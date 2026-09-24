@@ -433,16 +433,21 @@
 
 
   /**
-   * Freak Athlete Hyper Pro (standard model, NOT the Hyper Pro X) — moves that need only the base machine.
+   * Freak Athlete Hyper Pro (standard model, NOT the Hyper Pro X). Nathan owns the GHD Attachment and the Leg Developer
+   * (NOT the Belt Squat Attachment or Upper Body Kit), so belt squats, loaded calf raises, rows/face pulls on the kit are never programmed.
    * Sources: freakathlete.co Hyper Pro FAQ ("With the Hyper Pro only"), how-to-use page, and Freak Athlete workout blogs.
-   * GHD sit-ups / glute-ham raises (GHD Attachment) and leg extensions / curls (Leg Developer) are add-ons, so they are not programmed.
    * Full research: HYPER_PRO_EXERCISES.md (not published).
    */
   const HP_NOTES = {
-    reverseHyper: "Set the Freak Athlete Hyper Pro in GHD mode (or 90-degree back extension mode), then lie face down across the pad with your hips at its edge, hold the footplate handles, and let your legs hang straight down behind you. Squeeze your glutes to lift both legs until they line up with your body, pause for one second, and lower slowly with no swinging. Stop when your legs reach level; kicking higher only arches your low back. Body weight only, smooth and easy to moderate effort. It should feel like a warm pump in your glutes and low back, never a pinch.",
+    reverseHyper: "Set the Freak Athlete Hyper Pro in 90-degree back extension mode and attach the GHD Attachment pad. Use the footplate handles to climb on, lie face down with your hips at the top edge of the GHD pad, keep holding the handles, and let your legs hang straight down behind you for the full range. Squeeze your glutes to lift both legs until they line up with your body, pause for one second, and lower slowly all the way down with no swinging. Stop when your legs reach level; kicking higher only arches your low back. Body weight only, smooth and easy to moderate effort. It should feel like a warm pump in your glutes and low back, never a pinch.",
     nordic: "Set the Hyper Pro in Nordic mode at an incline you can control, around 30 to 45 degrees to start (a higher angle is easier). Kneel on the pad with your ankles locked between the rollers and your feet flat on the footplate. Squeeze your glutes and keep a straight line from knees to shoulders, then lower yourself as slowly as you can, aiming for 3 to 5 seconds. When you can't hold it any longer, catch yourself with your hands and push back up to the start. End each set 1 to 2 reps before your form breaks. When every rep of every set feels controlled, drop the incline one notch the next week.",
     reverseNordic: "Set the Hyper Pro in Nordic mode (Freak Athlete's beginner workout uses the 20-degree setting). Kneel on the pad with your ankles locked in the rollers, just like a Nordic curl, and sit tall. Squeeze your glutes so your hips stay straight, then lean your whole body back from the knees as far as you can control, pause for a second, and pull yourself back up with your thighs. Start with a shallow lean and go a little deeper each week. Moderate effort; stop if you feel sharp pain in the knee. Keep your ribs down so your low back does not arch.",
     hipThrust: "Set the Hyper Pro to hip thrust mode: flip the post at the base up to vertical and move the top ankle roller onto it so it becomes your back rest. Sit on the floor with your upper back across the roller, feet flat about shoulder-width apart, and a padded barbell or one heavy dumbbell across your hips. Tuck your chin, drive through your heels, and squeeze your glutes until your body is flat from knees to shoulders, pause for two seconds, then lower under control. The rep ends when your hips are straight, so do not arch your low back to go higher. Pick a load you could lift 2 to 3 more times at the end of each set, and log the weight you used.",
+    gluteHam: "Set the Hyper Pro in GHD mode with the GHD Attachment pad, and slide the pad so your knees sit just behind its back edge with your feet flat on the footplate and locked between the rollers. Start with your body straight and level with the floor, then pull yourself up by digging your toes into the footplate and curling with your hamstrings until you are upright, keeping your hips straight the whole time. Lower back down slowly over about 3 seconds. Easier version: raise the machine's incline, use a shorter range, or lower slowly and push off the floor with your hands to get back up. Harder version: full range at a flatter angle, a slower lowering, then a light plate held at your chest. End each set 1 to 2 reps before your hips start to bend.",
+    sorensen: "Set the Hyper Pro in 90-degree back extension mode with the GHD Attachment pad, and slide it so your hip bones are just past the front edge with your ankles locked in the rollers. Cross your arms on your chest and hold your body in one straight line, level with the floor, from head to heels. Squeeze your glutes and keep your ribs down so your low back does not sag or arch. Start with 30 to 40 second holds, add 5 to 10 seconds each week, and hold a plate at your chest once 90 seconds is easy. If your low back complains, put your hands on the floor for help and shorten the hold. Log the seconds and any added plate.",
+    ghdSitUp: "Set the Hyper Pro in GHD mode with the GHD Attachment pad, sit on the pad with your hips just past its edge, and lock your feet in the rollers with your knees slightly bent. Cross your arms on your chest, lean back under control only until your body is about level with the floor, stopping well short of full extension, then sit up by pulling with your abs and hips. Keep it smooth and moderate, with no bouncing or throwing your arms. Skip this exercise and do a side plank instead if your low back is flaring or you feel nerve pain down your leg.",
+    legExtension: "Attach the Leg Developer to the front of the Hyper Pro and lock its clamp, then slide plates onto the weight horn. Sit on the flat pad with your knees at its front edge, the tops of your ankles behind the lower ankle roller, and hold the handles to stay seated. Straighten your knees until your legs are straight, squeeze your thighs for one second, then lower over 2 to 3 seconds. Pick a plate load you could lift 2 to 3 more times at the end of each set, and log the total plate weight you loaded. This builds your quads and knees for long downhill hiking.",
+    hamCurl: "Attach the Leg Developer to the front of the Hyper Pro and lock its clamp, then slide plates onto the weight horn. Lie face down on the pad with your knees just past its edge and your heels under the roller pad, and hold the frame. Keep your hips pressed into the pad and curl your heels toward your glutes, squeeze for one second, then lower over 2 to 3 seconds without letting the weight drop. Pick a plate load you could lift 2 to 3 more times at the end of each set, and log the total plate weight you loaded.",
     sideRaise: "Set the Hyper Pro in 45-degree back extension mode and close the gap between the two front pads. Turn sideways so the side of your hip rests on the pads and your feet are locked in the rollers, one foot in front of the other. Cross your arms on your chest, slowly bend sideways toward the floor, then lift back up until your body is a straight line. Keep your top hip stacked over your bottom hip and do not twist. Do all the reps on one side, then switch. Start with a small range and go deeper as it gets comfortable; hold a light dumbbell at your chest once 12 reps per side feels easy, and log that weight.",
   };
   function hyperProReverseHyper(sets, reps, lead, name) {
@@ -461,6 +466,22 @@
     return { name: "Hyper Pro Side Raise (QL Raise)", detail: sets + " sets of " + reps + " reps per side", note: HP_NOTES.sideRaise, sets: sets, reps: reps, log: "reps", noLoad: true };
   }
 
+  function hyperProGluteHamRaise(sets, reps) {
+    return { name: "Hyper Pro Glute-Ham Raise (GHD Attachment)", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.gluteHam, sets: sets, reps: reps, log: "reps", bw: true };
+  }
+  function hyperProSorensenHold(sets, secs) {
+    return { name: "Hyper Pro Sorensen Hold (back extension hold)", detail: sets + " sets of " + secs + " seconds", note: HP_NOTES.sorensen, sets: sets, reps: secs, log: "hold", noLoad: true };
+  }
+  function hyperProGhdSitUp(sets, reps) {
+    return { name: "Hyper Pro GHD Sit-Up (partial range)", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.ghdSitUp, sets: sets, reps: reps, log: "reps", bw: true };
+  }
+  function hyperProLegExtension(sets, reps) {
+    return { name: "Hyper Pro Leg Extension (Leg Developer)", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.legExtension, sets: sets, reps: reps, log: "reps", noLoad: true };
+  }
+  function hyperProHamstringCurl(sets, reps) {
+    return { name: "Hyper Pro Hamstring Curl (Leg Developer)", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.hamCurl, sets: sets, reps: reps, log: "reps", noLoad: true };
+  }
+
   /** Concrete workout library — keyed by slot. Multiple options per slot. */
   const WORKOUTS = {
     strength_a: [
@@ -471,7 +492,7 @@
         lengthClass: "medium",
         location: "Home · Power rack",
         rpe: "7–8",
-        summary: "About 75 minutes of heavy back squats and bench press for strength and an athletic look, then core work that protects your low back for ultra and hunting miles.",
+        summary: "About 75 minutes of heavy back squats and bench press for strength and an athletic look, Leg Developer hamstring curls to balance your knees, then core work that protects your low back for ultra and hunting miles.",
         warmup: [
           "5 minutes of easy walking or jogging on the treadmill",
           "Hip circles and upper-back rotations for 2 minutes",
@@ -479,10 +500,10 @@
         ],
         blocks: [
           {
-            name: "Squat work",
+            name: "Squat and hamstring work",
             items: [
               { name: "Back Squat", detail: "5 sets of 5 reps — about 78% of your 1RM — stop 2–3 reps before failure", note: "Hard effort. Use your Progress back-squat max (baseline 315 lb). Quality depth — no pause needed.", liftId: "back_squat", pct1rm: 78, sets: 5, reps: 5 },
-              { name: "Front Squat", detail: "3 sets of 5 reps — about 62% of your 1RM", note: "Solid effort. Lighter positional volume after back squat — front squat loads run lighter than back squat.", liftId: "back_squat", pct1rm: 62, sets: 3, reps: 5 },
+              hyperProHamstringCurl(3, 12),
             ],
           },
           {
@@ -548,7 +569,7 @@
         lengthClass: "long",
         location: "Home · Full gym",
         rpe: "7–8",
-        summary: "A fuller ~90 minute day — squat volume toward your 405 goal, upper-body work for physique, Hyper Pro hip thrusts for your glutes, and heavy carries for hunting and core strength.",
+        summary: "A fuller ~90 minute day — squat volume toward your 405 goal, Leg Developer leg extensions for downhill knees, upper-body work for physique, Hyper Pro hip thrusts for your glutes, and heavy carries for hunting and core strength.",
         warmup: ["5–8 min easy tread", "Empty-bar front squat × 8", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
@@ -556,6 +577,7 @@
             items: [
               { name: "Back Squat", detail: "4 sets of 8 reps — about 68% of your 1RM", note: "Solid effort. Hypertrophy volume toward the 405 goal. Controlled tempo.", liftId: "back_squat", pct1rm: 68, sets: 4, reps: 8 },
               { name: "Bulgarian Split Squat (rear foot elevated)", detail: "3 sets of 8 reps per leg", note: "Rest the top of your back foot on the FID bench or the Hyper Pro hip thrust roller and hold a dumbbell in each hand. Drop your back knee straight down toward the floor, keep your torso tall and your front heel planted, and drive up through your front foot. Moderate to hard effort: finish each set with about 2 reps left. Log the dumbbell weight in each hand.", sets: 3, reps: 8, log: "reps", noLoad: true },
+              hyperProLegExtension(3, 12),
             ],
           },
           {
@@ -563,7 +585,6 @@
             items: [
               { name: "Incline DB Bench (FID)", detail: "4 sets of 8 reps — stop 2–3 reps before failure", note: "Upper chest / athletic shelf. Choose DBs you can finish clean — not a % of barbell bench.", sets: 4, reps: 8 },
               hyperProHipThrust(3, 10),
-              { name: "DB Lateral + Front Raise combo", detail: "3 sets of 12 reps", note: "Shoulder look without frying recovery." },
               { name: "Bicep Curl Bar — EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory after main work." },
             ],
           },
@@ -588,7 +609,7 @@
         lengthClass: "medium",
         location: "Home · Rack + bar",
         rpe: "7–8",
-        summary: "About 80 minutes: deadlift toward 405, personal pull-up and push-up practice, then anti-twist core so your back stays durable for long days on your feet.",
+        summary: "About 80 minutes: deadlift toward 405, Hyper Pro Nordic curls for your hamstrings without more low-back load, personal pull-up and push-up practice, then anti-twist core so your back stays durable for long days on your feet.",
         warmup: [
           "5 min easy tread",
           "Bodyweight hip hinges × 10, then glute bridges × 12",
@@ -599,7 +620,7 @@
             name: "Hinge strength",
             items: [
               { name: "Conventional Deadlift", detail: "5 sets of 3 reps — about 78% of your 1RM — stop 2–3 reps before failure", note: "Hard effort. Uses your Progress deadlift max (baseline 345 lb → goal 405). Keep low back neutral; brace hard — don't coddle.", liftId: "deadlift", pct1rm: 78, sets: 5, reps: 3 },
-              { name: "Romanian Deadlift (RDL)", detail: "3 sets of 6 reps — about 55% of your 1RM", note: "Hamstring and hinge pattern. Moderate load — leave plenty in the tank after the main pull.", liftId: "deadlift", pct1rm: 55, sets: 3, reps: 6 },
+              hyperProNordicCurl(3, 5),
             ],
           },
           {
@@ -659,14 +680,14 @@
         lengthClass: "medium",
         location: "Home · Hyper Pro + rack",
         rpe: "7",
-        summary: "About 70 minutes of Hyper Pro reverse hypers and Nordic curls, Romanian deadlifts, and heavy rows — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
+        summary: "About 70 minutes of full-range Hyper Pro reverse hypers and glute-ham raises on the GHD Attachment, Romanian deadlifts, heavy rows, and a small dose of GHD sit-ups — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
         warmup: ["Easy tread 5 min", "Hyper Pro back extensions with bodyweight × 15", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
             name: "Posterior chain",
             items: [
               hyperProReverseHyper(3, 12, "Warms up your glutes and low back before the hinge work."),
-              hyperProNordicCurl(3, 5),
+              hyperProGluteHamRaise(3, 6),
               { name: "Barbell RDL", detail: "4 sets of 6 reps — about 55% of your 1RM", note: "Hinge strength without max deadlift fatigue.", liftId: "deadlift", pct1rm: 55, sets: 4, reps: 6 },
               { name: "Walking Lunges (DB)", detail: "3 sets of 10 reps", note: "Hiking legs accessory." },
             ],
@@ -681,7 +702,7 @@
           {
             name: "Core finish",
             items: [
-              { name: "Barbell Rollout (from the knees)", detail: "4 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 4, reps: 8, log: "reps", bw: true },
+              hyperProGhdSitUp(2, 8),
               { name: "Side Plank", detail: "3 sets of 40 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 40, log: "hold", noLoad: true },
             ],
           },
@@ -1027,14 +1048,14 @@
         lengthClass: "short",
         location: "Home · Full kit",
         rpe: "7",
-        summary: "A focused 35-minute core session to protect your low back: barbell rollouts and weighted planks, heavy suitcase carries, side planks, and Hyper Pro side raises, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
+        summary: "A focused 35-minute core session to protect your low back: barbell rollouts, Hyper Pro Sorensen holds for back endurance, heavy suitcase carries, side planks, and Hyper Pro side raises, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
         warmup: ["3 minutes of easy treadmill walking", "Cat-cow × 8, then 5 slow dead bugs per side to practice bracing"],
         blocks: [
           {
-            name: "Anti-extension core",
+            name: "Anti-extension and back endurance",
             items: [
               { name: "Barbell Rollout (from the knees)", detail: "5 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 5, reps: 8, log: "reps", bw: true },
-              { name: "Weighted Front Plank", detail: "4 sets of 45 seconds", note: "Get on your forearms and toes with a 25 or 45 lb plate on your upper back (easiest to set it on while your knees are down). Hold a straight line from head to heels, squeeze your glutes, and pull your elbows toward your toes so it feels hard. Keep your hips level with no sagging or piking. Log the plate weight and the seconds you held.", sets: 4, reps: 45, log: "hold", noLoad: true },
+              hyperProSorensenHold(3, 40),
               { name: "Dead Bug (holding a light dumbbell)", detail: "3 sets of 8 reps per side", note: "Lie on your back holding a 25 lb dumbbell straight over your chest, knees bent over your hips. Press your low back flat into the floor, then slowly straighten one leg toward the floor while you breathe out, and bring it back. Alternate legs. If your low back lifts off the floor, shorten the reach. Log the dumbbell weight.", sets: 3, reps: 8, log: "reps", noLoad: true },
             ],
           },
@@ -3423,7 +3444,7 @@
       </div>
       <div class="goal-card">
         <h3>Beast Core (back-pain insurance)</h3>
-        <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Freak Athlete Hyper Pro back extensions, reverse hypers, and side raises round it out. Core finishers come after strength days, plus the flex-day core session.</p>
+        <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Freak Athlete Hyper Pro back extensions, full-range reverse hypers, Sorensen holds, side raises, and an occasional small dose of GHD sit-ups round it out. Core finishers come after strength days, plus the flex-day core session.</p>
       </div>
     `;
   }
@@ -3442,7 +3463,7 @@
           <span class="equip-chip">425 lb plates</span>
           <span class="equip-chip">Pull-up bar</span>
           <span class="equip-chip">Adjustable DBs 25–125</span>
-          <span class="equip-chip">Freak Athlete Hyper Pro</span>
+          <span class="equip-chip">Freak Athlete Hyper Pro + GHD Attachment + Leg Developer</span>
           <span class="equip-chip">Bicep curl bar</span>
         </div>
       </div>
@@ -3455,7 +3476,7 @@
         <ul class="notes-list">
           <li>Five goals: athletic look, hunting fitness, Black Canyon 100k volume, personal PT marks, and a strong core</li>
           <li>Squats are back squat or front squat only (no goblet squats)</li>
-          <li>Hyper Pro means the standard Freak Athlete Hyper Pro (not the Hyper Pro X); only moves the base machine does are programmed</li>
+          <li>Hyper Pro means the standard Freak Athlete Hyper Pro (not the Hyper Pro X) with the GHD Attachment and Leg Developer; no Belt Squat Attachment or Upper Body Kit</li>
           <li>Only well-known exercises that use the equipment above</li>
           <li>Split squats and lunges are fine; arm and shoulder extras belong after main strength work</li>
           <li>One active recovery / deep stretch day is required every week</li>
