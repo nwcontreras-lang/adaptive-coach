@@ -460,7 +460,7 @@
     return { name: "Hyper Pro Reverse Nordic", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.reverseNordic, sets: sets, reps: reps, log: "reps", bw: true };
   }
   function hyperProHipThrust(sets, reps) {
-    return { name: "Hyper Pro Hip Thrust", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.hipThrust, sets: sets, reps: reps, log: "reps", noLoad: true };
+    return { name: "Hyper Pro Hip Thrust", detail: sets + " sets of " + reps + " reps. Stop each set when you could still do 2 to 3 more reps.", note: HP_NOTES.hipThrust, sets: sets, reps: reps, log: "reps", noLoad: true };
   }
   function hyperProSideRaise(sets, reps) {
     return { name: "Hyper Pro Side Raise (QL Raise)", detail: sets + " sets of " + reps + " reps per side", note: HP_NOTES.sideRaise, sets: sets, reps: reps, log: "reps", noLoad: true };
@@ -476,10 +476,10 @@
     return { name: "Hyper Pro GHD Sit-Up (partial range)", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.ghdSitUp, sets: sets, reps: reps, log: "reps", bw: true };
   }
   function hyperProLegExtension(sets, reps) {
-    return { name: "Hyper Pro Leg Extension (Leg Developer)", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.legExtension, sets: sets, reps: reps, log: "reps", noLoad: true };
+    return { name: "Hyper Pro Leg Extension (Leg Developer)", detail: sets + " sets of " + reps + " reps. Stop each set when you could still do 2 to 3 more reps.", note: HP_NOTES.legExtension, sets: sets, reps: reps, log: "reps", noLoad: true };
   }
   function hyperProHamstringCurl(sets, reps) {
-    return { name: "Hyper Pro Hamstring Curl (Leg Developer)", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.hamCurl, sets: sets, reps: reps, log: "reps", noLoad: true };
+    return { name: "Hyper Pro Hamstring Curl (Leg Developer)", detail: sets + " sets of " + reps + " reps. Stop each set when you could still do 2 to 3 more reps.", note: HP_NOTES.hamCurl, sets: sets, reps: reps, log: "reps", noLoad: true };
   }
 
   /** Concrete workout library — keyed by slot. Multiple options per slot. */
@@ -496,23 +496,23 @@
         warmup: [
           "5 minutes of easy walking or jogging on the treadmill",
           "Hip circles and upper-back rotations for 2 minutes",
-          "Empty-bar back squat × 10, then ramp sets",
+          "10 back squats with the empty bar, then a few lighter sets building up to your working weight",
         ],
         blocks: [
           {
             name: "Squat and hamstring work",
             items: [
-              { name: "Back Squat", detail: "5 sets of 5 reps — about 78% of your 1RM — stop 2–3 reps before failure", note: "Hard effort. Use your Progress back-squat max (baseline 315 lb). Quality depth — no pause needed.", liftId: "back_squat", pct1rm: 78, sets: 5, reps: 5 },
+              { name: "Back Squat", detail: "5 sets of 5 reps at about 78% of your 1RM. Stop each set when you could still do 2 to 3 more reps.", note: "Hard effort. The weight comes from your back-squat max in Progress (starting point 315 lb). Squat to full depth; no pause is needed at the bottom.", liftId: "back_squat", pct1rm: 78, sets: 5, reps: 5 },
               hyperProHamstringCurl(3, 12),
             ],
           },
           {
             name: "Pressing and physique extras",
             items: [
-              { name: "Barbell Bench Press", detail: "4 sets of 6 reps — about 75% of your 1RM — stop 2–3 reps before failure", note: "Hard effort. Uses your Progress bench max (baseline 275 lb). Balanced push for PT marks and an athletic look.", liftId: "bench", pct1rm: 75, sets: 4, reps: 6 },
-              { name: "DB Overhead Press (seated FID)", detail: "3 sets of 8 reps", note: "Shoulder cap / athletic look. 25–70 lb DBs." },
-              { name: "DB Lateral Raises", detail: "3 sets of 12 reps", note: "Physique: delts. Light–moderate, no swing." },
-              { name: "Bicep Curl Bar — EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory — doesn't interfere with ultra." },
+              { name: "Barbell Bench Press", detail: "4 sets of 6 reps at about 75% of your 1RM. Stop each set when you could still do 2 to 3 more reps.", note: "Hard effort. The weight comes from your bench max in Progress (starting point 275 lb). Balanced pressing for your push-up marks and an athletic look.", liftId: "bench", pct1rm: 75, sets: 4, reps: 6 },
+              { name: "Seated Dumbbell Overhead Press (adjustable bench)", detail: "3 sets of 8 reps", note: "Builds rounded shoulders for an athletic look. Use dumbbells somewhere between 25 and 70 lb.", sets: 3, reps: 8 },
+              { name: "Dumbbell Lateral Raises", detail: "3 sets of 12 reps", note: "Builds the sides of your shoulders. Use a light to moderate weight and do not swing.", sets: 3, reps: 12 },
+              { name: "EZ-Bar Biceps Curls", detail: "3 sets of 10 reps", note: "Extra arm work that does not interfere with your ultra training.", sets: 3, reps: 10 },
             ],
           },
           {
@@ -524,7 +524,7 @@
             ],
           },
         ],
-        notes: ["Program hard; flag any low-back flare and swap to lighter front squats plus extra dead bugs and planks.", "Hydrate; session ~75 min."],
+        notes: ["Program hard; flag any low-back flare and swap to lighter front squats plus extra dead bugs and planks.", "Drink water throughout. This session takes about 75 minutes."],
       },
       {
         id: "sa-short-squat-core",
@@ -533,14 +533,14 @@
         lengthClass: "short",
         location: "Home · Rack",
         rpe: "7",
-        summary: "A tight 30–35 minute session: front squat triples, pressing, and dense core. Fits a compressed day while still hitting squat strength and low-back armor.",
-        warmup: ["2 minutes of easy treadmill walking", "Bodyweight squat × 15", "Easy push-ups × 10"],
+        summary: "A tight 30 to 35 minute session: front squat triples, pressing, and dense core. Fits a compressed day while still hitting squat strength and low-back armor.",
+        warmup: ["2 minutes of easy treadmill walking", "15 bodyweight squats", "10 easy push-ups"],
         blocks: [
           {
             name: "Main strength",
             items: [
-              { name: "Front Squat", detail: "6 sets of 3 reps — about 72% of your 1RM", note: "Hard effort. Crisp triples. Belt optional.", liftId: "back_squat", pct1rm: 72, sets: 6, reps: 3 },
-              { name: "Close-Grip Bench or Floor Press", detail: "4 sets of 6 reps — about 75% of your 1RM — stop 2–3 reps before failure", note: "Triceps + lockout for push-up capacity.", liftId: "bench", pct1rm: 75, sets: 4, reps: 6 },
+              { name: "Front Squat", detail: "6 sets of 3 reps at about 72% of your 1RM.", note: "Hard effort. Keep every set of three crisp and fast. A belt is optional.", liftId: "back_squat", pct1rm: 72, sets: 6, reps: 3 },
+              { name: "Close-Grip Bench Press or Floor Press", detail: "4 sets of 6 reps at about 75% of your 1RM. Stop each set when you could still do 2 to 3 more reps.", note: "Builds your triceps and lockout strength, which carries over to push-ups.", liftId: "bench", pct1rm: 75, sets: 4, reps: 6 },
             ],
           },
           {
@@ -555,12 +555,12 @@
           {
             name: "Quick physique finish (optional)",
             items: [
-              { name: "DB Lateral Raises", detail: "2 sets of 15 reps", note: "Athletic shoulders without long session tax." },
-              { name: "Bicep Curl Bar", detail: "2 sets of 12 reps", note: "Physique pillar micro-dose." },
+              { name: "Dumbbell Lateral Raises", detail: "2 sets of 15 reps", note: "Athletic shoulders without making the session much longer.", sets: 2, reps: 15 },
+              { name: "EZ-Bar Biceps Curls", detail: "2 sets of 12 reps", note: "A small dose of arm work for your physique goal.", sets: 2, reps: 12 },
             ],
           },
         ],
-        notes: ["Short option for on-shift or compressed days.", "No goblet squats — front squat only here."],
+        notes: ["Short option for on-shift or compressed days.", "No goblet squats. Front squats only here."],
       },
       {
         id: "sa-long-volume",
@@ -569,13 +569,13 @@
         lengthClass: "long",
         location: "Home · Full gym",
         rpe: "7–8",
-        summary: "A fuller ~90 minute day — squat volume toward your 405 goal, Leg Developer leg extensions for downhill knees, upper-body work for physique, Hyper Pro hip thrusts for your glutes, and heavy carries for hunting and core strength.",
-        warmup: ["5–8 min easy tread", "Empty-bar front squat × 8", "Light dumbbell rear-delt raises × 15"],
+        summary: "A fuller day of about 90 minutes: squat volume toward your 405 goal, Leg Developer leg extensions for downhill knees, upper-body work for physique, Hyper Pro hip thrusts for your glutes, and heavy carries for hunting and core strength.",
+        warmup: ["5 to 8 minutes of easy walking or jogging on the treadmill", "8 front squats with the empty bar", "15 light dumbbell rear-delt raises"],
         blocks: [
           {
             name: "Squat volume",
             items: [
-              { name: "Back Squat", detail: "4 sets of 8 reps — about 68% of your 1RM", note: "Solid effort. Hypertrophy volume toward the 405 goal. Controlled tempo.", liftId: "back_squat", pct1rm: 68, sets: 4, reps: 8 },
+              { name: "Back Squat", detail: "4 sets of 8 reps at about 68% of your 1RM.", note: "Solid effort. Muscle-building volume toward your 405 lb goal. Lower and stand up at a steady, controlled speed.", liftId: "back_squat", pct1rm: 68, sets: 4, reps: 8 },
               { name: "Bulgarian Split Squat (rear foot elevated)", detail: "3 sets of 8 reps per leg", note: "Rest the top of your back foot on the FID bench or the Hyper Pro hip thrust roller and hold a dumbbell in each hand. Drop your back knee straight down toward the floor, keep your torso tall and your front heel planted, and drive up through your front foot. Moderate to hard effort: finish each set with about 2 reps left. Log the dumbbell weight in each hand.", sets: 3, reps: 8, log: "reps", noLoad: true },
               hyperProLegExtension(3, 12),
             ],
@@ -583,9 +583,9 @@
           {
             name: "Press, posterior chain, and physique",
             items: [
-              { name: "Incline DB Bench (FID)", detail: "4 sets of 8 reps — stop 2–3 reps before failure", note: "Upper chest / athletic shelf. Choose DBs you can finish clean — not a % of barbell bench.", sets: 4, reps: 8 },
+              { name: "Incline Dumbbell Bench Press (adjustable bench)", detail: "4 sets of 8 reps. Stop each set when you could still do 2 to 3 more reps.", note: "Builds your upper chest. Choose dumbbells you can finish every rep with cleanly; this is not based on a percentage of your barbell bench.", sets: 4, reps: 8 },
               hyperProHipThrust(3, 10),
-              { name: "Bicep Curl Bar — EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory after main work." },
+              { name: "EZ-Bar Biceps Curls", detail: "3 sets of 10 reps", note: "Extra arm work after the main lifts.", sets: 3, reps: 10 },
             ],
           },
           {
@@ -597,7 +597,7 @@
             ],
           },
         ],
-        notes: ["Long option when you have the full 90.", "Hyper Pro = Freak Athlete Hyper Pro."],
+        notes: ["The long option for when you have the full 90 minutes.", "Hyper Pro means your Freak Athlete Hyper Pro."],
       },
     ],
 
@@ -607,30 +607,30 @@
         title: "Deadlift, pull-ups, and push-ups",
         durationMin: 80,
         lengthClass: "medium",
-        location: "Home · Rack + bar",
+        location: "Home · Rack and barbell",
         rpe: "7–8",
-        summary: "About 80 minutes: deadlift toward 405, Hyper Pro Nordic curls for your hamstrings without more low-back load, personal pull-up and push-up practice, then anti-twist core so your back stays durable for long days on your feet.",
+        summary: "About 80 minutes: deadlifts toward your 405 lb goal, Hyper Pro Nordic curls for your hamstrings without more low-back load, personal pull-up and push-up practice, then anti-twist core so your back stays durable for long days on your feet.",
         warmup: [
-          "5 min easy tread",
-          "Bodyweight hip hinges × 10, then glute bridges × 12",
-          "Deadlift ramp: bar → 135 → 225 → work",
+          "5 minutes of easy walking or jogging on the treadmill",
+          "10 bodyweight hip hinges, then 12 glute bridges",
+          "Deadlift warm-up sets: the empty bar, then 135 lb, then 225 lb, then your working weight",
         ],
         blocks: [
           {
             name: "Hinge strength",
             items: [
-              { name: "Conventional Deadlift", detail: "5 sets of 3 reps — about 78% of your 1RM — stop 2–3 reps before failure", note: "Hard effort. Uses your Progress deadlift max (baseline 345 lb → goal 405). Keep low back neutral; brace hard — don't coddle.", liftId: "deadlift", pct1rm: 78, sets: 5, reps: 3 },
+              { name: "Conventional Deadlift", detail: "5 sets of 3 reps at about 78% of your 1RM. Stop each set when you could still do 2 to 3 more reps.", note: "Hard effort. The weight comes from your deadlift max in Progress (starting point 345 lb, goal 405 lb). Keep your low back flat and brace hard, but do not baby it.", liftId: "deadlift", pct1rm: 78, sets: 5, reps: 3 },
               hyperProNordicCurl(3, 5),
             ],
           },
           {
             name: "Pull-ups, push-ups, and physique",
             items: [
-              { name: "Dead-Hang Pull-Ups", detail: "5 sets → total toward 30", note: "Personal target 30. Baseline 21. Full dead hang each rep." },
-              { name: "Bent-Over Barbell Row or Chest-Supported", detail: "4 sets of 6 reps", note: "Upper-back thickness · balanced pull for physique + posture." },
-              { name: "HR Push-Ups (2-min style practice)", detail: "3 sets — as many clean reps as you can in 45 to 60 seconds", note: "Personal target 70 in 2 minutes (now about 40). Practice density, not a job fitness block. Log the reps you got each set.", sets: 3, bw: true },
+              { name: "Dead-Hang Pull-Ups", detail: "5 sets, adding up as many total reps as you can toward 30", note: "Your personal target is 30 in one set; your starting point was 21. Start every rep from a full dead hang.", sets: 5 },
+              { name: "Bent-Over Barbell Row or Chest-Supported Dumbbell Row", detail: "4 sets of 6 reps", note: "Builds a thicker upper back and balances all the pressing, for your physique and posture.", sets: 4, reps: 6 },
+              { name: "Hand-Release Push-Ups (2-minute test practice)", detail: "3 sets of as many clean reps as you can in 45 to 60 seconds", note: "Your personal target is 70 in 2 minutes (you are at about 40 now). This is practice for packing more reps into less time, not a job fitness block. Log the reps you got each set.", sets: 3, bw: true },
               { name: "Rear-Delt Dumbbell Flyes", detail: "3 sets of 15 reps", note: "Bend forward with a flat back and raise light dumbbells out to the sides, squeezing your shoulder blades together. Shoulder health and an athletic upper-back look.", sets: 3, reps: 15 },
-              { name: "Bicep Curl Bar — Hammer or EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory; keep easy on grip before heavy carries." },
+              { name: "EZ-Bar Biceps Curls or Hammer Curls", detail: "3 sets of 10 reps", note: "Extra arm work. Keep it easy on your grip before the heavy carries.", sets: 3, reps: 10 },
             ],
           },
           {
@@ -642,7 +642,7 @@
             ],
           },
         ],
-        notes: ["Strength B is the PT maxes day.", "If low back nags on DL, cut volume and emphasize RDL + Hyper Pro next session."],
+        notes: ["Strength B is the PT maxes day.", "If your low back nags during deadlifts, cut the number of sets and lean on Romanian deadlifts and Hyper Pro work next session."],
       },
       {
         id: "sb-short-pt-core",
@@ -651,15 +651,15 @@
         lengthClass: "short",
         location: "Home or Fire Station",
         rpe: "7–8",
-        summary: "Thirty minutes of pull-up and push-up practice plus hanging core. Works at home or the station and still counts as your hinge/pull strength day.",
+        summary: "Thirty minutes of pull-up and push-up practice plus hanging core. Works at home or the station and still counts as your hinge and pull strength day.",
         warmup: ["Arm circles, then 2 dead hangs from the bar for 20 seconds each", "10 easy push-ups"],
         blocks: [
           {
             name: "Pull-ups and push-ups",
             items: [
-              { name: "Dead-Hang Pull-Up Ladder", detail: "1,2,3,4,5… until fail", note: "Rest :45–:60 between rungs. Log total reps." },
-              { name: "Push-Ups Every Minute", detail: "12 sets of 8 reps — start a new set at the top of each minute", note: "Leave 2 reps in the tank each minute and rest for whatever is left of the minute. This builds your 2-minute push-up capacity.", sets: 12, reps: 8, bw: true },
-              { name: "Bicep Curl Bar — Strict Curls", detail: "3 sets of 10 reps", note: "Elbow health / arm finish." },
+              { name: "Dead-Hang Pull-Up Ladder", detail: "Do 1 pull-up, then 2, then 3, adding one rep each round until you can't finish a round", note: "Rest 45 to 60 seconds between rounds. Log your total reps." },
+              { name: "Push-Ups Every Minute", detail: "12 sets of 8 reps. Start a new set at the top of each minute.", note: "Stop each set when you could still do 2 more reps and rest for whatever is left of the minute. This builds your 2-minute push-up capacity.", sets: 12, reps: 8, bw: true },
+              { name: "Strict EZ-Bar Biceps Curls", detail: "3 sets of 10 reps", note: "Keeps your elbows healthy and finishes off your arms.", sets: 3, reps: 10 },
             ],
           },
           {
@@ -671,32 +671,32 @@
             ],
           },
         ],
-        notes: ["Tag: Fire Station friendly if bar available.", "Short option — still counts as Strength B."],
+        notes: ["Works at the fire station if there is a pull-up bar.", "Short option that still counts as Strength B."],
       },
       {
         id: "sb-hyper-row",
         title: "Hyper Pro hinge and row volume",
         durationMin: 70,
         lengthClass: "medium",
-        location: "Home · Hyper Pro + rack",
+        location: "Home · Hyper Pro and rack",
         rpe: "7",
         summary: "About 70 minutes of full-range Hyper Pro reverse hypers and glute-ham raises on the GHD Attachment, Romanian deadlifts, heavy rows, and a small dose of GHD sit-ups — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
-        warmup: ["Easy tread 5 min", "Hyper Pro back extensions with bodyweight × 15", "Light dumbbell rear-delt raises × 15"],
+        warmup: ["5 minutes of easy walking or jogging on the treadmill", "15 bodyweight back extensions on the Hyper Pro", "15 light dumbbell rear-delt raises"],
         blocks: [
           {
             name: "Posterior chain",
             items: [
               hyperProReverseHyper(3, 12, "Warms up your glutes and low back before the hinge work."),
               hyperProGluteHamRaise(3, 6),
-              { name: "Barbell RDL", detail: "4 sets of 6 reps — about 55% of your 1RM", note: "Hinge strength without max deadlift fatigue.", liftId: "deadlift", pct1rm: 55, sets: 4, reps: 6 },
-              { name: "Walking Lunges (DB)", detail: "3 sets of 10 reps", note: "Hiking legs accessory." },
+              { name: "Barbell Romanian Deadlift", detail: "4 sets of 6 reps at about 55% of your deadlift 1RM.", note: "Builds hinge strength without the fatigue of heavy deadlifts.", liftId: "deadlift", pct1rm: 55, sets: 4, reps: 6 },
+              { name: "Dumbbell Walking Lunges", detail: "3 sets of 10 reps per leg", note: "Extra leg work for hiking. Log the dumbbell weight in each hand.", sets: 3, reps: 10 },
             ],
           },
           {
             name: "Pulling strength",
             items: [
-              { name: "Pull-Ups (weighted if >10 strict)", detail: "4× max − 2", note: "Start each rep from a dead hang. Once you can do more than 10 strict reps, hold a dumbbell between your feet." },
-              { name: "Single-Arm DB Row", detail: "4 sets of 8 reps", note: "Heavy — 70–100+ lb." },
+              { name: "Pull-Ups (add weight once you can do more than 10 strict reps)", detail: "4 rounds, stopping each round 2 reps short of your max", note: "Start each rep from a dead hang. Once you can do more than 10 strict reps, hold a dumbbell between your feet." },
+              { name: "Single-Arm Dumbbell Row", detail: "4 sets of 8 reps per side", note: "Go heavy: 70 to 100 lb or more.", sets: 4, reps: 8 },
             ],
           },
           {
@@ -707,7 +707,7 @@
             ],
           },
         ],
-        notes: ["Equipment: Freak Athlete Hyper Pro."],
+        notes: ["Equipment: your Freak Athlete Hyper Pro."],
       },
     ],
 
@@ -720,12 +720,12 @@
         location: "Outdoor or Wahoo",
         rpe: "3–4",
         summary: "Ultra-first: steady easy miles. Talk in full sentences. Speed comes with volume — no intervals today.",
-        warmup: ["3–5 min walk into jog"],
+        warmup: ["Walk for 3 to 5 minutes, then ease into a jog"],
         blocks: [
           {
             name: "Easy aerobic miles",
             items: [
-              { name: "40–50 min continuous easy", detail: "About 11:00–12:00 per mile · easy — conversational", note: "Talk in full sentences the whole way. Walk brief hills if needed. Black Canyon base." },
+              { name: "Easy continuous run, 40 to 50 minutes", detail: "About 11 to 12 minutes per mile. Keep it easy enough to talk in full sentences.", note: "Talk in full sentences the whole way. Walk brief hills if needed. Black Canyon base." },
             ],
           },
           {
@@ -749,13 +749,13 @@
         location: "Outdoor / Trail or Wahoo",
         rpe: "3",
         summary: "A shorter easy run of 35 to 45 minutes. Keep it relaxed enough to talk in full sentences the whole time.",
-        warmup: ["Easy start — no strides required"],
+        warmup: ["Start easy. No strides needed."],
         blocks: [
           {
             name: "Easy miles",
             items: [
-              { name: "35–45 min very easy", detail: "Easy — conversational · nasal breathing if you can", note: "Keep your ego at home. Time on your feet matters more than pace." },
-              { name: "Optional last 10 min hike/walk", detail: "If legs are heavy", note: "Walking still counts toward your time on feet." },
+              { name: "Very easy run, 35 to 45 minutes", detail: "Easy enough to talk in full sentences. Breathe through your nose if you can.", note: "Keep your ego at home. Time on your feet matters more than pace." },
+              { name: "Optional hike or walk for the last 10 minutes", detail: "Only if your legs feel heavy", note: "Walking still counts toward your time on feet." },
             ],
           },
           {
@@ -777,13 +777,13 @@
         lengthClass: "medium",
         location: "Outdoor / Trail",
         rpe: "3–4",
-        summary: "Soft-surface easy miles toward the 100k-feet year. Hike the steep bits, keep every minute conversational, and stack time-on-feet.",
-        warmup: ["2 min mobility at trailhead"],
+        summary: "Easy miles on soft trails toward your 100k. Hike the steep parts, keep every minute conversational, and build time on your feet.",
+        warmup: ["2 minutes of loosening up at the trailhead"],
         blocks: [
           {
             name: "Easy trail volume",
             items: [
-              { name: "45–55 min easy trail jog/hike", detail: "Easy — conversational", note: "Ultra specificity. Power-hike climbs; easy jog flats and downs." },
+              { name: "Easy trail jog and hike, 45 to 55 minutes", detail: "Easy enough to talk in full sentences.", note: "This matches what your ultra will feel like. Power-hike the climbs and jog the flats and downhills easily." },
             ],
           },
           {
@@ -794,7 +794,7 @@
             ],
           },
         ],
-        notes: ["Tag: Outdoor / Trail.", "Counts as your easy run for the week."],
+        notes: ["Outdoors on a trail.", "Counts as your easy run for the week."],
       },
     ],
 
@@ -804,15 +804,15 @@
         title: "Hyper Pro and easy hills",
         durationMin: 55,
         lengthClass: "medium",
-        location: "Home · Hyper Pro + Wahoo",
+        location: "Home · Hyper Pro and Wahoo treadmill",
         rpe: "5–6",
         summary: "Incline time-on-feet plus Hyper Pro back and knee work (reverse hypers, back extensions, and reverse Nordics for downhill durability) for Black Canyon climbs and multi-day elk or deer hunts. Steady effort you can sustain.",
-        warmup: ["5 min flat easy walk/jog"],
+        warmup: ["5 minutes of easy walking or jogging on flat ground"],
         blocks: [
           {
             name: "Aerobic time on feet",
             items: [
-              { name: "Wahoo Incline Walk/Jog", detail: "Easy incline walk or jog for about 30 minutes — conversational", note: "Conversational. Builds Black Canyon climbing + hunt fitness together." },
+              { name: "Wahoo Incline Walk or Jog", detail: "Easy incline walk or jog for about 30 minutes. Keep it easy enough to talk.", note: "Builds climbing fitness for Black Canyon and your hunts at the same time." },
             ],
           },
           {
@@ -831,7 +831,7 @@
             ],
           },
         ],
-        notes: ["Hyper Pro = Freak Athlete Hyper Pro.", "Easy intent — volume and hills, not speed.", "Supports ultra + hunting pillars."],
+        notes: ["Hyper Pro means your Freak Athlete Hyper Pro.", "Keep it easy: this is for volume and hills, not speed.", "Supports your ultra and hunting goals."],
       },
       {
         id: "eh-trail-easy",
@@ -840,13 +840,13 @@
         lengthClass: "medium",
         location: "Outdoor / Trail",
         rpe: "4–5",
-        summary: "Ultra feet + hunt sim: easy trail with light pack — time-on-feet, hips, patience under load.",
-        warmup: ["Mobility 3 min at trailhead"],
+        summary: "An easy trail outing with a light pack that toughens your feet for the ultra and feels like a hunt: time on your feet, strong hips, and patience under load.",
+        warmup: ["3 minutes of loosening up at the trailhead"],
         blocks: [
           {
             name: "Trail time",
             items: [
-              { name: "45–55 min easy trail", detail: "Steady effort · hike the steep bits", note: "Optional 10–20 lb pack (build toward hunt days). Nasal breathing when possible." },
+              { name: "Easy trail outing, 45 to 55 minutes", detail: "Steady effort. Hike the steep parts.", note: "Carry an optional 10 to 20 lb pack to build toward hunting days. Breathe through your nose when you can." },
             ],
           },
           {
@@ -857,7 +857,7 @@
             ],
           },
         ],
-        notes: ["Tag: Outdoor / Trail.", "Black Canyon volume + hunting crossover — still conversational."],
+        notes: ["Outdoors on a trail.", "Builds volume for Black Canyon and carries over to hunting. Keep it conversational."],
       },
       {
         id: "eh-short-hyper",
@@ -867,7 +867,7 @@
         location: "Home",
         rpe: "5",
         summary: "A quick 30 minutes: incline walk, Hyper Pro reverse hypers and reverse Nordics, and carries. Climbing legs, downhill knees, and hunt base when the day is short.",
-        warmup: ["2 min march in place"],
+        warmup: ["March in place for 2 minutes"],
         blocks: [
           {
             name: "Hills and Hyper Pro",
@@ -879,7 +879,7 @@
             ],
           },
         ],
-        notes: ["Short aerobic + hike-legs option."],
+        notes: ["A short option for aerobic fitness and hiking legs."],
       },
     ],
 
@@ -892,12 +892,12 @@
         location: "Outdoor or Wahoo",
         rpe: "3–4",
         summary: "Your main ultra session: about 10 continuous easy miles at a pace where you can talk in full sentences. This is Black Canyon volume first.",
-        warmup: ["5 min walk + very easy first mile"],
+        warmup: ["Walk for 5 minutes, then run the first mile very easily"],
         blocks: [
           {
             name: "Ultra long easy run",
             items: [
-              { name: "9–11 miles easy continuous", detail: "About 11:00 per mile average · easy — conversational", note: "Baseline 10 miles around 11:00/mi. Full sentences. Walk brief hills. Fuel if over 75 minutes." },
+              { name: "Easy continuous run, 9 to 11 miles", detail: "Average about 11 minutes per mile. Keep it easy enough to talk in full sentences.", note: "Your starting point is 10 miles at about 11 minutes per mile. Walk short hills if you need to. Eat and drink if you are out longer than 75 minutes." },
             ],
           },
           {
@@ -912,7 +912,7 @@
         notes: [
           "This is the main run of the week — not a speed day.",
           "Mile and fire-pace marks improve from stacking easy volume; use rare TEST days only to check.",
-          "Outdoor preferred; Wahoo OK with fan.",
+          "Outdoors is best. The Wahoo treadmill is fine with a fan.",
         ],
       },
       {
@@ -922,13 +922,13 @@
         lengthClass: "long",
         location: "Wahoo or Outdoor",
         rpe: "3–4",
-        summary: "Build the long run by time — 80–90 minutes easy and conversational. Progress by lasting longer, not by running faster.",
-        warmup: ["Walk 3–5 min"],
+        summary: "Build the long run by time: 80 to 90 minutes, easy and conversational. Progress by lasting longer, not by running faster.",
+        warmup: ["Walk for 3 to 5 minutes"],
         blocks: [
           {
             name: "Time on feet",
             items: [
-              { name: "80–90 min continuous easy", detail: "Easy — conversational · stay aerobic", note: "Can mix jog and hike on trails. Add about 5–10 minutes in future weeks when this feels easy." },
+              { name: "Easy continuous run, 80 to 90 minutes", detail: "Easy enough to talk in full sentences. Stay relaxed the whole time.", note: "You can mix jogging and hiking on trails. Add about 5 to 10 minutes in future weeks when this feels easy." },
             ],
           },
           {
@@ -939,7 +939,7 @@
             ],
           },
         ],
-        notes: ["Ultra progressive long — duration climbs over the block.", "No tempo finishers."],
+        notes: ["This long run gets longer over the coming weeks to build toward your ultra.", "Do not finish with a fast section."],
       },
       {
         id: "lr-trail-long",
@@ -954,12 +954,12 @@
           {
             name: "Long trail easy",
             items: [
-              { name: "75–95 min easy trail", detail: "Easy — conversational", note: "Power-hike the climbs. Soft surface. Optional light pack later in the block." },
+              { name: "Easy trail run, 75 to 95 minutes", detail: "Easy enough to talk in full sentences.", note: "Power-hike the climbs and stay on soft ground. You can add a light pack in later weeks." },
               hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
         ],
-        notes: ["Black Canyon & hunting feet.", "Tag: Outdoor / Trail."],
+        notes: ["Toughens your feet for Black Canyon and hunting.", "Outdoors on a trail."],
       },
       {
         id: "lr-short-bridge",
@@ -968,18 +968,18 @@
         lengthClass: "medium",
         location: "Outdoor / Tread",
         rpe: "3–4",
-        summary: "Shorter long-run option when the week is already stacked — still easy volume, still fully conversational.",
+        summary: "A shorter long-run option for a week that is already full. Still easy volume, and still fully conversational.",
         warmup: ["Easy start"],
         blocks: [
           {
             name: "Easy volume",
             items: [
-              { name: "60 min easy", detail: "~11:00–12:00/mi", note: "Do not race. Keep for recovery after night shift / heavy strength." },
+              { name: "Easy run, 60 minutes", detail: "About 11 to 12 minutes per mile.", note: "Do not race it. Save this one for after a night shift or a heavy strength day." },
               hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
         ],
-        notes: ["Bridge option — still ultra-easy intent."],
+        notes: ["An in-between option. Keep it very easy."],
       },
     ],
     recovery: [
@@ -990,11 +990,11 @@
         lengthClass: "short",
         location: "Home",
         rpe: "2–3",
-        summary: "Required weekly recovery: deep stretching, breathing, and light movement. Not a couch day — it keeps strength and ultra days sharp.",
+        summary: "Required weekly recovery: deep stretching, breathing, and light movement. It is not a couch day; it keeps your strength and ultra days sharp.",
         warmup: ["5 minutes of easy walking"],
         blocks: [
           {
-            name: "Mobility flow — rotate and breathe",
+            name: "Mobility flow: rotate and breathe",
             items: [
               { name: "Lunge Stretch with a Twist", detail: "2 sets of 5 reps per side", note: "Step into a long lunge and put both hands on the floor inside your front foot. Rotate and reach the arm on the front-leg side up toward the ceiling, hold for two slow breaths, then switch sides. Deep but controlled.", sets: 2, reps: 5, log: "reps", bw: true },
               { name: "Kneeling Hip Flexor Stretch", detail: "2 sets of 90 seconds per side", note: "Kneel with your back foot up against a wall or the couch and your front foot flat. Squeeze the glute of the back leg and tuck your hips under until you feel a stretch in the front of that hip. Breathe slowly and stay tall.", sets: 2, reps: 90, log: "hold", bw: true },
@@ -1008,11 +1008,11 @@
             items: [
               hyperProReverseHyper(2, 15, "Recovery pace: slow and easy, just for blood flow.", "Easy Hyper Pro Reverse Hyper"),
               { name: "Cat-Cow and Easy Dead Bugs", detail: "2 sets of 8 reps", note: "On your hands and knees, slowly round your back up and then let it sag, 8 times. Then roll onto your back and do 8 easy, slow dead bugs. Gentle, just to keep the core pattern alive.", sets: 2, reps: 8, log: "reps", bw: true },
-              { name: "Nasal breathing walk", detail: "8–10 min", note: "Downshift nervous system." },
+              { name: "Walk while breathing through your nose", detail: "8 to 10 minutes", note: "Calms your nervous system down." },
             ],
           },
         ],
-        notes: ["Required slot — do not skip the week.", "If flared low back: lean into breath + hips, skip deep end-range that aggravates."],
+        notes: ["Required every week. Do not skip it.", "If your low back is flared up, focus on breathing and hip stretches, and skip any deep stretch that makes it worse."],
       },
       {
         id: "rec-station",
@@ -1022,21 +1022,21 @@
         location: "Fire Station",
         rpe: "2",
         summary: "A 30-minute stretch circuit you can do at the house or station so the recovery slot still gets done.",
-        warmup: ["March in place 2 min"],
+        warmup: ["March in place for 2 minutes"],
         blocks: [
           {
-            name: "Mobility circuit (2–3 rounds)",
+            name: "Mobility circuit (2 or 3 rounds)",
             items: [
-              { name: "Hip flexor stretch", detail: "60s/side" },
-              { name: "Doorway pec stretch", detail: "45s/side" },
-              { name: "Deep squat hold (heels elevated OK)", detail: "60s", note: "Bodyweight only." },
-              { name: "Thread-the-Needle Upper-Back Stretch", detail: "5 per side", note: "On your hands and knees, slide one arm under your body along the floor until your shoulder and cheek rest down, hold for a breath, then reach that arm up to the ceiling. Switch sides." },
-              { name: "Side Plank (easy)", detail: "20 seconds per side", note: "Prop up on your forearm with hips lifted in a straight line. Easy activation, not a max effort." },
-              { name: "Easy walk hallway laps", detail: "3 min" },
+              { name: "Hip Flexor Stretch", detail: "Hold 60 seconds on each side" },
+              { name: "Doorway Chest Stretch", detail: "Hold 45 seconds on each side" },
+              { name: "Deep Squat Hold (heels raised is fine)", detail: "Hold for 60 seconds", note: "Body weight only." },
+              { name: "Thread-the-Needle Upper-Back Stretch", detail: "5 reps on each side", note: "On your hands and knees, slide one arm under your body along the floor until your shoulder and cheek rest down, hold for a breath, then reach that arm up to the ceiling. Switch sides." },
+              { name: "Side Plank (easy)", detail: "Hold 20 seconds on each side", note: "Prop yourself up on your forearm with your hips lifted in a straight line. This just wakes your core up; it is not a max effort." },
+              { name: "Easy Hallway Walk", detail: "3 minutes of easy laps" },
             ],
           },
         ],
-        notes: ["Tag: Fire Station.", "Still fulfills Active Recovery required slot."],
+        notes: ["Works at the fire station.", "Still counts as your required recovery session."],
       },
     ],
 
@@ -1049,7 +1049,7 @@
         location: "Home · Full kit",
         rpe: "7",
         summary: "A focused 35-minute core session to protect your low back: barbell rollouts, Hyper Pro Sorensen holds for back endurance, heavy suitcase carries, side planks, and Hyper Pro side raises, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
-        warmup: ["3 minutes of easy treadmill walking", "Cat-cow × 8, then 5 slow dead bugs per side to practice bracing"],
+        warmup: ["3 minutes of easy treadmill walking", "8 slow cat-cows, then 5 slow dead bugs on each side to practice bracing"],
         blocks: [
           {
             name: "Anti-extension and back endurance",
@@ -1085,12 +1085,12 @@
         location: "Outdoor or Wahoo",
         rpe: "3–4",
         summary: "Use the flex day for extra easy miles or an incline walk. It adds easy aerobic time without adding stress.",
-        warmup: ["None needed — start easy"],
+        warmup: ["No warm-up needed. Just start easy."],
         blocks: [
           {
             name: "Easy aerobic",
             items: [
-              { name: "40–50 min very easy jog or incline walk", detail: "Easy — conversational", note: "Conversational or nasal. Ultra volume stack — not a quality day." },
+              { name: "Very easy jog or incline walk, 40 to 50 minutes", detail: "Easy enough to talk in full sentences.", note: "Keep it conversational, or easy enough to breathe through your nose. This adds ultra volume; it is not a hard day." },
               { name: "Dead Bug and Side Plank", detail: "2 rounds", note: "Each round: 8 slow dead bugs per side with your low back pressed into the floor, then a 30-second side plank on each side." },
             ],
           },
@@ -1105,21 +1105,21 @@
         location: "Home",
         rpe: "6–7",
         summary: "A lighter catch-up circuit of squat, hinge, pull-ups, push-ups, and core if you missed a strength flavor earlier in the week.",
-        warmup: ["5 min easy", "Empty bar squats × 10"],
+        warmup: ["5 minutes of easy movement", "10 squats with the empty bar"],
         blocks: [
           {
             name: "Strength catch-up circuit (4 rounds)",
             items: [
-              { name: "Front Squat", detail: "4 rounds × 6 reps at about 60% of your back-squat 1RM", note: "Easy–solid effort. Not a max day — catch-up flavor only.", liftId: "back_squat", pct1rm: 60, sets: 4, reps: 6 },
-              { name: "RDL", detail: "4 rounds × 6 reps at about 65% of your deadlift 1RM", note: "Easy–solid hinge volume for catch-up.", liftId: "deadlift", pct1rm: 65, sets: 4, reps: 6 },
-              { name: "Pull-Ups", detail: "max − 2" },
-              { name: "Push-Ups", detail: "12–20" },
+              { name: "Front Squat", detail: "4 rounds of 6 reps at about 60% of your back-squat 1RM.", note: "Easy to solid effort. Not a max day, just a catch-up dose.", liftId: "back_squat", pct1rm: 60, sets: 4, reps: 6 },
+              { name: "Romanian Deadlift", detail: "4 rounds of 6 reps at about 65% of your deadlift 1RM.", note: "Easy to solid hinge volume to catch up.", liftId: "deadlift", pct1rm: 65, sets: 4, reps: 6 },
+              { name: "Pull-Ups", detail: "Each round, stop 2 reps short of your max" },
+              { name: "Push-Ups", detail: "12 to 20 reps each round" },
               { name: "Barbell Rollout (from the knees)", detail: "4 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 4, reps: 8, log: "reps", bw: true },
               { name: "Farmer Carry (two dumbbells)", detail: "4 sets of 40 seconds", note: "Hold a heavy dumbbell in each hand (start around 70 to 100 lb each) and walk with short, steady steps. Stand tall, keep your shoulders back, and brace your abs like you are about to get bumped. End the set if your grip or posture breaks. Log the weight per hand and the seconds you walked.", sets: 4, reps: 40, log: "carry", noLoad: true },
             ],
           },
         ],
-        notes: ["Does not replace Strength A/B if those are still open — prefer logging those first.", "No goblet squats."],
+        notes: ["This does not replace Strength A or B if those are still open. Do and log those first.", "No goblet squats."],
       },
     ],
   };
@@ -1143,20 +1143,20 @@
       isTest: true,
       summary: "Occasional back-squat max: warm up, then build to a true or estimated 1RM. Log the top single in Progress after you finish.",
       warmup: [
-        "5 min easy tread + hip openers",
-        "Empty bar × 10, then progressive squat warm-ups",
+        "5 minutes of easy walking or jogging on the treadmill, plus hip stretches",
+        "10 squats with the empty bar, then gradually heavier warm-up sets",
       ],
       blocks: [
         {
           name: "Build up to a heavy single",
           items: [
-            { name: "Back Squat", detail: "Bar × 10", note: "Groove pattern." },
-            { name: "Back Squat", detail: "~50% × 5", note: "Baseline ref ~315." },
-            { name: "Back Squat", detail: "~65% × 3", note: "" },
-            { name: "Back Squat", detail: "~75% × 2", note: "" },
-            { name: "Back Squat", detail: "~85% × 1", note: "" },
-            { name: "Back Squat", detail: "~90–93% × 1", note: "If crisp, take another single." },
-            { name: "Back Squat — Opener / Max", detail: "1RM or best single", note: "Stop one clean miss early. Goal track: 405." },
+            { name: "Back Squat", detail: "10 reps with the empty bar", note: "Grooves the movement.", noLoad: true },
+            { name: "Back Squat", detail: "5 reps at about 50% of your 1RM", note: "Your starting point was about 315 lb.", sets: 1, reps: 5, pct1rm: 50 },
+            { name: "Back Squat", detail: "3 reps at about 65% of your 1RM", note: "", sets: 1, reps: 3, pct1rm: 65 },
+            { name: "Back Squat", detail: "2 reps at about 75% of your 1RM", note: "", sets: 1, reps: 2, pct1rm: 75 },
+            { name: "Back Squat", detail: "1 rep at about 85% of your 1RM", note: "", sets: 1, reps: 1, pct1rm: 85 },
+            { name: "Back Squat", detail: "1 rep at about 90 to 93% of your 1RM", note: "If it moves fast, take one more single.", sets: 1, reps: 1, pct1rm: 92 },
+            { name: "Back Squat — Opener / Max", detail: "1RM or best single", note: "Stop before you miss a rep. Your goal is 405 lb." },
           ],
         },
         {
@@ -1180,18 +1180,18 @@
       title: "Test day · Bench max",
       durationMin: 55,
       lengthClass: "medium",
-      location: "Home · FID + rack",
+      location: "Home · Adjustable bench and rack",
       rpe: "9–10",
       isTest: true,
       summary: "Occasional bench max: progressive singles to a heavy single or 1RM. You’ll be prompted to log it in Progress when you finish.",
-      warmup: ["Easy push-ups × 10", "Empty bar bench × 10", "Ramp sets"],
+      warmup: ["10 easy push-ups", "10 bench presses with the empty bar", "A few gradually heavier warm-up sets"],
       blocks: [
         {
           name: "Build up to a heavy single",
           items: [
-            { name: "Bench Press", detail: "Bar × 10 → 50% × 5 → 65% × 3", note: "Baseline ~275 → goal 315." },
-            { name: "Bench Press", detail: "75% × 2 → 85% × 1 → 90% × 1", note: "" },
-            { name: "Bench Press — Max", detail: "Best single / 1RM", note: "Spotter or safeties. Clean lockout only." },
+            { name: "Bench Press", detail: "10 reps with the empty bar, then 5 reps at 50% of your 1RM, then 3 reps at 65%", note: "Your starting point was about 275 lb; your goal is 315 lb.", sets: 1, reps: 5, pct1rm: 50 },
+            { name: "Bench Press", detail: "2 reps at 75% of your 1RM, then 1 rep at 85%, then 1 rep at 90%", note: "", sets: 1, reps: 2, pct1rm: 75 },
+            { name: "Bench Press — Max", detail: "Best single / 1RM", note: "Use a spotter or the safety bars. Only count reps with a clean lockout." },
           ],
         },
         {
@@ -1201,7 +1201,7 @@
           ],
         },
       ],
-      notes: ["Occasional TEST — fulfills Strength A when chosen.", "Result prompts into Progress."],
+      notes: ["An occasional test day. It counts as Strength A when you choose it.", "You will be asked to log the result in Progress."],
     },
     {
       id: "test-dl-1rm",
@@ -1214,14 +1214,14 @@
       rpe: "9–10",
       isTest: true,
       summary: "Occasional deadlift max toward the 405 goal. Keep jump sizes conservative, walk out clean singles, and log the pull in Progress.",
-      warmup: ["5 min easy", "Bodyweight hip hinges × 10", "Deadlift ramp sets from the empty bar"],
+      warmup: ["5 minutes of easy movement", "10 bodyweight hip hinges", "Gradually heavier deadlift warm-up sets, starting with the empty bar"],
       blocks: [
         {
           name: "Build up to a heavy single",
           items: [
-            { name: "Conventional Deadlift", detail: "Bar × 5 → 50% × 3 → 65% × 2", note: "Baseline ~345." },
-            { name: "Conventional Deadlift", detail: "75% × 1 → 85% × 1 → 90% × 1", note: "Reset every rep." },
-            { name: "Deadlift — Max", detail: "Best single / 1RM", note: "Brace hard. Flag low-back flare — don’t grind ugly misses." },
+            { name: "Conventional Deadlift", detail: "5 reps with the empty bar, then 3 reps at 50% of your 1RM, then 2 reps at 65%", note: "Your starting point was about 345 lb.", sets: 1, reps: 3, pct1rm: 50 },
+            { name: "Conventional Deadlift", detail: "1 rep at 75% of your 1RM, then 1 rep at 85%, then 1 rep at 90%", note: "Reset your setup before every rep.", sets: 1, reps: 1, pct1rm: 75 },
+            { name: "Deadlift — Max", detail: "Best single / 1RM", note: "Brace hard. Stop if your low back flares up, and do not grind out ugly reps." },
           ],
         },
         {
@@ -1231,7 +1231,7 @@
           ],
         },
       ],
-      notes: ["Occasional TEST — fulfills Strength B.", "Hyper Pro = Freak Athlete Hyper Pro."],
+      notes: ["An occasional test day. It counts as Strength B.", "Hyper Pro means your Freak Athlete Hyper Pro."],
     },
     {
       id: "test-pt-combo",
@@ -1244,14 +1244,14 @@
       location: "Home or Fire Station",
       rpe: "9–10",
       isTest: true,
-      summary: "Rare personal check: max HR push-ups / 2 min + max dead-hang pull-ups. Not weekly job fitness.",
-      warmup: ["2 min easy move", "Dead hang from the bar, 2 × 20 seconds", "10 easy push-ups"],
+      summary: "A rare personal check: as many hand-release push-ups as you can in 2 minutes, plus one max set of dead-hang pull-ups. This is not weekly job fitness.",
+      warmup: ["2 minutes of easy movement", "Hang from the bar for 20 seconds, twice", "10 easy push-ups"],
       blocks: [
         {
           name: "Personal PT max checks",
           items: [
-            { name: "Dead-Hang Pull-Ups — Max set", detail: "1 all-out set", note: "Full hang each rep. Baseline 21 → goal 30. Rest 5+ min after." },
-            { name: "HR Push-Ups — 2:00 max", detail: "Max reps in 2:00", note: "Personal target 40 → 70 / 2 min. Occasional full test on TEST days." },
+            { name: "Dead-Hang Pull-Ups — Max set", detail: "1 all-out set", note: "Start every rep from a full hang. Your starting point was 21 and your goal is 30. Rest at least 5 minutes afterward." },
+            { name: "Hand-Release Push-Ups — 2-minute max", detail: "Max reps in 2 minutes", note: "You are at about 40 now; your personal target is 70 in 2 minutes. Only do the full test on test days." },
           ],
         },
         {
@@ -1262,7 +1262,7 @@
           ],
         },
       ],
-      notes: ["Rare personal TEST — not job-fitness programming.", "You’ll be prompted to log push-ups then pull-ups."],
+      notes: ["A rare personal test, not job fitness programming.", "You’ll be prompted to log push-ups then pull-ups."],
     },
     {
       id: "test-fire-run",
@@ -1274,14 +1274,14 @@
       location: "Home · Wahoo treadmill",
       rpe: "10",
       isTest: true,
-      summary: "Rare personal check: 1.95 miles all-out (≤12:00 target). Volume does the work; this just measures it.",
-      warmup: ["10 min easy", "3×20s strides", "2 min easy"],
+      summary: "A rare personal check: 1.95 miles all-out, aiming for 12 minutes or less. Easy volume does the work; this just measures it.",
+      warmup: ["10 minutes easy", "3 strides of 20 seconds each (quick but relaxed)", "2 minutes easy"],
       blocks: [
         {
           name: "All-out time check",
           items: [
-            { name: "1.95 mi all-out", detail: "Target ≤12:00", note: "Flat or 0.5% Wahoo. Hard start, settle, finish." },
-            { name: "Walk cooldown", detail: "5–8 min", note: "" },
+            { name: "1.95 miles all-out", detail: "Aim for 12 minutes or less", note: "Run on flat ground or the Wahoo treadmill at 0.5% incline. Start hard, settle in, then finish strong." },
+            { name: "Cool-down walk", detail: "5 to 8 minutes", note: "" },
           ],
         },
       ],
@@ -1297,14 +1297,14 @@
       location: "Outdoor or Wahoo",
       rpe: "10",
       isTest: true,
-      summary: "Rare mile check (baseline ~7:30). Expect the time to move from easy volume across the week — not from intervals.",
-      warmup: ["8–10 min easy", "4×20s strides"],
+      summary: "A rare mile check (your starting point was about 7 minutes 30 seconds). Expect the time to improve from easy volume across the week, not from intervals.",
+      warmup: ["8 to 10 minutes easy", "4 strides of 20 seconds each (quick but relaxed)"],
       blocks: [
         {
           name: "Mile time check",
           items: [
             { name: "1 mile all-out", detail: "Best time", note: "Even splits if possible." },
-            { name: "Easy jog", detail: "5 min", note: "" },
+            { name: "Easy jog", detail: "5 minutes", note: "" },
           ],
         },
       ],

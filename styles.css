@@ -461,38 +461,52 @@ body {
   margin-bottom: 8px;
 }
 .exercise {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
-  gap: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
   min-width: 0;
   max-width: 100%;
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
   font-size: 14px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .exercise:last-child { border-bottom: none; }
+/* Name on its own full-width line, prescription stacked below (never side by side). */
 .exercise-name {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
-  font-weight: 600;
-  overflow-wrap: anywhere;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 .exercise-detail {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
   color: var(--accent);
-  text-align: right;
+  text-align: left;
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 .exercise-note {
-  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
   font-size: 12px;
+  line-height: 1.4;
   color: var(--text-muted);
-  margin-top: -4px;
+  overflow-wrap: break-word;
 }
 .warmup-list, .notes-list {
   list-style: none;
@@ -972,32 +986,41 @@ body {
 }
 .log-ex-head {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
   min-width: 0;
   max-width: 100%;
   margin-bottom: 6px;
 }
+/* Name on its own full-width line, prescription stacked below (never side by side). */
 .log-ex-name {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   font-weight: 700;
   font-size: 15px;
+  line-height: 1.3;
   letter-spacing: -0.2px;
-  overflow-wrap: anywhere;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 .log-ex-detail {
+  display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
-  flex: 0 1 auto;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.4;
   color: var(--orange);
-  font-weight: 700;
+  font-weight: 600;
   white-space: normal;
-  overflow-wrap: anywhere;
-  text-align: right;
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-align: left;
 }
 .log-ex-note {
   min-width: 0;
@@ -1019,7 +1042,8 @@ body {
 }
 .set-row > * { min-width: 0; max-width: 100%; }
 .set-row .set-label {
-  font-family: "JetBrains Mono", monospace;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  white-space: nowrap;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-dim);
@@ -1228,7 +1252,7 @@ body {
 /* Pass 2 polish: narrow phones */
 @media (max-width: 400px) {
   .cardio-fields { grid-template-columns: 1fr; }
-  .set-row { grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr) 44px; gap: 4px; }
+  .set-row { grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr) 44px; gap: 4px; }
   .option-blurb { -webkit-line-clamp: 3; }
   .slot-day { min-width: 48px; font-size: 11px; }
   .bench-actions.onerm-actions { flex-direction: column; }
