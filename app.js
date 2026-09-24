@@ -1,6 +1,7 @@
 /**
  * Nathan — Adaptive Weekly Workout Coach
  * Week 1 anchor: Wed Sep 23 2026 (got off 8am MT, 48/96 fire)
+ * Equipment rule: only well-known moves using his own gear (no ab wheel, cable, band, landmine, kettlebell, med ball, slider, sled, etc.)
  * Pillars: physique, hunting hike, ultra 100k volume, personal PT test marks, beast core
  */
 
@@ -350,6 +351,8 @@
     if (!item || looksLikeMaxAttempt(item.name, item.detail)) {
       return null;
     }
+    // Core, holds, carries, and bodyweight moves never pull a barbell 1RM
+    if (item.noLoad || item.bw || item.log === "hold" || item.log === "carry") return null;
     const metricId = (item.liftId && LIFT_1RM_META && LIFT_1RM_META[item.liftId])
       ? item.liftId
       : (typeof inferLiftId === "function" ? inferLiftId(item) : null) || inferLiftMetricId(item.name);
@@ -441,8 +444,8 @@
         rpe: "7–8",
         summary: "About 75 minutes of heavy back squats and bench press for strength and an athletic look, then core work that protects your low back for ultra and hunting miles.",
         warmup: [
-          "5 min easy bike/tread or jump rope",
-          "Hip openers + thoracic rotations 2 min",
+          "5 minutes of easy walking or jogging on the treadmill",
+          "Hip circles and upper-back rotations for 2 minutes",
           "Empty-bar back squat × 10, then ramp sets",
         ],
         blocks: [
@@ -465,13 +468,13 @@
           {
             name: "Beast core — brace and anti-extension",
             items: [
-              { name: "Ab Wheel Rollouts (kneeling → standing prog.)", detail: "4 sets of 8 reps", note: "Brace hard. Progress range before reps." },
-              { name: "Dead Bug (slow eccentrics)", detail: "3 sets of 8 reps", note: "Low-back glued to floor. Exhale on reach." },
-              { name: "Hollow Body Hold", detail: "4 sets of 20 reps", note: "Beyond static front plank — hollow > plank for you." },
+              { name: "Barbell Rollout (from the knees)", detail: "4 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 4, reps: 8, log: "reps", bw: true },
+              { name: "Dead Bug", detail: "3 sets of 8 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 3, reps: 8, log: "reps", bw: true },
+              { name: "Weighted Front Plank", detail: "3 sets of 45 seconds", note: "Get on your forearms and toes with a 25 or 45 lb plate on your upper back (easiest to set it on while your knees are down). Hold a straight line from head to heels, squeeze your glutes, and pull your elbows toward your toes so it feels hard. Keep your hips level with no sagging or piking. Log the plate weight and the seconds you held.", sets: 3, reps: 45, log: "hold", noLoad: true },
             ],
           },
         ],
-        notes: ["Program hard; flag any low-back flare and swap to lighter front squat + more hollow work.", "Hydrate; session ~75 min."],
+        notes: ["Program hard; flag any low-back flare and swap to lighter front squats plus extra dead bugs and planks.", "Hydrate; session ~75 min."],
       },
       {
         id: "sa-short-squat-core",
@@ -481,7 +484,7 @@
         location: "Home · Rack",
         rpe: "7",
         summary: "A tight 30–35 minute session: front squat triples, pressing, and dense core. Fits a compressed day while still hitting squat strength and low-back armor.",
-        warmup: ["2 min jump rope", "Bodyweight squat × 15", "Scap push-ups × 10"],
+        warmup: ["2 minutes of easy treadmill walking", "Bodyweight squat × 15", "Easy push-ups × 10"],
         blocks: [
           {
             name: "Main strength",
@@ -491,12 +494,12 @@
             ],
           },
           {
-            name: "Core circuit (repeat 3 rounds)",
+            name: "Core circuit (3 rounds, moving from one exercise to the next)",
             items: [
-              { name: "Ab Wheel", detail: "10 reps", note: "No rest inside circuit." },
-              { name: "Hanging Knee Raise (toes toward bar)", detail: "8–12", note: "Pull-up bar. Control swing." },
-              { name: "Side Plank Hip Dips", detail: "10/side", note: "Progress past flat side plank." },
-              { name: "Suitcase Hold (DB)", detail: "30s/side", note: "Heavy — 70–100+ lb if grip allows." },
+              { name: "Barbell Rollout (from the knees)", detail: "3 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 3, reps: 8, log: "reps", bw: true },
+              { name: "Hanging Knee Raise", detail: "3 sets of 10 reps", note: "Hang from the pull-up bar with a full grip. Without swinging, pull your knees up toward your chest and curl your hips up at the top, then lower slowly. Pause at the bottom of each rep so you are not using momentum.", sets: 3, reps: 10, log: "reps", bw: true },
+              { name: "Side Plank", detail: "3 sets of 30 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 30, log: "hold", noLoad: true },
+              { name: "Suitcase Carry (one dumbbell)", detail: "3 sets of 40 seconds per side", note: "Hold one heavy dumbbell at your side (start around 70 to 100 lb) and walk tall for the set time, then switch hands. Do not lean toward or away from the weight: keep your shoulders level and your ribs down. Stop the set early if you start to tip. Log the dumbbell weight and the seconds you walked.", sets: 3, reps: 40, log: "carry", noLoad: true },
             ],
           },
           {
@@ -517,7 +520,7 @@
         location: "Home · Full gym",
         rpe: "7–8",
         summary: "A fuller ~90 minute day — squat volume toward your 405 goal, upper-body work for physique, Hyper Pro posterior work, and heavy carries for hunting and core strength.",
-        warmup: ["5–8 min easy tread", "Empty-bar front squat × 8", "Band pull-aparts × 20"],
+        warmup: ["5–8 min easy tread", "Empty-bar front squat × 8", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
             name: "Squat volume",
@@ -538,9 +541,9 @@
           {
             name: "Beast core and heavy carries",
             items: [
-              { name: "Farmer Carry (DBs)", detail: "4 sets of 40 reps", note: "Heavy bilateral. Brace like a plank on legs." },
-              { name: "Pallof Press (band or DB landmine-style)", detail: "3 sets of 10 reps", note: "Anti-rotation. Pause at full extension." },
-              { name: "Toes-to-Bar or Hanging Leg Raise", detail: "3× max quality", note: "Progress toward strict T2B." },
+              { name: "Farmer Carry (two dumbbells)", detail: "4 sets of 45 seconds", note: "Hold a heavy dumbbell in each hand (start around 70 to 100 lb each) and walk with short, steady steps. Stand tall, keep your shoulders back, and brace your abs like you are about to get bumped. End the set if your grip or posture breaks. Log the weight per hand and the seconds you walked.", sets: 4, reps: 45, log: "carry", noLoad: true },
+              { name: "Single-Arm Dumbbell Row (anti-rotation)", detail: "3 sets of 10 reps per side", note: "Put one hand and one knee on the bench and row a heavy dumbbell up to your hip. Keep your shoulders and hips square to the floor and do not let your torso twist as the weight comes up. Fighting that twist is the core work. Log the dumbbell weight.", sets: 3, reps: 10, log: "reps", noLoad: true },
+              { name: "Hanging Leg Raise (toes-to-bar when ready)", detail: "3 sets of 8 reps", note: "Hang from the pull-up bar and raise your legs as high as you can control, keeping them as straight as you can. Lower slowly with no swinging. Once you can do 10 clean reps to hip height, start bringing your toes all the way to the bar. Bend your knees if your form breaks.", sets: 3, reps: 8, log: "reps", bw: true },
             ],
           },
         ],
@@ -559,7 +562,7 @@
         summary: "About 80 minutes: deadlift toward 405, personal pull-up and push-up practice, then anti-twist core so your back stays durable for long days on your feet.",
         warmup: [
           "5 min easy tread",
-          "Hip hinge drills + glute bridge × 12",
+          "Bodyweight hip hinges × 10, then glute bridges × 12",
           "Deadlift ramp: bar → 135 → 225 → work",
         ],
         blocks: [
@@ -575,17 +578,17 @@
             items: [
               { name: "Dead-Hang Pull-Ups", detail: "5 sets → total toward 30", note: "Personal target 30. Baseline 21. Full dead hang each rep." },
               { name: "Bent-Over Barbell Row or Chest-Supported", detail: "4 sets of 6 reps", note: "Upper-back thickness · balanced pull for physique + posture." },
-              { name: "HR Push-Ups (2-min style practice)", detail: "3× max in 45–60s", note: "Personal target 70 / 2 min (now ~40). Practice density — not a job fitness block." },
-              { name: "Face Pulls or Rear-Delt DB Flyes", detail: "3 sets of 15 reps", note: "Shoulder health + athletic upper-back look." },
+              { name: "HR Push-Ups (2-min style practice)", detail: "3 sets — as many clean reps as you can in 45 to 60 seconds", note: "Personal target 70 in 2 minutes (now about 40). Practice density, not a job fitness block. Log the reps you got each set.", sets: 3, bw: true },
+              { name: "Rear-Delt Dumbbell Flyes", detail: "3 sets of 15 reps", note: "Bend forward with a flat back and raise light dumbbells out to the sides, squeezing your shoulder blades together. Shoulder health and an athletic upper-back look.", sets: 3, reps: 15 },
               { name: "Bicep Curl Bar — Hammer or EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory; keep easy on grip before heavy carries." },
             ],
           },
           {
             name: "Beast core — anti-rotation and hanging work",
             items: [
-              { name: "Pallof Press (band @ rack)", detail: "4 sets of 12 reps", note: "Assume light band or cable substitute with DB press-out vs wall." },
-              { name: "Suitcase Carry", detail: "3 sets of 30 reps", note: "Uneven load — own the anti-lateral flexion." },
-              { name: "Hanging Knee Raise → Leg Raise", detail: "4 sets of 8 reps", note: "Build toward toes-to-bar." },
+              { name: "Russian Twist with a Dumbbell", detail: "3 sets of 10 reps per side", note: "Sit with your knees bent and heels on the floor, lean back a little with a straight back, and hold one dumbbell (25 to 40 lb) at your chest. Slowly turn your shoulders to one side, then the other, moving with your ribs, not just your arms. Keep it slow and controlled, and stop if your low back complains. Log the dumbbell weight.", sets: 3, reps: 10, log: "reps", noLoad: true },
+              { name: "Suitcase Carry (one dumbbell)", detail: "3 sets of 40 seconds per side", note: "Hold one heavy dumbbell at your side (start around 70 to 100 lb) and walk tall for the set time, then switch hands. Do not lean toward or away from the weight: keep your shoulders level and your ribs down. Stop the set early if you start to tip. Log the dumbbell weight and the seconds you walked.", sets: 3, reps: 40, log: "carry", noLoad: true },
+              { name: "Hanging Leg Raise (toes-to-bar when ready)", detail: "4 sets of 8 reps", note: "Hang from the pull-up bar and raise your legs as high as you can control, keeping them as straight as you can. Lower slowly with no swinging. Once you can do 10 clean reps to hip height, start bringing your toes all the way to the bar. Bend your knees if your form breaks.", sets: 4, reps: 8, log: "reps", bw: true },
             ],
           },
         ],
@@ -599,22 +602,22 @@
         location: "Home or Fire Station",
         rpe: "7–8",
         summary: "Thirty minutes of pull-up and push-up practice plus hanging core. Works at home or the station and still counts as your hinge/pull strength day.",
-        warmup: ["Arm circles + scap hangs × 20s × 2", "10 empty push-ups"],
+        warmup: ["Arm circles, then 2 dead hangs from the bar for 20 seconds each", "10 easy push-ups"],
         blocks: [
           {
             name: "Pull-ups and push-ups",
             items: [
               { name: "Dead-Hang Pull-Up Ladder", detail: "1,2,3,4,5… until fail", note: "Rest :45–:60 between rungs. Log total reps." },
-              { name: "Push-Up EMOM", detail: "12 sets of 8 reps", note: "Leave 2 in tank each minute. Build 2-min capacity." },
+              { name: "Push-Ups Every Minute", detail: "12 sets of 8 reps — start a new set at the top of each minute", note: "Leave 2 reps in the tank each minute and rest for whatever is left of the minute. This builds your 2-minute push-up capacity.", sets: 12, reps: 8, bw: true },
               { name: "Bicep Curl Bar — Strict Curls", detail: "3 sets of 10 reps", note: "Elbow health / arm finish." },
             ],
           },
           {
             name: "Core circuit",
             items: [
-              { name: "Hanging Windshield Wipers (tuck OK)", detail: "3 sets of 6 reps", note: "Anti-rotation from hang." },
-              { name: "Side Plank + Reach-Under", detail: "3 sets of 8 reps", note: "Dynamic side plank > static." },
-              { name: "Hollow Rocks", detail: "3 sets of 20 reps", note: "Anti-extension under motion." },
+              { name: "Hanging Knee Raise", detail: "3 sets of 10 reps", note: "Hang from the pull-up bar with a full grip. Without swinging, pull your knees up toward your chest and curl your hips up at the top, then lower slowly. Pause at the bottom of each rep so you are not using momentum.", sets: 3, reps: 10, log: "reps", bw: true },
+              { name: "Side Plank", detail: "3 sets of 40 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 40, log: "hold", noLoad: true },
+              { name: "Dead Bug", detail: "3 sets of 10 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 3, reps: 10, log: "reps", bw: true },
             ],
           },
         ],
@@ -628,7 +631,7 @@
         location: "Home · Hyper Pro + rack",
         rpe: "7",
         summary: "About 70 minutes of Hyper Pro hinge work, Romanian deadlifts, and heavy rows — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
-        warmup: ["Easy tread 5 min", "Hyper Pro bodyweight reps × 15", "Band face pulls × 20"],
+        warmup: ["Easy tread 5 min", "Hyper Pro back extensions with bodyweight × 15", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
             name: "Posterior chain",
@@ -641,15 +644,15 @@
           {
             name: "Pulling strength",
             items: [
-              { name: "Pull-Ups (weighted if >10 strict)", detail: "4× max − 2", note: "Dead hang start." },
+              { name: "Pull-Ups (weighted if >10 strict)", detail: "4× max − 2", note: "Start each rep from a dead hang. Once you can do more than 10 strict reps, hold a dumbbell between your feet." },
               { name: "Single-Arm DB Row", detail: "4 sets of 8 reps", note: "Heavy — 70–100+ lb." },
             ],
           },
           {
             name: "Core finish",
             items: [
-              { name: "Ab Wheel", detail: "4 sets of 10 reps", note: "Anti-extension pillar." },
-              { name: "Copenhagen Side Plank (short lever OK)", detail: "3 sets of 20 reps", note: "Adductors + lateral core." },
+              { name: "Barbell Rollout (from the knees)", detail: "4 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 4, reps: 8, log: "reps", bw: true },
+              { name: "Side Plank", detail: "3 sets of 40 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 40, log: "hold", noLoad: true },
             ],
           },
         ],
@@ -677,8 +680,8 @@
           {
             name: "Brief post-run extras",
             items: [
-              { name: "Dead Bug", detail: "2 sets of 8 reps", note: "Low-back insurance." },
-              { name: "Side Plank", detail: "2 sets of 25 reps" },
+              { name: "Dead Bug", detail: "2 sets of 8 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 2, reps: 8, log: "reps", bw: true },
+              { name: "Side Plank", detail: "2 sets of 30 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 2, reps: 30, log: "hold", noLoad: true },
             ],
           },
         ],
@@ -735,8 +738,8 @@
           {
             name: "Core finish",
             items: [
-              { name: "Dead Bug", detail: "2 sets of 8 reps" },
-              { name: "Hollow Hold", detail: "2 sets of 20 reps" },
+              { name: "Dead Bug", detail: "2 sets of 8 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 2, reps: 8, log: "reps", bw: true },
+              { name: "Front Plank", detail: "2 sets of 60 seconds", note: "Get on your forearms and toes with your elbows under your shoulders. Hold a straight line from head to heels, squeeze your glutes, and brace your abs so it feels hard the whole time. Keep your hips level with no sagging or piking. Log the seconds you held.", sets: 2, reps: 60, log: "hold", bw: true },
             ],
           },
         ],
@@ -765,14 +768,14 @@
             name: "Hyper Pro leg work",
             items: [
               { name: "Freak Athlete Hyper Pro — Reverse Hyper", detail: "4 sets of 15 reps", note: "Smooth, full ROM. Posterior + core support." },
-              { name: "Hyper Pro — Hip Extension / GHD-style if setup allows", detail: "3 sets of 12 reps", note: "Controlled. Brace abs." },
+              { name: "Hyper Pro Back Extension", detail: "3 sets of 12 reps", note: "Set the pad just below your hips on the Freak Athlete Hyper Pro. Lower your chest with a flat back, then squeeze your glutes to come up until your body is in a straight line. Do not over-arch at the top. Hold a plate at your chest once 15 reps feels easy.", sets: 3, reps: 12, log: "reps", noLoad: true },
             ],
           },
           {
             name: "Core support",
             items: [
-              { name: "Side Plank Clams / Hip Abduction holds", detail: "3 sets of 20 reps", note: "Lateral hip + core for trails." },
-              { name: "Dead Bug", detail: "3 sets of 8 reps" },
+              { name: "Side Plank", detail: "3 sets of 30 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 30, log: "hold", noLoad: true },
+              { name: "Dead Bug", detail: "3 sets of 8 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 3, reps: 8, log: "reps", bw: true },
             ],
           },
         ],
@@ -797,8 +800,8 @@
           {
             name: "Quick trailhead core",
             items: [
-              { name: "Front-rack or backpack Pallof-ish presses", detail: "2 sets of 10 reps", note: "Or slow mountain-climber holds 20s × 3." },
-              { name: "Single-leg balance reaches", detail: "2 sets of 8 reps", note: "Ankle + hip stability." },
+              { name: "Front Plank", detail: "2 sets of 45 seconds", note: "Get on your forearms and toes with your elbows under your shoulders. Hold a straight line from head to heels, squeeze your glutes, and brace your abs so it feels hard the whole time. Keep your hips level with no sagging or piking. Log the seconds you held.", sets: 2, reps: 45, log: "hold", bw: true },
+              { name: "Side Plank", detail: "2 sets of 30 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 2, reps: 30, log: "hold", noLoad: true },
             ],
           },
         ],
@@ -819,8 +822,8 @@
             items: [
               { name: "Incline treadmill walk", detail: "Brisk incline treadmill walk for about 12 minutes" },
               { name: "Hyper Pro Reverse Hyper", detail: "5 sets of 12 reps", note: "Freak Athlete Hyper Pro." },
-              { name: "Farmer Carry", detail: "3 sets of 40 reps", note: "Core under load." },
-              { name: "Hollow Hold", detail: "3 sets of 20 reps" },
+              { name: "Farmer Carry (two dumbbells)", detail: "3 sets of 45 seconds", note: "Hold a heavy dumbbell in each hand (start around 70 to 100 lb each) and walk with short, steady steps. Stand tall, keep your shoulders back, and brace your abs like you are about to get bumped. End the set if your grip or posture breaks. Log the weight per hand and the seconds you walked.", sets: 3, reps: 45, log: "carry", noLoad: true },
+              { name: "Front Plank", detail: "3 sets of 60 seconds", note: "Get on your forearms and toes with your elbows under your shoulders. Hold a straight line from head to heels, squeeze your glutes, and brace your abs so it feels hard the whole time. Keep your hips level with no sagging or piking. Log the seconds you held.", sets: 3, reps: 60, log: "hold", bw: true },
             ],
           },
         ],
@@ -848,9 +851,9 @@
           {
             name: "Post-run core (do this)",
             items: [
-              { name: "Dead Bug", detail: "3 sets of 8 reps", note: "Low-back insurance after volume." },
-              { name: "Side Plank", detail: "2 sets of 40 reps", note: "Quality." },
-              { name: "Glute Bridge March", detail: "2 sets of 10 reps", note: "Posterior support." },
+              { name: "Dead Bug", detail: "3 sets of 8 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 3, reps: 8, log: "reps", bw: true },
+              { name: "Side Plank", detail: "2 sets of 40 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 2, reps: 40, log: "hold", noLoad: true },
+              { name: "Glute Bridge", detail: "2 sets of 12 reps", note: "Lie on your back with your feet flat and close to your hips. Push through your heels and squeeze your glutes to lift your hips until your body is straight from knees to shoulders, pause for one second, then lower.", sets: 2, reps: 12, log: "reps", bw: true },
             ],
           },
         ],
@@ -879,8 +882,8 @@
           {
             name: "Core finish",
             items: [
-              { name: "Ab Wheel", detail: "3 sets of 8 reps" },
-              { name: "Hollow Hold", detail: "3 sets of 25 reps" },
+              { name: "Barbell Rollout (from the knees)", detail: "3 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 3, reps: 8, log: "reps", bw: true },
+              { name: "Side Plank", detail: "2 sets of 40 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 2, reps: 40, log: "hold", noLoad: true },
             ],
           },
         ],
@@ -936,23 +939,23 @@
         location: "Home",
         rpe: "2–3",
         summary: "Required weekly recovery: deep stretching, breathing, and light movement. Not a couch day — it keeps strength and ultra days sharp.",
-        warmup: ["5 min easy walk or bike"],
+        warmup: ["5 minutes of easy walking"],
         blocks: [
           {
             name: "Mobility flow — rotate and breathe",
             items: [
-              { name: "World's Greatest Stretch", detail: "2 sets of 5 reps", note: "Deep but controlled." },
-              { name: "Couch Stretch / Hip Flexor", detail: "2 × 90 sec / side", note: "Posterior pelvic tilt." },
-              { name: "Pigeon or 90/90 Hip Switch", detail: "2 × 60 sec / side" },
-              { name: "Thoracic openers (FID)", detail: "2 sets of 8 slow reps", note: "Mobility only — empty bar or bodyweight. No load prescription.", sets: 2, reps: 8 },
-              { name: "Hamstring Strap / Soft Low Squat Hold", detail: "2 × 60 sec", note: "Bilateral squat stretch — not goblet loaded." },
+              { name: "Lunge Stretch with a Twist", detail: "2 sets of 5 reps per side", note: "Step into a long lunge and put both hands on the floor inside your front foot. Rotate and reach the arm on the front-leg side up toward the ceiling, hold for two slow breaths, then switch sides. Deep but controlled.", sets: 2, reps: 5, log: "reps", bw: true },
+              { name: "Kneeling Hip Flexor Stretch", detail: "2 sets of 90 seconds per side", note: "Kneel with your back foot up against a wall or the couch and your front foot flat. Squeeze the glute of the back leg and tuck your hips under until you feel a stretch in the front of that hip. Breathe slowly and stay tall.", sets: 2, reps: 90, log: "hold", bw: true },
+              { name: "Pigeon Stretch", detail: "2 sets of 60 seconds per side", note: "From your hands and knees, bring one knee forward behind your wrist and slide the other leg straight back. Lower your hips and chest until you feel a stretch in the outside of the front hip. Breathe slowly and ease off if your knee complains.", sets: 2, reps: 60, log: "hold", bw: true },
+              { name: "Upper-Back Stretch on the Bench", detail: "2 sets of 8 slow reps", note: "Kneel in front of the FID bench with your elbows on the pad and hands together. Sit your hips back and let your chest sink toward the floor, hold for a breath, and come back up. Bodyweight only.", sets: 2, reps: 8, log: "reps", bw: true },
+              { name: "Hamstring Stretch and Deep Squat Hold", detail: "2 sets of 60 seconds", note: "Spend 30 seconds on a standing toe-reach hamstring stretch, then sink into a deep bodyweight squat and hold it for 30 seconds with your chest up. Hold a rack upright for balance if needed. No weight.", sets: 2, reps: 60, log: "hold", bw: true },
             ],
           },
           {
             name: "Light movement and soft core",
             items: [
               { name: "Easy Hyper Pro Reverse Hyper", detail: "2 sets of 15 reps", note: "Blood flow, not loading." },
-              { name: "Cat-Cow + Dead Bug easy", detail: "2 sets of 8 reps", note: "Keep core pattern alive gently." },
+              { name: "Cat-Cow and Easy Dead Bugs", detail: "2 sets of 8 reps", note: "On your hands and knees, slowly round your back up and then let it sag, 8 times. Then roll onto your back and do 8 easy, slow dead bugs. Gentle, just to keep the core pattern alive.", sets: 2, reps: 8, log: "reps", bw: true },
               { name: "Nasal breathing walk", detail: "8–10 min", note: "Downshift nervous system." },
             ],
           },
@@ -975,8 +978,8 @@
               { name: "Hip flexor stretch", detail: "60s/side" },
               { name: "Doorway pec stretch", detail: "45s/side" },
               { name: "Deep squat hold (heels elevated OK)", detail: "60s", note: "Bodyweight only." },
-              { name: "Thread-the-needle", detail: "5/side" },
-              { name: "Side plank easy", detail: "20s/side", note: "Activation, not max." },
+              { name: "Thread-the-Needle Upper-Back Stretch", detail: "5 per side", note: "On your hands and knees, slide one arm under your body along the floor until your shoulder and cheek rest down, hold for a breath, then reach that arm up to the ceiling. Switch sides." },
+              { name: "Side Plank (easy)", detail: "20 seconds per side", note: "Prop up on your forearm with hips lifted in a straight line. Easy activation, not a max effort." },
               { name: "Easy walk hallway laps", detail: "3 min" },
             ],
           },
@@ -993,34 +996,34 @@
         lengthClass: "short",
         location: "Home · Full kit",
         rpe: "7",
-        summary: "North-star core day: armor the low back — anti-ext, anti-rot, hang, carry. Beyond 3-min plank.",
-        warmup: ["Jump rope 2 min", "Cat-cow + dead bug rehearsal"],
+        summary: "A focused 35-minute core session to protect your low back: barbell rollouts and weighted planks, heavy suitcase carries and side planks, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
+        warmup: ["3 minutes of easy treadmill walking", "Cat-cow × 8, then 5 slow dead bugs per side to practice bracing"],
         blocks: [
           {
             name: "Anti-extension core",
             items: [
-              { name: "Ab Wheel (kneeling or standing)", detail: "5 sets of 8 reps", note: "Best available progression." },
-              { name: "Hollow Body Hold → Hollow Rocks", detail: "4 sets of 20 reps", note: "Plank is maxed — hollow is the progress path." },
-              { name: "Dead Bug weighted (light DB/plate)", detail: "3 sets of 8 reps" },
+              { name: "Barbell Rollout (from the knees)", detail: "5 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 5, reps: 8, log: "reps", bw: true },
+              { name: "Weighted Front Plank", detail: "4 sets of 45 seconds", note: "Get on your forearms and toes with a 25 or 45 lb plate on your upper back (easiest to set it on while your knees are down). Hold a straight line from head to heels, squeeze your glutes, and pull your elbows toward your toes so it feels hard. Keep your hips level with no sagging or piking. Log the plate weight and the seconds you held.", sets: 4, reps: 45, log: "hold", noLoad: true },
+              { name: "Dead Bug (holding a light dumbbell)", detail: "3 sets of 8 reps per side", note: "Lie on your back holding a 25 lb dumbbell straight over your chest, knees bent over your hips. Press your low back flat into the floor, then slowly straighten one leg toward the floor while you breathe out, and bring it back. Alternate legs. If your low back lifts off the floor, shorten the reach. Log the dumbbell weight.", sets: 3, reps: 8, log: "reps", noLoad: true },
             ],
           },
           {
-            name: "Anti-rotation and side core",
+            name: "Anti-twist and side core",
             items: [
-              { name: "Pallof Press", detail: "4 sets of 12 reps", note: "Band at rack or DB press-out." },
-              { name: "Suitcase Hold / Carry", detail: "4 sets of 30 reps", note: "Go heavy." },
-              { name: "Side Plank Hip Dip + Reach", detail: "3 sets of 10 reps" },
+              { name: "Suitcase Carry (one dumbbell)", detail: "4 sets of 40 seconds per side", note: "Hold one heavy dumbbell at your side (start around 70 to 100 lb) and walk tall for the set time, then switch hands. Do not lean toward or away from the weight: keep your shoulders level and your ribs down. Stop the set early if you start to tip. Log the dumbbell weight and the seconds you walked.", sets: 4, reps: 40, log: "carry", noLoad: true },
+              { name: "Side Plank", detail: "3 sets of 45 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 45, log: "hold", noLoad: true },
+              { name: "Russian Twist with a Dumbbell", detail: "3 sets of 10 reps per side", note: "Sit with your knees bent and heels on the floor, lean back a little with a straight back, and hold one dumbbell (25 to 40 lb) at your chest. Slowly turn your shoulders to one side, then the other, moving with your ribs, not just your arms. Keep it slow and controlled, and stop if your low back complains. Log the dumbbell weight.", sets: 3, reps: 10, log: "reps", noLoad: true },
             ],
           },
           {
             name: "Hanging and posterior core",
             items: [
-              { name: "Hanging Knee Raise / Toes-to-Bar prog.", detail: "5 sets of 6 reps", note: "Strict > kipping." },
+              { name: "Hanging Knee Raise to Toes-to-Bar", detail: "5 sets of 6 reps", note: "Hang from the pull-up bar. Start with strict knee raises, move to straight-leg raises when those feel easy, and work toward touching your toes to the bar. Every rep is slow and controlled with no kipping or swinging. Use the hardest version you can do cleanly for every rep.", sets: 5, reps: 6, log: "reps", bw: true },
               { name: "Hyper Pro Reverse Hyper", detail: "3 sets of 12 reps", note: "Freak Athlete Hyper Pro — posterior + core support." },
             ],
           },
         ],
-        notes: ["This is the weekly core density option.", "Program hard toward armor around the low back."],
+        notes: ["This is the weekly core density option.", "Push these hard with clean form. A strong core is your best insurance for your low back."],
       },
       {
         id: "fx-second-aerobic",
@@ -1036,7 +1039,7 @@
             name: "Easy aerobic",
             items: [
               { name: "40–50 min very easy jog or incline walk", detail: "Easy — conversational", note: "Conversational or nasal. Ultra volume stack — not a quality day." },
-              { name: "Light core: dead bug + side plank", detail: "2 rounds", note: "Keep the pillar." },
+              { name: "Dead Bug and Side Plank", detail: "2 rounds", note: "Each round: 8 slow dead bugs per side with your low back pressed into the floor, then a 30-second side plank on each side." },
             ],
           },
         ],
@@ -1059,8 +1062,8 @@
               { name: "RDL", detail: "4 rounds × 6 reps at about 65% of your deadlift 1RM", note: "Easy–solid hinge volume for catch-up.", liftId: "deadlift", pct1rm: 65, sets: 4, reps: 6 },
               { name: "Pull-Ups", detail: "max − 2" },
               { name: "Push-Ups", detail: "12–20" },
-              { name: "Ab Wheel", detail: "10" },
-              { name: "Farmer Carry", detail: "40 yd" },
+              { name: "Barbell Rollout (from the knees)", detail: "4 sets of 8 reps", note: "Put a 45 lb plate (or 25s) on each end of the barbell so it rolls, kneel behind it, and grip it shoulder-width. Squeeze your glutes and brace your abs, then slowly roll the bar forward as far as you can without your low back sagging, and pull it back using your abs. End the set when your hips drop or your back starts to arch. Roll a little farther each week before adding reps.", sets: 4, reps: 8, log: "reps", bw: true },
+              { name: "Farmer Carry (two dumbbells)", detail: "4 sets of 40 seconds", note: "Hold a heavy dumbbell in each hand (start around 70 to 100 lb each) and walk with short, steady steps. Stand tall, keep your shoulders back, and brace your abs like you are about to get bumped. End the set if your grip or posture breaks. Log the weight per hand and the seconds you walked.", sets: 4, reps: 40, log: "carry", noLoad: true },
             ],
           },
         ],
@@ -1107,8 +1110,8 @@
         {
           name: "Light core — keep it brief",
           items: [
-            { name: "Dead Bug", detail: "2×6/side", note: "Downshift after heavy neural work." },
-            { name: "Hollow Hold", detail: "2×20s", note: "" },
+            { name: "Dead Bug", detail: "2 sets of 6 reps per side", note: "Lie on your back with your arms pointing at the ceiling and your knees bent over your hips. Press your low back flat into the floor, then slowly lower the opposite arm and leg toward the floor while you breathe out. Come back and switch sides. If your low back lifts off the floor, shorten the reach.", sets: 2, reps: 6, log: "reps", bw: true },
+            { name: "Front Plank", detail: "2 sets of 45 seconds", note: "Get on your forearms and toes with your elbows under your shoulders. Hold a straight line from head to heels, squeeze your glutes, and brace your abs so it feels hard the whole time. Keep your hips level with no sagging or piking. Log the seconds you held.", sets: 2, reps: 45, log: "hold", bw: true },
           ],
         },
       ],
@@ -1129,7 +1132,7 @@
       rpe: "9–10",
       isTest: true,
       summary: "Occasional bench max: progressive singles to a heavy single or 1RM. You’ll be prompted to log it in Progress when you finish.",
-      warmup: ["Scap push-ups × 10", "Empty bar bench × 10", "Ramp sets"],
+      warmup: ["Easy push-ups × 10", "Empty bar bench × 10", "Ramp sets"],
       blocks: [
         {
           name: "Build up to a heavy single",
@@ -1159,7 +1162,7 @@
       rpe: "9–10",
       isTest: true,
       summary: "Occasional deadlift max toward the 405 goal. Keep jump sizes conservative, walk out clean singles, and log the pull in Progress.",
-      warmup: ["5 min easy", "Hip hinge drills", "DL ramp from bar"],
+      warmup: ["5 min easy", "Bodyweight hip hinges × 10", "Deadlift ramp sets from the empty bar"],
       blocks: [
         {
           name: "Build up to a heavy single",
@@ -1190,7 +1193,7 @@
       rpe: "9–10",
       isTest: true,
       summary: "Rare personal check: max HR push-ups / 2 min + max dead-hang pull-ups. Not weekly job fitness.",
-      warmup: ["2 min easy move", "Scap hangs 2×20s", "10 easy push-ups"],
+      warmup: ["2 min easy move", "Dead hang from the bar, 2 × 20 seconds", "10 easy push-ups"],
       blocks: [
         {
           name: "Personal PT max checks",
@@ -1202,8 +1205,8 @@
         {
           name: "Short core finish",
           items: [
-            { name: "Hanging Knee Raise", detail: "2×8", note: "" },
-            { name: "Side Plank", detail: "2×25s/side", note: "" },
+            { name: "Hanging Knee Raise", detail: "2 sets of 8 reps", note: "Hang from the pull-up bar with a full grip. Without swinging, pull your knees up toward your chest and curl your hips up at the top, then lower slowly. Pause at the bottom of each rep so you are not using momentum.", sets: 2, reps: 8, log: "reps", bw: true },
+            { name: "Side Plank", detail: "2 sets of 25 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 2, reps: 25, log: "hold", noLoad: true },
           ],
         },
       ],
@@ -2016,6 +2019,17 @@
     return w || null;
   }
 
+  /** How a set is logged: "reps" (weight × reps), "hold" (seconds), or "carry" (weight × seconds). */
+  function exerciseLogKind(item) {
+    if (!item) return "reps";
+    if (item.log === "hold" || item.log === "carry" || item.log === "reps") return item.log;
+    const n = String(item.name || "").toLowerCase();
+    const d = String(item.detail || "").toLowerCase();
+    if (/\bcarry\b|\bcarries\b/.test(n)) return "carry";
+    if (/plank|\bhold\b|\bhang\b/.test(n) && /\bsec|seconds|\d+\s*s\b/.test(d)) return "hold";
+    return "reps";
+  }
+
   function parseExerciseSpec(item) {
     const name = item.name || "";
     const detail = item.detail || "";
@@ -2051,6 +2065,7 @@
 
     const liftId = isMax ? null : inferLiftId(item);
     const pct1rm = liftId ? inferPct1rm(item, liftId) : null;
+    const logKind = exerciseLogKind(item);
 
     const isCardio =
       !setCount &&
@@ -2065,8 +2080,10 @@
         setCount: setCount,
         targetReps: targetReps,
         isMax: !!isMax,
-        liftId: liftId,
-        pct1rm: pct1rm,
+        liftId: item.noLoad || item.bw || logKind !== "reps" ? null : liftId,
+        pct1rm: item.noLoad || item.bw || logKind !== "reps" ? null : pct1rm,
+        logKind: logKind,
+        bw: !!item.bw,
       };
     }
     if (/ladder|emom|all-out set|max in/i.test(blob) || isMax) {
@@ -2110,6 +2127,8 @@
             loadLine: loadLine,
             suggest: sug,
             suggestedWeight: suggested != null ? String(suggested) : "",
+            logKind: spec.logKind || "reps",
+            bw: !!spec.bw,
           };
         } else if (spec.type === "cardio") {
           logs[key] = {
@@ -2580,18 +2599,49 @@
         }
 
         if (log.type === "sets") {
-          html += '<div class="set-rows">';
+          const kind = log.logKind || exerciseLogKind(item);
+          const bw = log.bw != null ? !!log.bw : !!item.bw;
+          const valLabel = kind === "reps" ? "Reps" : "Seconds";
+          const valPh = kind === "reps" ? "reps" : "sec";
+          const wLabel = bw
+            ? ""
+            : kind === "carry"
+              ? /farmer|two dumbbells/i.test(item.name || "") ? "Lb per hand" : "Dumbbell lb"
+              : kind === "hold"
+                ? "Added lb"
+                : "Weight (lb)";
+          const wPh = kind === "hold" ? "opt." : "lb";
+          html += '<div class="set-rows set-rows-' + kind + '">';
+          html +=
+            '<div class="set-row set-head" aria-hidden="true"><span></span><span>' +
+            escapeHtml(wLabel) +
+            "</span><span>" +
+            escapeHtml(valLabel) +
+            "</span><span></span></div>";
           (log.sets || []).forEach(function (set, si) {
+            const weightCell = bw
+              ? '<span class="set-bw">Body weight</span>'
+              : '<input type="text" inputmode="decimal" data-field="weight" placeholder="' +
+                wPh +
+                '" value="' +
+                escapeHtml(set.weight || "") +
+                '" aria-label="' +
+                escapeHtml(wLabel) +
+                '" />';
             html +=
               '<div class="set-row" data-set-idx="' +
               si +
               '"><span class="set-label">Set ' +
               (si + 1) +
-              '</span><input type="text" inputmode="decimal" data-field="weight" placeholder="lb" value="' +
-              escapeHtml(set.weight || "") +
-              '" aria-label="Weight" /><input type="text" inputmode="numeric" data-field="reps" placeholder="reps" value="' +
+              "</span>" +
+              weightCell +
+              '<input type="text" inputmode="numeric" data-field="reps" placeholder="' +
+              valPh +
+              '" value="' +
               escapeHtml(set.reps || "") +
-              '" aria-label="Reps" /><button type="button" class="set-check' +
+              '" aria-label="' +
+              valLabel +
+              '" /><button type="button" class="set-check' +
               (set.done ? " on" : "") +
               '" data-action="toggle-set" aria-label="Mark set done">' +
               (set.done ? "✓" : "○") +
@@ -3327,7 +3377,7 @@
         <div class="goal-row"><span>Deadlift</span><strong>405 <small style="color:var(--text-dim)">(now ~345)</small></strong></div>
         <div class="goal-row"><span>Bench</span><strong>315 <small style="color:var(--text-dim)">(now ~275)</small></strong></div>
         <div class="goal-row"><span>Back squat</span><strong>405 <small style="color:var(--text-dim)">(now ~315)</small></strong></div>
-        <div class="goal-row"><span>Plank</span><strong>3 min MAXED → hollow / wheel / hang</strong></div>
+        <div class="goal-row"><span>Plank</span><strong>3 min maxed → weighted planks, rollouts, hanging</strong></div>
       </div>
       <div class="goal-card">
         <h3>Ultra Aerobic · How We Run</h3>
@@ -3338,11 +3388,11 @@
       </div>
       <div class="goal-card">
         <h3>Physique (without killing endurance)</h3>
-        <p class="goal-note">Hypertrophy-friendly accessories on Strength A/B: lateral raises, curl bar arms, rear delts / face pulls, balanced push-pull. Kept after main strength/PT so they don't cannibalize long ultra volume.</p>
+        <p class="goal-note">Hypertrophy-friendly accessories on Strength A/B: lateral raises, curl bar arms, rear-delt dumbbell flyes, balanced push-pull. Kept after main strength/PT so they don't cannibalize long ultra volume.</p>
       </div>
       <div class="goal-card">
         <h3>Beast Core (back-pain insurance)</h3>
-        <p class="goal-note">Anti-extension (ab wheel, hollow, dead bug), anti-rotation (Pallof), heavy carries / suitcase, hanging knee raise → toes-to-bar, side planks, Hyper Pro reverse hyper. Strength finishers + Flex Beast Core Density day.</p>
+        <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Hyper Pro back extensions and reverse hypers round it out. Core finishers come after strength days, plus the flex-day core session.</p>
       </div>
     `;
   }
@@ -3375,6 +3425,7 @@
           <li>Five goals: athletic look, hunting fitness, Black Canyon 100k volume, personal PT marks, and a strong core</li>
           <li>Squats are back squat or front squat only (no goblet squats)</li>
           <li>Hyper Pro means the Freak Athlete Hyper Pro</li>
+          <li>Only well-known exercises that use the equipment above</li>
           <li>Split squats and lunges are fine; arm and shoulder extras belong after main strength work</li>
           <li>One active recovery / deep stretch day is required every week</li>
         </ul>
@@ -3459,6 +3510,26 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  // ——— Sanity: banned equipment / obscure moves (rules list) ———
+  const BANNED_MOVE_PATTERNS = /ab\s*wheel|ab[\s-]*roller|hip\s*dip|copenhagen|pallof|landmine|cable|\bband\b|kettlebell|med(icine)?\s*ball|slider|stability\s*ball|\bsled\b|\btrx\b|stir[\s-]the[\s-]pot|body\s*saw|jefferson|hollow|dragon\s*flag|mcgill|get-up|windshield/i;
+  function assertNoBannedMoves() {
+    const all = [];
+    Object.keys(WORKOUTS).forEach(function (k) { all.push.apply(all, WORKOUTS[k]); });
+    all.push.apply(all, TEST_WORKOUTS);
+    all.forEach(function (w) {
+      (w.warmup || []).forEach(function (line) {
+        if (BANNED_MOVE_PATTERNS.test(line)) console.error("CONTENT ERROR: banned warm-up item:", line);
+      });
+      (w.blocks || []).forEach(function (b) {
+        (b.items || []).forEach(function (item) {
+          if (BANNED_MOVE_PATTERNS.test((item.name || "") + " " + (item.note || ""))) {
+            console.error("CONTENT ERROR: banned exercise:", item.name);
+          }
+        });
+      });
+    });
   }
 
   // ——— Sanity: ban goblet ———
@@ -3629,6 +3700,7 @@
 
   // init
   assertNoGoblet();
+  assertNoBannedMoves();
   bind();
   state = ensureAssignments(state);
   saveState(state);
