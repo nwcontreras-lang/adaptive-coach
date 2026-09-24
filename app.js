@@ -159,9 +159,9 @@
     },
     speed_run: {
       id: "speed_run",
-      name: "Easy running volume",
-      short: "Easy miles",
-      blurb: "Extra easy miles you can talk through — builds Black Canyon fitness. Not a speed day.",
+      name: "Easy run",
+      short: "Easy run",
+      blurb: "An easy run you can talk through the whole way. It builds Black Canyon fitness and is never a speed day.",
     },
     easy_hike: {
       id: "easy_hike",
@@ -185,7 +185,7 @@
       id: "flex",
       name: "Flex day",
       short: "Catch-up or core",
-      blurb: "Catch up a missed strength flavor, stack another easy run, or hit a focused core session.",
+      blurb: "Catch up a missed strength flavor, add another easy run, or do a focused core session.",
     },
   };
 
@@ -683,25 +683,25 @@
           },
         ],
         notes: [
-          "This slot is easy volume / B2B — not speed work.",
+          "This is an easy run, not speed work.",
           "Daily running stays easy and conversational; all-out fire-pace checks are rare TEST days only.",
         ],
       },
       {
-        id: "sp-b2b-easy",
-        title: "Back-to-back easy run (96 off)",
+        id: "sp-short-easy",
+        title: "Short easy conversational run",
         durationMin: 45,
         lengthClass: "short",
         location: "Outdoor / Trail or Wahoo",
         rpe: "3",
-        summary: "On the 96: stack another easy day after yesterday’s volume. Ultra legs learn to go again tired.",
+        summary: "A shorter easy run of 35 to 45 minutes. Keep it relaxed enough to talk in full sentences the whole time.",
         warmup: ["Easy start — no strides required"],
         blocks: [
           {
-            name: "Back-to-back easy miles",
+            name: "Easy miles",
             items: [
-              { name: "35–45 min very easy", detail: "Easy — conversational · nasal breathing if you can", note: "Shorter than the long run. Keep ego home. This is the adaptation." },
-              { name: "Optional last 10 min hike/walk", detail: "If legs are heavy", note: "Still counts. Time-on-feet > pace." },
+              { name: "35–45 min very easy", detail: "Easy — conversational · nasal breathing if you can", note: "Keep your ego at home. Time on your feet matters more than pace." },
+              { name: "Optional last 10 min hike/walk", detail: "If legs are heavy", note: "Walking still counts toward your time on feet." },
             ],
           },
           {
@@ -712,8 +712,8 @@
           },
         ],
         notes: [
-          "Best used on off-cycle (96) when you already ran easy yesterday.",
-          "No intervals / tempo — volume teaches the engine.",
+          "A good pick on a busy day or when your legs feel heavy.",
+          "No intervals or tempo work. Easy volume builds the engine.",
         ],
       },
       {
@@ -740,7 +740,7 @@
             ],
           },
         ],
-        notes: ["Tag: Outdoor / Trail.", "Fulfills Easy Volume / B2B slot."],
+        notes: ["Tag: Outdoor / Trail.", "Counts as your easy run for the week."],
       },
     ],
 
@@ -1024,12 +1024,12 @@
       },
       {
         id: "fx-second-aerobic",
-        title: "Second easy run (96 back-to-back)",
+        title: "Extra easy run or incline walk",
         durationMin: 45,
         lengthClass: "short",
         location: "Outdoor or Wahoo",
         rpe: "3–4",
-        summary: "Flex day for extra easy miles or an incline walk — perfect as the second easy aerobic session on a 96 off-cycle back-to-back.",
+        summary: "Use the flex day for extra easy miles or an incline walk. It adds easy aerobic time without adding stress.",
         warmup: ["None needed — start easy"],
         blocks: [
           {
@@ -1040,7 +1040,7 @@
             ],
           },
         ],
-        notes: ["Use for B2B easy on the 96, catch-up volume, or pure recovery aerobic.", "Speed comes with volume."],
+        notes: ["Use it for extra easy volume, catch-up miles, or gentle recovery aerobic work.", "Speed comes with volume."],
       },
       {
         id: "fx-catchup-strength",
@@ -1230,7 +1230,7 @@
           ],
         },
       ],
-      notes: ["Rare TEST check only — fulfills Easy Volume / B2B slot when chosen.", "Speed comes mostly from ultra volume; this is a sparse check.", "Enter finish time when prompted."],
+      notes: ["Rare test check only. It counts as your easy run for the week when you choose it.", "Speed comes mostly from ultra volume; this is a sparse check.", "Enter finish time when prompted."],
     },
     {
       id: "test-mile",
@@ -1253,7 +1253,7 @@
           ],
         },
       ],
-      notes: ["Rare TEST — fulfills Easy Volume / B2B when chosen. Not a weekly speed day."],
+      notes: ["Rare test day. It counts as your easy run for the week when you choose it. It is not a weekly speed day."],
     },
   ];
 
@@ -1774,6 +1774,131 @@
     return pool[idx];
   }
 
+  // ——— Recent history (survives week resets) + second day on tired legs ———
+  const HISTORY_KEY = "nc-adaptive-coach-history-v1";
+
+  function localDateKey(d) {
+    const x = d instanceof Date ? d : new Date(d);
+    return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
+  }
+
+  function loadHistory() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory(arr) {
+    // keep the last 60 entries only
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(-60)));
+  }
+
+  function parseMinutes(t) {
+    const s = String(t || "").trim();
+    if (!s) return 0;
+    if (s.includes(":")) {
+      const parts = s.split(":").map((n) => parseFloat(n) || 0);
+      if (parts.length === 3) return parts[0] * 60 + parts[1] + parts[2] / 60;
+      // "95:00" = minutes:seconds; "1:35" = hours:minutes when first part is small
+      if (parts[0] < 5) return parts[0] * 60 + parts[1];
+      return parts[0] + parts[1] / 60;
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  /** Sum logged cardio distance (miles) and time (minutes) from a session log. */
+  function summarizeCardioLogs(logs) {
+    let miles = 0;
+    let minutes = 0;
+    Object.values(logs || {}).forEach((log) => {
+      if (!log || log.type !== "cardio") return;
+      const d = parseFloat(String(log.distance || "").replace(/[^0-9.]/g, ""));
+      if (!isNaN(d)) miles += d;
+      minutes += parseMinutes(log.time);
+    });
+    return { miles, minutes };
+  }
+
+  function recordHistory(entry) {
+    const arr = loadHistory().filter((e) => !(e.dateKey === entry.dateKey && e.slotId === entry.slotId));
+    arr.push(entry);
+    saveHistory(arr);
+  }
+
+  function removeHistory(dateKey, slotId) {
+    saveHistory(loadHistory().filter((e) => !(e.dateKey === dateKey && e.slotId === slotId)));
+  }
+
+  /** All finished workouts for a local calendar date (history + this week's completions). */
+  function finishedOnDate(dateKey) {
+    const out = loadHistory().filter((e) => e.dateKey === dateKey);
+    Object.keys(state.completed || {}).forEach((slotId) => {
+      const c = state.completed[slotId];
+      if (!c || !c.ts) return;
+      const dk = c.dateKey || localDateKey(c.ts);
+      if (dk !== dateKey) return;
+      if (out.some((e) => e.slotId === slotId)) return;
+      const sum = summarizeCardioLogs(c.sessionLog);
+      out.push({ dateKey: dk, slotId, workoutId: c.workoutId, title: c.title, durationMin: c.durationMin, loggedMiles: sum.miles, loggedMinutes: sum.minutes, ts: c.ts });
+    });
+    return out.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  }
+
+  const RUN_SLOTS = ["speed_run", "long_run", "flex"];
+
+  /** Does a finished workout count as a big day that leaves the legs tired? Returns a reason or null. */
+  function bigDayReason(e) {
+    if (!e) return null;
+    const planned = Number(e.durationMin) || 0;
+    const miles = Number(e.loggedMiles) || 0;
+    const mins = Number(e.loggedMinutes) || 0;
+    if (e.slotId === "long_run") return "long_run";
+    if (e.slotId === "easy_hike" && Math.max(planned, mins) >= 60) return "long_hike";
+    if (RUN_SLOTS.includes(e.slotId) && (miles >= 8 || mins >= 90)) return "big_run";
+    return null;
+  }
+
+  /** Looks at yesterday (local calendar day). Returns { reason, entry } if today is a second day on tired legs. */
+  function tiredLegsFromYesterday() {
+    const y = new Date();
+    y.setDate(y.getDate() - 1);
+    const entries = finishedOnDate(localDateKey(y));
+    for (const e of entries) {
+      const reason = bigDayReason(e);
+      if (reason) return { reason, entry: e };
+    }
+    return null;
+  }
+
+  function tiredLegsMessage(t) {
+    const what =
+      t.reason === "long_run"
+        ? "you did your long run yesterday"
+        : t.reason === "long_hike"
+        ? "you did a long hills and hiking session yesterday"
+        : "you ran a long way yesterday";
+    return (
+      "Second day on tired legs: " +
+      what +
+      ", so this run trains you to keep moving when your legs are already worn out, like the back half of Black Canyon. " +
+      "Keep it easy and conversational, walk the steep climbs, and stop if your stride falls apart."
+    );
+  }
+
+  const TIRED_LEGS_PRESCRIPTION =
+    "Hold the planned time, but let the pace be as slow as it needs to be. Time on your feet matters more than speed today.";
+
+  /** Is this an easy-run option that should carry the tired-legs note? */
+  function isEasyRunOption(slotId, workout) {
+    if (!workout || workout.isTest) return false;
+    if (slotId === "speed_run") return true;
+    return workout.id === "fx-second-aerobic";
+  }
+
   // ——— Today's options ———
   function pickOptionsForToday(st) {
     st = ensureAssignments(st);
@@ -1872,11 +1997,20 @@
       }
     }
 
-    return { done: false, options, rem };
+    const tired = tiredLegsFromYesterday();
+    if (tired) {
+      options.forEach((o) => {
+        if (isEasyRunOption(o.slotId, o.workout)) o.tiredLegs = tiredLegsMessage(tired);
+      });
+    }
+    return { done: false, options, rem, tiredLegs: tired };
   }
 
   // ——— Actions / active session ———
+  const LEGACY_WORKOUT_IDS = { "sp-b2b-easy": "sp-short-easy" }; // renamed id; keeps old saved state loading
+
   function findWorkout(slotId, workoutId) {
+    if (LEGACY_WORKOUT_IDS[workoutId]) workoutId = LEGACY_WORKOUT_IDS[workoutId];
     let w = (WORKOUTS[slotId] || []).find((x) => x.id === workoutId);
     if (!w) w = TEST_WORKOUTS.find((x) => x.id === workoutId);
     return w || null;
@@ -2123,12 +2257,25 @@
     const workout = findWorkout(sess.slotId, sess.workoutId);
     if (!workout) return;
 
+    const finishedAt = Date.now();
+    const cardioSum = summarizeCardioLogs(sess.logs);
+    recordHistory({
+      dateKey: localDateKey(finishedAt),
+      slotId: sess.slotId,
+      workoutId: workout.id,
+      title: workout.title,
+      durationMin: workout.durationMin,
+      loggedMiles: cardioSum.miles,
+      loggedMinutes: cardioSum.minutes,
+      ts: finishedAt,
+    });
     state.completed[sess.slotId] = {
       workoutId: workout.id,
       title: workout.title,
+      dateKey: localDateKey(finishedAt),
       dayKey: today.day.key,
       dayLabel: today.day.label,
-      ts: Date.now(),
+      ts: finishedAt,
       durationMin: workout.durationMin,
       isTest: !!workout.isTest,
       sessionLog: sess.logs,
@@ -2233,6 +2380,10 @@
       if (!confirm("Undo today? In-progress workout logs will be cleared.")) return;
     } else if (finished) {
       if (!confirm("Undo today's finished workout? It will return to the week board as incomplete.")) return;
+    }
+    if (finished) {
+      const c = state.completed[slotId];
+      removeHistory((c && c.dateKey) || localDateKey(new Date()), slotId);
     }
     delete state.completed[slotId];
     state.todayPick = null;
@@ -2627,6 +2778,8 @@
         (result.pick.isTest ? " · test day" : "");
       $("#today-sub").textContent = result.pick.isTest
         ? "Test day finished. Check Progress for your new mark."
+        : result.pick.slotId === "long_run"
+        ? "Done for today. If you feel up to it, an easy run tomorrow would make a good second day on tired legs. That is only a suggestion, so pick whatever fits tomorrow."
         : "Done for today. Come back tomorrow for fresh options.";
       return;
     }
@@ -2639,7 +2792,7 @@
       " choices today — tap one to start. Choosing locks today and reshuffles the rest of the week.";
 
     list.innerHTML = result.options
-      .map(({ slotId, workout }) => {
+      .map(({ slotId, workout, tiredLegs }) => {
         const meta = SLOT_META[slotId];
         const isTest = !!workout.isTest;
         return (
@@ -2667,8 +2820,10 @@
           '<p class="option-blurb">' +
           escapeHtml(workout.summary) +
           "</p>" +
+          (tiredLegs ? '<p class="option-tired-legs">' + escapeHtml(tiredLegs) + "</p>" : "") +
           '<div class="option-tags">' +
           (isTest ? '<span class="tag test-tag">Test / PR day</span>' : "") +
+          (tiredLegs ? '<span class="tag tired-tag">Second day on tired legs</span>' : "") +
           '<span class="tag loc">' +
           escapeHtml(plainLocation(workout.location)) +
           "</span>" +
@@ -3179,7 +3334,7 @@
         <div class="goal-row"><span>10 mi continuous</span><strong>~11:00 / mi easy</strong></div>
         <div class="goal-row"><span>Daily run identity</span><strong>Conversational volume</strong></div>
         <div class="goal-row"><span>Speed / intervals</span><strong>Not a weekly focus</strong></div>
-        <p class="goal-note" style="margin-top:10px">Ultra Long Easy + Hills/Hike Legs + Easy Volume/B2B (and Flex B2B on the 96) stack Black Canyon fitness with hunting time-on-feet. “The speed will come with volume.”</p>
+        <p class="goal-note" style="margin-top:10px">The long easy run, hills and hike legs, and easy runs stack Black Canyon fitness with hunting time on feet. You pick each day in any order. When an easy run lands the day after a long run, the app flags it as a second day on tired legs. “The speed will come with volume.”</p>
       </div>
       <div class="goal-card">
         <h3>Physique (without killing endurance)</h3>
@@ -3241,6 +3396,15 @@
     }
 
     let html = "";
+    const tired = isEasyRunOption(slotId, workout) ? tiredLegsFromYesterday() : null;
+    if (tired) {
+      html +=
+        '<div class="tired-legs-note"><p>' +
+        escapeHtml(tiredLegsMessage(tired)) +
+        "</p><p>" +
+        escapeHtml(TIRED_LEGS_PRESCRIPTION) +
+        "</p></div>";
+    }
     if (workout.warmup && workout.warmup.length) {
       html += '<div class="block"><h4>Warm-up</h4><ul class="warmup-list">';
       workout.warmup.forEach((w) => {

@@ -1252,3 +1252,26 @@ body {
 #app.active-mode .pr-toast {
   bottom: calc(108px + env(safe-area-inset-bottom, 0px));
 }
+
+/* Second day on tired legs (adaptive note on easy-run options) */
+.option-tired-legs,
+.tired-legs-note {
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border-left: 3px solid #ffb547;
+  background: rgba(255, 181, 71, 0.12);
+  color: #ffe2b0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.tired-legs-note { margin: 0 0 14px; }
+.tired-legs-note p { margin: 0; }
+.tired-legs-note p + p { margin-top: 6px; color: var(--text, #e8eef5); }
+.tag.tired-tag {
+  background: rgba(255, 181, 71, 0.18);
+  color: #ffb547;
+  border-color: rgba(255, 181, 71, 0.4);
+}
