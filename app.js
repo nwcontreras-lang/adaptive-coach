@@ -432,6 +432,35 @@
   }
 
 
+  /**
+   * Freak Athlete Hyper Pro (standard model, NOT the Hyper Pro X) — moves that need only the base machine.
+   * Sources: freakathlete.co Hyper Pro FAQ ("With the Hyper Pro only"), how-to-use page, and Freak Athlete workout blogs.
+   * GHD sit-ups / glute-ham raises (GHD Attachment) and leg extensions / curls (Leg Developer) are add-ons, so they are not programmed.
+   * Full research: HYPER_PRO_EXERCISES.md (not published).
+   */
+  const HP_NOTES = {
+    reverseHyper: "Set the Freak Athlete Hyper Pro in GHD mode (or 90-degree back extension mode), then lie face down across the pad with your hips at its edge, hold the footplate handles, and let your legs hang straight down behind you. Squeeze your glutes to lift both legs until they line up with your body, pause for one second, and lower slowly with no swinging. Stop when your legs reach level; kicking higher only arches your low back. Body weight only, smooth and easy to moderate effort. It should feel like a warm pump in your glutes and low back, never a pinch.",
+    nordic: "Set the Hyper Pro in Nordic mode at an incline you can control, around 30 to 45 degrees to start (a higher angle is easier). Kneel on the pad with your ankles locked between the rollers and your feet flat on the footplate. Squeeze your glutes and keep a straight line from knees to shoulders, then lower yourself as slowly as you can, aiming for 3 to 5 seconds. When you can't hold it any longer, catch yourself with your hands and push back up to the start. End each set 1 to 2 reps before your form breaks. When every rep of every set feels controlled, drop the incline one notch the next week.",
+    reverseNordic: "Set the Hyper Pro in Nordic mode (Freak Athlete's beginner workout uses the 20-degree setting). Kneel on the pad with your ankles locked in the rollers, just like a Nordic curl, and sit tall. Squeeze your glutes so your hips stay straight, then lean your whole body back from the knees as far as you can control, pause for a second, and pull yourself back up with your thighs. Start with a shallow lean and go a little deeper each week. Moderate effort; stop if you feel sharp pain in the knee. Keep your ribs down so your low back does not arch.",
+    hipThrust: "Set the Hyper Pro to hip thrust mode: flip the post at the base up to vertical and move the top ankle roller onto it so it becomes your back rest. Sit on the floor with your upper back across the roller, feet flat about shoulder-width apart, and a padded barbell or one heavy dumbbell across your hips. Tuck your chin, drive through your heels, and squeeze your glutes until your body is flat from knees to shoulders, pause for two seconds, then lower under control. The rep ends when your hips are straight, so do not arch your low back to go higher. Pick a load you could lift 2 to 3 more times at the end of each set, and log the weight you used.",
+    sideRaise: "Set the Hyper Pro in 45-degree back extension mode and close the gap between the two front pads. Turn sideways so the side of your hip rests on the pads and your feet are locked in the rollers, one foot in front of the other. Cross your arms on your chest, slowly bend sideways toward the floor, then lift back up until your body is a straight line. Keep your top hip stacked over your bottom hip and do not twist. Do all the reps on one side, then switch. Start with a small range and go deeper as it gets comfortable; hold a light dumbbell at your chest once 12 reps per side feels easy, and log that weight.",
+  };
+  function hyperProReverseHyper(sets, reps, lead, name) {
+    return { name: name || "Hyper Pro Reverse Hyper", detail: sets + " sets of " + reps + " reps", note: (lead ? lead + " " : "") + HP_NOTES.reverseHyper, sets: sets, reps: reps, log: "reps", bw: true };
+  }
+  function hyperProNordicCurl(sets, reps) {
+    return { name: "Hyper Pro Nordic Curl (incline, lowering with control)", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.nordic, sets: sets, reps: reps, log: "reps", bw: true };
+  }
+  function hyperProReverseNordic(sets, reps) {
+    return { name: "Hyper Pro Reverse Nordic", detail: sets + " sets of " + reps + " reps", note: HP_NOTES.reverseNordic, sets: sets, reps: reps, log: "reps", bw: true };
+  }
+  function hyperProHipThrust(sets, reps) {
+    return { name: "Hyper Pro Hip Thrust", detail: sets + " sets of " + reps + " reps — stop 2–3 reps before failure", note: HP_NOTES.hipThrust, sets: sets, reps: reps, log: "reps", noLoad: true };
+  }
+  function hyperProSideRaise(sets, reps) {
+    return { name: "Hyper Pro Side Raise (QL Raise)", detail: sets + " sets of " + reps + " reps per side", note: HP_NOTES.sideRaise, sets: sets, reps: reps, log: "reps", noLoad: true };
+  }
+
   /** Concrete workout library — keyed by slot. Multiple options per slot. */
   const WORKOUTS = {
     strength_a: [
@@ -519,21 +548,21 @@
         lengthClass: "long",
         location: "Home · Full gym",
         rpe: "7–8",
-        summary: "A fuller ~90 minute day — squat volume toward your 405 goal, upper-body work for physique, Hyper Pro posterior work, and heavy carries for hunting and core strength.",
+        summary: "A fuller ~90 minute day — squat volume toward your 405 goal, upper-body work for physique, Hyper Pro hip thrusts for your glutes, and heavy carries for hunting and core strength.",
         warmup: ["5–8 min easy tread", "Empty-bar front squat × 8", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
             name: "Squat volume",
             items: [
               { name: "Back Squat", detail: "4 sets of 8 reps — about 68% of your 1RM", note: "Solid effort. Hypertrophy volume toward the 405 goal. Controlled tempo.", liftId: "back_squat", pct1rm: 68, sets: 4, reps: 8 },
-              { name: "Bulgarian Split Squat (rear foot elevated)", detail: "3 sets of 8 reps", note: "DB or bar. Keep torso tall." },
+              { name: "Bulgarian Split Squat (rear foot elevated)", detail: "3 sets of 8 reps per leg", note: "Rest the top of your back foot on the FID bench or the Hyper Pro hip thrust roller and hold a dumbbell in each hand. Drop your back knee straight down toward the floor, keep your torso tall and your front heel planted, and drive up through your front foot. Moderate to hard effort: finish each set with about 2 reps left. Log the dumbbell weight in each hand.", sets: 3, reps: 8, log: "reps", noLoad: true },
             ],
           },
           {
             name: "Press, posterior chain, and physique",
             items: [
               { name: "Incline DB Bench (FID)", detail: "4 sets of 8 reps — stop 2–3 reps before failure", note: "Upper chest / athletic shelf. Choose DBs you can finish clean — not a % of barbell bench.", sets: 4, reps: 8 },
-              { name: "Freak Athlete Hyper Pro — Reverse Hyper", detail: "4 sets of 12 reps", note: "Posterior + core support. Use the Freak Athlete Hyper Pro." },
+              hyperProHipThrust(3, 10),
               { name: "DB Lateral + Front Raise combo", detail: "3 sets of 12 reps", note: "Shoulder look without frying recovery." },
               { name: "Bicep Curl Bar — EZ Curls", detail: "3 sets of 10 reps", note: "Arms accessory after main work." },
             ],
@@ -630,13 +659,14 @@
         lengthClass: "medium",
         location: "Home · Hyper Pro + rack",
         rpe: "7",
-        summary: "About 70 minutes of Hyper Pro hinge work, Romanian deadlifts, and heavy rows — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
+        summary: "About 70 minutes of Hyper Pro reverse hypers and Nordic curls, Romanian deadlifts, and heavy rows — builds the posterior chain for ultra climbs and hunting without a max deadlift day.",
         warmup: ["Easy tread 5 min", "Hyper Pro back extensions with bodyweight × 15", "Light dumbbell rear-delt raises × 15"],
         blocks: [
           {
             name: "Posterior chain",
             items: [
-              { name: "Freak Athlete Hyper Pro — Reverse Hyper", detail: "5 sets of 10 reps", note: "Loaded if possible. Spine-friendly posterior + core." },
+              hyperProReverseHyper(3, 12, "Warms up your glutes and low back before the hinge work."),
+              hyperProNordicCurl(3, 5),
               { name: "Barbell RDL", detail: "4 sets of 6 reps — about 55% of your 1RM", note: "Hinge strength without max deadlift fatigue.", liftId: "deadlift", pct1rm: 55, sets: 4, reps: 6 },
               { name: "Walking Lunges (DB)", detail: "3 sets of 10 reps", note: "Hiking legs accessory." },
             ],
@@ -710,7 +740,7 @@
           {
             name: "Easy flush work",
             items: [
-              { name: "Easy Hyper Pro Reverse Hyper (if home)", detail: "2 sets of 12 reps", note: "Freak Athlete Hyper Pro — blood flow." },
+              hyperProReverseHyper(2, 12, "Only if you're home. Easy blood-flow sets after the run.", "Easy Hyper Pro Reverse Hyper (if home)"),
             ],
           },
         ],
@@ -755,7 +785,7 @@
         lengthClass: "medium",
         location: "Home · Hyper Pro + Wahoo",
         rpe: "5–6",
-        summary: "Incline time-on-feet plus Hyper Pro posterior work for Black Canyon climbs and multi-day elk or deer hunts. Steady effort you can sustain.",
+        summary: "Incline time-on-feet plus Hyper Pro back and knee work (reverse hypers, back extensions, and reverse Nordics for downhill durability) for Black Canyon climbs and multi-day elk or deer hunts. Steady effort you can sustain.",
         warmup: ["5 min flat easy walk/jog"],
         blocks: [
           {
@@ -767,8 +797,9 @@
           {
             name: "Hyper Pro leg work",
             items: [
-              { name: "Freak Athlete Hyper Pro — Reverse Hyper", detail: "4 sets of 15 reps", note: "Smooth, full ROM. Posterior + core support." },
+              hyperProReverseHyper(3, 15),
               { name: "Hyper Pro Back Extension", detail: "3 sets of 12 reps", note: "Set the pad just below your hips on the Freak Athlete Hyper Pro. Lower your chest with a flat back, then squeeze your glutes to come up until your body is in a straight line. Do not over-arch at the top. Hold a plate at your chest once 15 reps feels easy.", sets: 3, reps: 12, log: "reps", noLoad: true },
+              hyperProReverseNordic(2, 8),
             ],
           },
           {
@@ -814,16 +845,16 @@
         lengthClass: "short",
         location: "Home",
         rpe: "5",
-        summary: "A quick 30 minutes: incline walk, Hyper Pro, and carries. Climbing legs and hunt base when the day is short.",
+        summary: "A quick 30 minutes: incline walk, Hyper Pro reverse hypers and reverse Nordics, and carries. Climbing legs, downhill knees, and hunt base when the day is short.",
         warmup: ["2 min march in place"],
         blocks: [
           {
             name: "Hills and Hyper Pro",
             items: [
               { name: "Incline treadmill walk", detail: "Brisk incline treadmill walk for about 12 minutes" },
-              { name: "Hyper Pro Reverse Hyper", detail: "5 sets of 12 reps", note: "Freak Athlete Hyper Pro." },
+              hyperProReverseHyper(3, 12),
+              hyperProReverseNordic(2, 6),
               { name: "Farmer Carry (two dumbbells)", detail: "3 sets of 45 seconds", note: "Hold a heavy dumbbell in each hand (start around 70 to 100 lb each) and walk with short, steady steps. Stand tall, keep your shoulders back, and brace your abs like you are about to get bumped. End the set if your grip or posture breaks. Log the weight per hand and the seconds you walked.", sets: 3, reps: 45, log: "carry", noLoad: true },
-              { name: "Front Plank", detail: "3 sets of 60 seconds", note: "Get on your forearms and toes with your elbows under your shoulders. Hold a straight line from head to heels, squeeze your glutes, and brace your abs so it feels hard the whole time. Keep your hips level with no sagging or piking. Log the seconds you held.", sets: 3, reps: 60, log: "hold", bw: true },
             ],
           },
         ],
@@ -903,7 +934,7 @@
             name: "Long trail easy",
             items: [
               { name: "75–95 min easy trail", detail: "Easy — conversational", note: "Power-hike the climbs. Soft surface. Optional light pack later in the block." },
-              { name: "Post: Reverse Hyper (if home)", detail: "3 sets of 12 reps", note: "Freak Athlete Hyper Pro flush." },
+              hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
         ],
@@ -923,7 +954,7 @@
             name: "Easy volume",
             items: [
               { name: "60 min easy", detail: "~11:00–12:00/mi", note: "Do not race. Keep for recovery after night shift / heavy strength." },
-              { name: "Post: Reverse Hyper (if home)", detail: "3 sets of 12 reps", note: "Hyper Pro flush." },
+              hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
         ],
@@ -954,7 +985,7 @@
           {
             name: "Light movement and soft core",
             items: [
-              { name: "Easy Hyper Pro Reverse Hyper", detail: "2 sets of 15 reps", note: "Blood flow, not loading." },
+              hyperProReverseHyper(2, 15, "Recovery pace: slow and easy, just for blood flow.", "Easy Hyper Pro Reverse Hyper"),
               { name: "Cat-Cow and Easy Dead Bugs", detail: "2 sets of 8 reps", note: "On your hands and knees, slowly round your back up and then let it sag, 8 times. Then roll onto your back and do 8 easy, slow dead bugs. Gentle, just to keep the core pattern alive.", sets: 2, reps: 8, log: "reps", bw: true },
               { name: "Nasal breathing walk", detail: "8–10 min", note: "Downshift nervous system." },
             ],
@@ -996,7 +1027,7 @@
         lengthClass: "short",
         location: "Home · Full kit",
         rpe: "7",
-        summary: "A focused 35-minute core session to protect your low back: barbell rollouts and weighted planks, heavy suitcase carries and side planks, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
+        summary: "A focused 35-minute core session to protect your low back: barbell rollouts and weighted planks, heavy suitcase carries, side planks, and Hyper Pro side raises, then hanging leg work and Hyper Pro reverse hypers. Your plain plank is maxed, so this adds load and range instead.",
         warmup: ["3 minutes of easy treadmill walking", "Cat-cow × 8, then 5 slow dead bugs per side to practice bracing"],
         blocks: [
           {
@@ -1012,14 +1043,14 @@
             items: [
               { name: "Suitcase Carry (one dumbbell)", detail: "4 sets of 40 seconds per side", note: "Hold one heavy dumbbell at your side (start around 70 to 100 lb) and walk tall for the set time, then switch hands. Do not lean toward or away from the weight: keep your shoulders level and your ribs down. Stop the set early if you start to tip. Log the dumbbell weight and the seconds you walked.", sets: 4, reps: 40, log: "carry", noLoad: true },
               { name: "Side Plank", detail: "3 sets of 45 seconds per side", note: "Lie on your side and prop yourself up on your forearm with your elbow right under your shoulder. Lift your hips so your body is a straight line from head to feet, and hold still without letting your hips sag. Do one side, then the other. When the hold feels easy, rest a dumbbell on your top hip and log that weight.", sets: 3, reps: 45, log: "hold", noLoad: true },
-              { name: "Russian Twist with a Dumbbell", detail: "3 sets of 10 reps per side", note: "Sit with your knees bent and heels on the floor, lean back a little with a straight back, and hold one dumbbell (25 to 40 lb) at your chest. Slowly turn your shoulders to one side, then the other, moving with your ribs, not just your arms. Keep it slow and controlled, and stop if your low back complains. Log the dumbbell weight.", sets: 3, reps: 10, log: "reps", noLoad: true },
+              hyperProSideRaise(3, 10),
             ],
           },
           {
             name: "Hanging and posterior core",
             items: [
               { name: "Hanging Knee Raise to Toes-to-Bar", detail: "5 sets of 6 reps", note: "Hang from the pull-up bar. Start with strict knee raises, move to straight-leg raises when those feel easy, and work toward touching your toes to the bar. Every rep is slow and controlled with no kipping or swinging. Use the hardest version you can do cleanly for every rep.", sets: 5, reps: 6, log: "reps", bw: true },
-              { name: "Hyper Pro Reverse Hyper", detail: "3 sets of 12 reps", note: "Freak Athlete Hyper Pro — posterior + core support." },
+              hyperProReverseHyper(3, 12),
             ],
           },
         ],
@@ -1175,7 +1206,7 @@
         {
           name: "Posterior flush",
           items: [
-            { name: "Freak Athlete Hyper Pro — Reverse Hyper", detail: "2×12 unloaded", note: "Blood flow, not loading." },
+            hyperProReverseHyper(2, 12, "Easy flush after the heavy singles, body weight only."),
           ],
         },
       ],
@@ -3392,7 +3423,7 @@
       </div>
       <div class="goal-card">
         <h3>Beast Core (back-pain insurance)</h3>
-        <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Hyper Pro back extensions and reverse hypers round it out. Core finishers come after strength days, plus the flex-day core session.</p>
+        <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Freak Athlete Hyper Pro back extensions, reverse hypers, and side raises round it out. Core finishers come after strength days, plus the flex-day core session.</p>
       </div>
     `;
   }
@@ -3424,7 +3455,7 @@
         <ul class="notes-list">
           <li>Five goals: athletic look, hunting fitness, Black Canyon 100k volume, personal PT marks, and a strong core</li>
           <li>Squats are back squat or front squat only (no goblet squats)</li>
-          <li>Hyper Pro means the Freak Athlete Hyper Pro</li>
+          <li>Hyper Pro means the standard Freak Athlete Hyper Pro (not the Hyper Pro X); only moves the base machine does are programmed</li>
           <li>Only well-known exercises that use the equipment above</li>
           <li>Split squats and lunges are fine; arm and shoulder extras belong after main strength work</li>
           <li>One active recovery / deep stretch day is required every week</li>
