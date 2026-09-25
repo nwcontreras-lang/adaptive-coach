@@ -1324,3 +1324,170 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ——— Weekly mileage tracker (Today and Week tabs) ——— */
+.mileage-slot:empty { display: none; }
+.mileage-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.mileage-card.cutback { border-left-color: var(--blue); }
+.mileage-head { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.mileage-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.mileage-total { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.2px; line-height: 1.25; overflow-wrap: break-word; }
+.mileage-bar {
+  height: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.mileage-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #2bc48a);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+.mileage-text { font-size: 14px; color: var(--text); line-height: 1.45; overflow-wrap: break-word; }
+.mileage-note { font-size: 13px; color: var(--text-muted); line-height: 1.45; overflow-wrap: break-word; }
+.mileage-callout {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  border-left: 3px solid var(--blue);
+  background: var(--blue-dim);
+  color: #d6e8ff;
+  overflow-wrap: break-word;
+}
+.mileage-callout.peak { border-left-color: var(--orange); background: var(--orange-dim); color: #ffe0c7; }
+.mileage-callout.race { border-left-color: var(--accent); background: var(--accent-dim); color: #d9ffee; }
+.miles-add { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; }
+.miles-add-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.miles-add-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.miles-add-row input,
+.miles-add-row select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  min-height: 44px;
+  padding: 8px 10px;
+  min-width: 0;
+  color-scheme: dark;
+}
+.miles-add-row input { flex: 0 0 92px; width: 92px; }
+.miles-add-row select { flex: 1 1 150px; }
+.miles-add-row input:focus,
+.miles-add-row select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.miles-add-row .btn-bench { flex: 1 1 100%; }
+.miles-status { font-size: 12.5px; color: var(--text-muted); }
+.miles-status:empty { display: none; }
+.miles-status.err { color: var(--red); }
+.miles-status.ok { color: var(--accent); }
+.miles-entries summary,
+.plan-details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); padding: 4px 0; }
+.miles-entries ul { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.miles-entries li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 6px 6px 10px;
+}
+.miles-entries .me-what { min-width: 0; overflow-wrap: break-word; color: var(--text-muted); }
+.miles-entries .me-mi { font-weight: 700; white-space: nowrap; }
+.me-del {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font: inherit;
+}
+#mileage-week { margin-top: 2px; }
+.cardio-count-note { font-size: 12.5px; color: var(--text-muted); margin: 6px 0 2px; line-height: 1.4; }
+
+/* ——— Weekly mileage history (Progress tab) ——— */
+.mh-list { display: flex; flex-direction: column; gap: 12px; }
+.mh-row { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mh-top { display: flex; justify-content: space-between; gap: 4px 10px; font-size: 13px; flex-wrap: wrap; }
+.mh-week { font-weight: 700; }
+.mh-val { color: var(--text-muted); white-space: nowrap; }
+.mh-track {
+  height: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-elev);
+  max-width: 100%;
+}
+.mh-fill { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #2bc48a); }
+.mh-row.cutback .mh-track { border-color: rgba(77, 163, 255, 0.7); }
+.mh-row.current .mh-week { color: var(--accent); }
+.mh-sub { font-size: 12px; color: var(--text-dim); }
+.plan-rows { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.plan-rows li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+}
+.plan-rows li.cutback { border-color: rgba(77, 163, 255, 0.5); }
+.plan-rows li.current { border-color: var(--accent); }
+.plan-rows .pr-top { display: flex; justify-content: space-between; gap: 8px; font-weight: 700; flex-wrap: wrap; }
+.plan-rows .pr-sub { color: var(--text-muted); overflow-wrap: break-word; }
+.plan-rules { margin-top: 8px; }
+
+/* Fueling practice note and checkpoint */
+.fuel-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4; }
+.fuel-note {
+  width: 100%;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 80px;
+}
+.fuel-note:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.mileage-callout.checkpoint { border-left-color: var(--purple); background: var(--purple-dim); color: #eadcff; }
+.mileage-callout.checkpoint.on_track { border-left-color: var(--accent); background: var(--accent-dim); color: #d9ffee; }
+.mileage-callout.checkpoint strong { display: block; margin-bottom: 4px; }
+.mileage-callout.checkpoint p + p { margin-top: 6px; }
+.checkpoint-verdict.on_track { color: var(--accent); }
+.race-date-form { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.race-date-form input[type="date"] { flex: 1 1 160px; width: auto; }
+.race-date-form .btn-bench { flex: 1 1 100%; }

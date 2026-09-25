@@ -219,6 +219,12 @@
   }
 
   function plainDuration(min) {
+    if (min > 90) {
+      const m5 = Math.round(min / 5) * 5;
+      const h = Math.floor(m5 / 60);
+      const r = m5 % 60;
+      return "About " + h + (h === 1 ? " hour" : " hours") + (r ? " " + r + " minutes" : "");
+    }
     return "About " + min + " minutes";
   }
 
@@ -1315,7 +1321,7 @@
   // ——— State ———
   function defaultState() {
     return {
-      weekId: WEEK_ID,
+      weekId: currentWeekId(),
       completed: {}, // slotId -> { workoutId, title, dayKey, ts } — only after Finish
       todayPick: null, // chosen for today (may still be in progress)
       dayAssignments: null, // dayKey -> slotId | null (planned remaining)
@@ -1328,7 +1334,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      if (parsed.weekId !== WEEK_ID) return defaultState();
+      if (parsed.weekId !== currentWeekId()) return defaultState();
       return Object.assign(defaultState(), parsed);
     } catch {
       return defaultState();
@@ -1694,10 +1700,21 @@
     return Math.round((cur - start) / 86400000);
   }
 
+  /** Calendar program week (0 = week of Wed Sep 23, 2026). Weeks run Wednesday to Tuesday. */
+  function currentCalendarWeekIndex() {
+    return Math.max(0, Math.floor(dayOffsetFromWeekStart(new Date()) / 7));
+  }
+
+  /** Week 1 keeps its original id so saved Week 1 progress still loads; later weeks start fresh. */
+  function currentWeekId() {
+    const idx = currentCalendarWeekIndex();
+    return idx === 0 ? WEEK_ID : "2026-prog-week-" + (idx + 1);
+  }
+
   function getTodayInfo() {
     const now = new Date();
-    let offset = dayOffsetFromWeekStart(now);
-    // Clamp to week 1 for demo consistency if somehow outside; still work inside week
+    let offset = dayOffsetFromWeekStart(now) - 7 * currentCalendarWeekIndex();
+    // Clamp inside the current Wednesday-to-Tuesday week
     if (offset < 0) offset = 0;
     if (offset > 6) offset = 6;
     const day = DAYS[offset];
@@ -1791,11 +1808,10 @@
   }
 
   // ——— Occasional Test / PR options (NOT weekly required) ———
-  /** Week index from Week 1 anchor; sparse offer ~ every 2–4 weeks */
+  /** Program week index from the Week 1 anchor (0 = week of Wed Sep 23, 2026). state.testWeekIndex simulates a week. */
   function getProgramWeekIndex() {
-    // Single week id for now; future weeks bump WEEK_ID / week counter in state
-    if (state.testWeekIndex != null) return state.testWeekIndex;
-    return 0; // Week 1
+    if (state && state.testWeekIndex != null && !isNaN(Number(state.testWeekIndex))) return Number(state.testWeekIndex);
+    return currentCalendarWeekIndex();
   }
 
   /**
@@ -1820,7 +1836,8 @@
     // Ultra-first: do NOT offer timed run tests (1.95 / mile) early.
     // Those stay rare — only after several volume weeks (weekIndex >= 3).
     let pool = TEST_WORKOUTS.filter((tw) => rem.includes(tw.slotId));
-    if (week < 3) {
+    // No all-out timed run checks during the Black Canyon build (volume first, no fire-pace sessions).
+    if (week < 3 || week <= raceWeekIndex()) {
       pool = pool.filter((tw) => tw.metricId !== "fire_195" && tw.metricId !== "mile");
     }
     if (!pool.length) return null;
@@ -1954,6 +1971,910 @@
     return workout.id === "fx-second-aerobic";
   }
 
+  // ——— Black Canyon 100K weekly mileage plan ———
+  // Race date confirmed on Aravaipa Running's Black Canyon Ultras page and UltraSignup:
+  // 100K on Saturday, February 13, 2027 (the 50K is the next day). Editable on the Goals tab.
+  const RACE_DEFAULT_DATE = new Date(2027, 1, 13);
+  const RACE = {
+    name: "Black Canyon 100K",
+    date: RACE_DEFAULT_DATE,
+    label: "",
+    miles: 62.2,
+    confirmed: true,
+    source: "Aravaipa Running's Black Canyon Ultras page and UltraSignup",
+  };
+  const MILES_KEY = "nc-adaptive-coach-miles-v1";
+  const RACE_KEY = "nc-adaptive-coach-race-v1";
+
+  function raceLabelFor(d) {
+    return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  }
+  function raceWeekday() {
+    return RACE.date.toLocaleDateString("en-US", { weekday: "long" });
+  }
+  function isoDate(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  /** Load the race date (saved on the Goals tab) or fall back to the confirmed date. */
+  function loadRaceDate() {
+    let d = RACE_DEFAULT_DATE;
+    try {
+      const raw = localStorage.getItem(RACE_KEY);
+      const m = raw && /^(\d{4})-(\d{2})-(\d{2})$/.exec(JSON.parse(raw).date || "");
+      if (m) {
+        const cand = new Date(+m[1], +m[2] - 1, +m[3]);
+        if (!isNaN(cand) && cand > WEEK_START) d = cand;
+      }
+    } catch {
+      d = RACE_DEFAULT_DATE;
+    }
+    RACE.date = d;
+    RACE.label = raceLabelFor(d);
+    RACE.edited = isoDate(d) !== isoDate(RACE_DEFAULT_DATE);
+    planCache = null;
+  }
+  function saveRaceDate(str) {
+    if (!str) {
+      localStorage.removeItem(RACE_KEY);
+    } else {
+      localStorage.setItem(RACE_KEY, JSON.stringify({ date: str }));
+    }
+    loadRaceDate();
+  }
+
+  const PHASES = {
+    base: { label: "Base building", tiredMiles: 4, minEasy: 3 },
+    build: { label: "Building volume", tiredMiles: 5, minEasy: 4 },
+    block: { label: "Big mileage block", tiredMiles: 6, minEasy: 4 },
+    peak: { label: "Peak weeks", tiredMiles: 6.5, minEasy: 4 },
+    taper: { label: "Taper", tiredMiles: 4, minEasy: 3 },
+    race: { label: "Race week", tiredMiles: 3, minEasy: 3 },
+    recovery: { label: "Recovery after the race", tiredMiles: 3, minEasy: 3 },
+  };
+
+  /**
+   * ===== PLAN DATA (swappable) =====
+   * PROVISIONAL numbers: a first-pass miles progression. Another methodology can replace PLAN_META and
+   * PLAN_WEEKS without touching the tracker, history, sizing, or UI code, as long as the shape stays the same.
+   *
+   * PLAN_WEEKS row shape (miles only):
+   *   { weekIndex, targetMiles, longRunMiles, isCutback, phase, peakLongDay?, taperPct?, raceWeek?, checkpoint? }
+   *   weekIndex 0 = the week of Wed Sep 23, 2026 (weeks run Wednesday to Tuesday).
+   *   phase is a key of PHASES (base, build, block, peak, taper, race; recovery is generated after the race).
+   *   The LAST row must be race week. getPlanSchedule() anchors that last row to RACE.date, so if the race
+   *   date moves the rows shift (peak and taper still land right before race day) and early weeks are smoothed
+   *   to the 10 percent rule. Written for the Feb 13, 2027 race, which falls in weekIndex 20.
+   */
+  const PLAN_META = {
+    name: "Black Canyon 100K miles plan",
+    provisional: true,
+    startWeeklyMiles: 20, // current base is about 15 to 20 miles a week
+    // Early-January readiness check: longest single logged run and the average of the last 3 weeks.
+    checkpoint: { longestRunMiles: 18, recentAvgMiles: 38, closeLongestMiles: 14, closeAvgMiles: 30 },
+  };
+  const PLAN_WEEKS = [
+    { weekIndex: 0, targetMiles: 20, longRunMiles: 10, isCutback: false, phase: "base" },
+    { weekIndex: 1, targetMiles: 22, longRunMiles: 11, isCutback: false, phase: "base" },
+    { weekIndex: 2, targetMiles: 24, longRunMiles: 12, isCutback: false, phase: "base" },
+    { weekIndex: 3, targetMiles: 19, longRunMiles: 9, isCutback: true, phase: "base" },
+    { weekIndex: 4, targetMiles: 26, longRunMiles: 12, isCutback: false, phase: "base" },
+    { weekIndex: 5, targetMiles: 28, longRunMiles: 13, isCutback: false, phase: "base" },
+    { weekIndex: 6, targetMiles: 30, longRunMiles: 14, isCutback: false, phase: "build" },
+    { weekIndex: 7, targetMiles: 24, longRunMiles: 10, isCutback: true, phase: "build" },
+    { weekIndex: 8, targetMiles: 33, longRunMiles: 15, isCutback: false, phase: "build" },
+    { weekIndex: 9, targetMiles: 36, longRunMiles: 16, isCutback: false, phase: "build" },
+    { weekIndex: 10, targetMiles: 39, longRunMiles: 17, isCutback: false, phase: "build" },
+    { weekIndex: 11, targetMiles: 31, longRunMiles: 13, isCutback: true, phase: "block" },
+    { weekIndex: 12, targetMiles: 42, longRunMiles: 18, isCutback: false, phase: "block" },
+    { weekIndex: 13, targetMiles: 45, longRunMiles: 20, isCutback: false, phase: "block" },
+    { weekIndex: 14, targetMiles: 48, longRunMiles: 22, isCutback: false, phase: "block" },
+    { weekIndex: 15, targetMiles: 38, longRunMiles: 14, isCutback: true, phase: "block", checkpoint: true },
+    { weekIndex: 16, targetMiles: 50, longRunMiles: 24, isCutback: false, phase: "peak", peakLongDay: true },
+    { weekIndex: 17, targetMiles: 46, longRunMiles: 18, isCutback: false, phase: "peak" },
+    { weekIndex: 18, targetMiles: 35, longRunMiles: 14, isCutback: false, phase: "taper", taperPct: 70 },
+    { weekIndex: 19, targetMiles: 25, longRunMiles: 10, isCutback: false, phase: "taper", taperPct: 50 },
+    { weekIndex: 20, targetMiles: 8, longRunMiles: 62.2, isCutback: false, phase: "race", raceWeek: true },
+  ];
+  // ===== end PLAN DATA =====
+  const TABLE_RACE_WEEK = PLAN_WEEKS.length - 1;
+  const START_WEEKLY_MILES = PLAN_META.startWeeklyMiles;
+
+  function weekStartDate(w) {
+    return new Date(WEEK_START.getFullYear(), WEEK_START.getMonth(), WEEK_START.getDate() + 7 * w);
+  }
+
+  function raceWeekIndex() {
+    return Math.floor(dayOffsetFromWeekStart(RACE.date) / 7);
+  }
+
+  let planCache = null;
+  loadRaceDate();
+  /** Full schedule from week 0 through a few recovery weeks after the race, anchored to the race date. */
+  function getPlanSchedule() {
+    if (planCache) return planCache;
+    const rw = raceWeekIndex();
+    const shift = rw - TABLE_RACE_WEEK;
+    const out = [];
+    let lastFull = START_WEEKLY_MILES;
+    for (let w = 0; w <= rw + 3; w++) {
+      const src = w - shift;
+      let row;
+      if (src < 0) {
+        row = Object.assign({}, PLAN_WEEKS[0], { isCutback: false, checkpoint: false });
+      } else if (src <= TABLE_RACE_WEEK) {
+        row = Object.assign({}, PLAN_WEEKS[src]);
+      } else {
+        const after = src - TABLE_RACE_WEEK;
+        row = {
+          targetMiles: after === 1 ? 6 : after === 2 ? 12 : 18,
+          longRunMiles: after === 1 ? 3 : after === 2 ? 6 : 8,
+          isCutback: false,
+          phase: "recovery",
+        };
+      }
+      // Smoothing: full weeks never jump more than about 10 percent (or 2 to 3 miles at low volume).
+      if (!row.isCutback && (row.phase === "base" || row.phase === "build" || row.phase === "block" || row.phase === "peak")) {
+        const cap = Math.round(Math.max(lastFull * 1.1, lastFull + 2));
+        if (row.targetMiles > cap) {
+          row.targetMiles = cap;
+          row.longRunMiles = Math.min(row.longRunMiles, Math.round(cap * 0.48));
+        }
+        lastFull = row.targetMiles;
+      }
+      row.weekIndex = w;
+      row.weekStart = weekStartDate(w);
+      out.push(row);
+    }
+    planCache = out;
+    return out;
+  }
+
+  function getWeekPlan(w) {
+    const sched = getPlanSchedule();
+    const rw = raceWeekIndex();
+    const idx = Math.max(0, Math.min(w, sched.length - 1));
+    const row = Object.assign({}, sched[idx]);
+    row.weekIndex = w;
+    row.weekStart = weekStartDate(w);
+    row.planWeekNumber = w + 1;
+    row.totalPlanWeeks = rw + 1;
+    row.weeksToRace = rw - w;
+    row.phaseLabel = (PHASES[row.phase] || PHASES.base).label;
+    return row;
+  }
+
+  function fmtNum(n) {
+    const v = Math.round((Number(n) || 0) * 10) / 10;
+    return v % 1 === 0 ? String(v) : v.toFixed(1);
+  }
+  function fmtMiles(m) {
+    const s = fmtNum(m);
+    return s + (s === "1" ? " mile" : " miles");
+  }
+  function roundHalf(x) {
+    return Math.round(x * 2) / 2;
+  }
+  function clampNum(x, lo, hi) {
+    return Math.max(lo, Math.min(hi, x));
+  }
+  function round5(min) {
+    return Math.max(5, Math.round(min / 5) * 5);
+  }
+  function fmtMinutes(min) {
+    const m5 = round5(min);
+    if (m5 < 90) return m5 + " minutes";
+    const h = Math.floor(m5 / 60);
+    const r = m5 % 60;
+    return h + (h === 1 ? " hour" : " hours") + (r ? " " + r + " minutes" : "");
+  }
+  /** "about 55 to 60 minutes" for a distance at a pace range in minutes per mile. */
+  function timeRangeText(miles, lo, hi) {
+    const a = round5(miles * lo);
+    const b = round5(miles * hi);
+    if (a === b) return "about " + fmtMinutes(a);
+    if (b < 90) return "about " + a + " to " + b + " minutes";
+    return "about " + fmtMinutes(a) + " to " + fmtMinutes(b);
+  }
+  function shortDate(d) {
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+  function longDate(d) {
+    return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  }
+
+  // ——— Miles log (runs, hikes, incline walks; survives week resets) ———
+  const MILES_KINDS = {
+    run: "Run",
+    long: "Long run",
+    hills: "Hills or incline session",
+    hike: "Hike or hunting hike",
+    incline: "Incline or pack walk",
+    race: "Race",
+  };
+
+  function loadMiles() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(MILES_KEY) || "[]");
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+  function saveMiles(arr) {
+    localStorage.setItem(MILES_KEY, JSON.stringify(arr.slice(-1500)));
+  }
+  function addMilesEntry(entry) {
+    const arr = loadMiles();
+    entry.id = "m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    arr.push(entry);
+    saveMiles(arr);
+    return entry;
+  }
+  function deleteMilesEntry(id) {
+    saveMiles(loadMiles().filter((e) => e.id !== id));
+  }
+  function removeWorkoutMiles(dateKey, slotId) {
+    saveMiles(loadMiles().filter((e) => !(e.source === "workout" && e.dateKey === dateKey && e.slotId === slotId)));
+  }
+  function milesEntriesForWeek(w) {
+    return loadMiles()
+      .filter((e) => e.weekIndex === w)
+      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+  }
+  function milesForWeek(w, opts) {
+    const skipRace = opts && opts.skipRace;
+    return Math.round(milesEntriesForWeek(w).reduce((s, e) => s + (skipRace && e.kind === "race" ? 0 : Number(e.miles) || 0), 0) * 10) / 10;
+  }
+
+  /** Which sessions add their logged cardio distance to the weekly miles. */
+  const MILES_SLOTS = ["speed_run", "long_run", "easy_hike"];
+  function workoutCountsMiles(slotId, workout) {
+    if (MILES_SLOTS.includes(slotId)) return true;
+    return !!workout && workout.id === "fx-second-aerobic";
+  }
+  function milesKindFor(slotId, workout) {
+    if (workout && workout.runPlan && workout.runPlan.kind === "race") return "race";
+    if (slotId === "long_run") return "long";
+    if (slotId === "easy_hike") return "hills";
+    return "run";
+  }
+
+  function pendingSessionMiles() {
+    const sess = state.activeSession;
+    if (!sess) return 0;
+    const w = resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
+    if (!workoutCountsMiles(sess.slotId, w)) return 0;
+    return summarizeCardioLogs(sess.logs).miles;
+  }
+
+  // ——— Run sizing: fit the remaining run sessions to the weekly target ———
+  const RUN_CAPS = { speed_run: 7, flex: 7, easy_hike: 5.5 }; // keeps every non-long session at 90 minutes or less
+  const HILLS_MIN = 3;
+
+  function computeWeekSizing() {
+    const w = getProgramWeekIndex();
+    const plan = getWeekPlan(w);
+    const phase = PHASES[plan.phase] || PHASES.base;
+    const today = getTodayInfo();
+    const logged = milesForWeek(w, { skipRace: plan.phase === "race" });
+    const pick = state.todayPick && state.todayPick.dayKey === today.day.key ? state.todayPick : null;
+    const pickOpen = pick && !state.completed[pick.slotId];
+    // Miles from today's started run count as planned until it is finished and logged.
+    let pendingPlanned = 0;
+    if (pickOpen && pick.runPlan && pick.runPlan.kind !== "race") {
+      pendingPlanned = Math.max(pendingSessionMiles(), Number(pick.runPlan.miles) || 0) + (Number(pick.runPlan.double) || 0);
+    }
+    const remaining = Math.max(0, plan.targetMiles - logged - pendingPlanned);
+    const daysLeft = Math.max(0, 7 - today.offset - (pick ? 1 : 0));
+
+    const nonLong = plan.targetMiles - plan.longRunMiles;
+    const flexIsRun = plan.phase === "race" || (plan.phase !== "recovery" && nonLong > 11);
+    const order = ["long_run", "speed_run", "easy_hike"].concat(flexIsRun ? ["flex"] : []);
+    const open = order.filter((s) => !state.completed[s] && !(pick && pick.slotId === s));
+    const counted = open.slice(0, daysLeft);
+
+    const sizes = {};
+    const doubles = {};
+    let pool = remaining;
+    let shortfall = 0;
+    let flexNeeded = false;
+
+    if (plan.phase === "race") {
+      if (open.includes("long_run")) sizes.long_run = RACE.miles;
+      sizes.speed_run = 3;
+      sizes.flex = 3;
+      sizes.easy_hike = 2;
+      return { w, plan, phase, logged, remaining: Math.max(0, plan.targetMiles - logged), daysLeft, open, counted, sizes, doubles, shortfall: 0, behind: false, ahead: logged >= plan.targetMiles, flexIsRun, flexNeeded: true };
+    }
+
+    if (counted.includes("long_run")) {
+      sizes.long_run = plan.longRunMiles;
+      pool -= plan.longRunMiles;
+    } else if (open.includes("long_run")) {
+      sizes.long_run = plan.longRunMiles;
+    }
+    const others = counted.filter((s) => s !== "long_run");
+    const minEasy = phase.minEasy;
+    const ahead = remaining <= 0.25;
+    if (others.length) {
+      const share = Math.max(0, pool) / others.length;
+      let used = 0;
+      if (others.includes("easy_hike")) {
+        sizes.easy_hike = roundHalf(clampNum(share * 0.85, HILLS_MIN, RUN_CAPS.easy_hike));
+        used += sizes.easy_hike;
+      }
+      const easySlots = others.filter((s) => s !== "easy_hike");
+      if (easySlots.length) {
+        const each = roundHalf(clampNum((Math.max(0, pool) - used) / easySlots.length, minEasy, RUN_CAPS.speed_run));
+        easySlots.forEach((s) => {
+          sizes[s] = each;
+          used += each;
+        });
+      }
+      shortfall = Math.max(0, pool - used);
+      // At higher volume, easy days can add an optional short second run (each run stays under 90 minutes).
+      const doublesOk = plan.phase === "block" || plan.phase === "peak" || plan.phase === "build";
+      if (doublesOk && shortfall >= 1.5 && easySlots.length) {
+        easySlots.forEach((s) => {
+          if (shortfall < 1.5) return;
+          const d = roundHalf(clampNum(shortfall, 3, 4));
+          doubles[s] = d;
+          shortfall = Math.max(0, shortfall - d);
+        });
+      }
+      // Flex offers the extra easy run only when the other runs can't comfortably cover the week.
+      if (flexIsRun && others.includes("flex")) {
+        const comfy = (others.includes("speed_run") ? 6 : 0) + (others.includes("easy_hike") ? 4.5 : 0);
+        flexNeeded = pool > comfy + 1;
+      }
+    } else {
+      shortfall = Math.max(0, pool);
+    }
+    // Slots beyond the days left still get a sensible size in case he picks them.
+    const fallbackShare = roundHalf(clampNum(Math.max(0, pool) / Math.max(1, others.length || 1), minEasy, RUN_CAPS.speed_run));
+    ["speed_run", "easy_hike", "flex"].forEach((s) => {
+      if (sizes[s] == null) {
+        sizes[s] = s === "easy_hike" ? roundHalf(clampNum(fallbackShare * 0.85, HILLS_MIN, RUN_CAPS.easy_hike)) : fallbackShare;
+      }
+    });
+    if (ahead) {
+      sizes.speed_run = minEasy;
+      sizes.flex = minEasy;
+      sizes.easy_hike = HILLS_MIN;
+    }
+    // What a full, untouched week can hold, so a small built-in gap is not called "behind".
+    const doublesPossible = plan.phase === "block" || plan.phase === "peak" || plan.phase === "build";
+    const fullCapacity =
+      plan.longRunMiles + RUN_CAPS.speed_run + RUN_CAPS.easy_hike + (flexIsRun ? RUN_CAPS.flex : 0) +
+      (doublesPossible ? 4 * (flexIsRun ? 2 : 1) : 0);
+    const structuralShort = Math.max(0, plan.targetMiles - fullCapacity);
+    const behind = !ahead && shortfall - structuralShort >= 1.5;
+    return { w, plan, phase, logged, remaining, daysLeft, open, counted, sizes, doubles, shortfall: Math.round(shortfall * 10) / 10, behind, ahead, flexIsRun, flexNeeded };
+  }
+
+  /** Plan object stored on a sized option, the started session, and today's pick. */
+  function runPlanFor(slotId, workout, sizing, tired) {
+    if (!workout || workout.isTest) return null;
+    const plan = sizing.plan;
+    const base = { weekIndex: sizing.w, phase: plan.phase, targetMiles: plan.targetMiles, cutback: !!plan.isCutback };
+    if (slotId === "long_run") {
+      if (plan.raceWeek) return Object.assign(base, { kind: "race", miles: RACE.miles });
+      // Fueling practice from the Build phase (November) onward on long runs over about 90 minutes.
+      const fueling = plan.phase !== "base" && plan.longRunMiles * 11.5 > 90;
+      return Object.assign(base, { kind: "long", miles: plan.longRunMiles, peakDay: !!plan.peakLongDay, fueling: fueling });
+    }
+    const note = sizingNote(slotId, sizing);
+    if (slotId === "speed_run") {
+      let miles = sizing.sizes.speed_run;
+      if (tired) miles = sizing.ahead ? sizing.phase.minEasy : Math.min(RUN_CAPS.speed_run, Math.max(sizing.phase.tiredMiles, miles));
+      return Object.assign(base, { kind: "easy", miles: miles, double: sizing.doubles.speed_run || 0, tired: !!tired, note: note });
+    }
+    if (slotId === "easy_hike") {
+      return Object.assign(base, { kind: "hills", miles: sizing.sizes.easy_hike, note: note, downhill: downhillWeek(plan) });
+    }
+    if (slotId === "flex" && workout.id === "fx-second-aerobic") {
+      let miles = sizing.sizes.flex;
+      if (tired) miles = sizing.ahead ? sizing.phase.minEasy : Math.min(RUN_CAPS.flex, Math.max(sizing.phase.tiredMiles, miles));
+      return Object.assign(base, { kind: "flex", miles: miles, double: sizing.doubles.flex || 0, tired: !!tired, note: note });
+    }
+    return null;
+  }
+
+  function sizingNote(slotId, sizing) {
+    const plan = sizing.plan;
+    if (plan.phase === "race") return "Race week: keep it short and easy so your legs are fresh on " + raceWeekday() + ".";
+    if (sizing.ahead) return "You have already reached this week's target of " + fmtMiles(plan.targetMiles) + ", so this stays short and easy.";
+    let s =
+      (sizing.logged > 0
+        ? "Sized for this week: " + fmtMiles(sizing.remaining) + " to go toward " + fmtMiles(plan.targetMiles)
+        : "Sized for this week's target of " + fmtMiles(plan.targetMiles)) +
+      ", with " + sizing.daysLeft + (sizing.daysLeft === 1 ? " day" : " days") + " left in the week, counting today.";
+    if (sizing.behind) s += " These runs are capped at a normal size, so you may come up a little short this week, and that is fine. Don't cram.";
+    return s;
+  }
+
+  function tiredLegsPrescription(workout) {
+    const rp = workout && workout.runPlan;
+    if (!rp || !rp.miles) return TIRED_LEGS_PRESCRIPTION;
+    const m = workout.displayMiles || rp.miles;
+    const trail = workout.id === "sp-trail-volume";
+    return (
+      "Plan on about " + fmtMiles(m) + ", " + timeRangeText(m, trail ? 12 : 11, trail ? 13 : 12) +
+      ", and let the pace be as slow as it needs to be. Time on your feet matters more than speed today."
+    );
+  }
+
+  function doubleItem(d) {
+    return {
+      name: "Optional second easy run later today, " + fmtMiles(d),
+      detail: "About " + fmtMiles(d) + ", " + timeRangeText(d, 11, 12) + ". Only if your legs feel good and you have the time. Keep it easy enough to talk in full sentences.",
+      note: "Two easy runs in one day keep every run under 90 minutes while the weekly miles climb. Skip it if you are tired; missing it is fine.",
+    };
+  }
+
+  const FUEL_TEXT =
+    "Fueling practice: eat about 200 to 300 calories and drink regularly every hour, starting in the first 30 to 45 minutes. Use the exact foods and drinks you plan to use at Black Canyon, and afterward jot down what sat well and what didn't.";
+  const DOWNHILL_TEXT =
+    "Downhill durability: Black Canyon drops more than it climbs, with roughly 7,300 feet of descent against 5,200 feet of climbing, so practice controlled, easy downhill running on trail. Take short, quick steps, stay relaxed, and let gravity do the work without braking hard. On the Wahoo KICKR RUN you can also lower the deck to its 3 percent decline for a few easy minutes at the end.";
+
+  /** Hills sessions from December onward get the downhill note (through the taper, not race week). */
+  function downhillWeek(plan) {
+    const dec1 = new Date(2026, 11, 1);
+    const weekEnd = new Date(plan.weekStart.getFullYear(), plan.weekStart.getMonth(), plan.weekStart.getDate() + 6);
+    return weekEnd >= dec1 && plan.phase !== "race" && plan.phase !== "recovery";
+  }
+
+  const LONG_RUN_RULE = "This is the only session of the week allowed to go past 90 minutes, so schedule it on a day off shift.";
+  const LONG_RUN_FUEL = "Bring water, and once you are out longer than about 75 minutes, eat something every 30 to 45 minutes.";
+  const PEAK_DAY_TEXT = "This is your biggest day before the race: about 24 miles or about 5 hours on your feet, whichever comes first. Practice race-day eating and drinking.";
+
+  /** Apply a stored run plan to a base workout (pure: same inputs give the same blocks and log keys). */
+  function applyRunPlan(slotId, base, rp) {
+    if (!base || !rp) return base;
+    const w = JSON.parse(JSON.stringify(base));
+    w.runPlan = rp;
+    const first = w.blocks && w.blocks[0] && w.blocks[0].items;
+    const m = Number(rp.miles) || 0;
+
+    if (rp.kind === "race") {
+      w.title = "Black Canyon 100K race day";
+      w.durationMin = 840;
+      w.lengthClass = "long";
+      w.location = "Outdoor / Trail";
+      w.rpe = "3–4";
+      w.summary =
+        "Race day, " + RACE.label + ": 62 miles on the Black Canyon Trail from Mayer toward Phoenix. Start easy enough to talk, hike every real climb, and eat and drink from the first hour. Pick this on race day, " + raceWeekday() + ".";
+      w.warmup = ["Walk around the start area for 5 to 10 minutes and keep the first miles very easy"];
+      w.blocks = [
+        {
+          name: "Race day",
+          items: [
+            {
+              name: "Black Canyon 100K trail run, 62 miles",
+              detail: "The whole race at an easy, patient effort. Walk the climbs early so you can still run the last 20 miles.",
+              note: "Enter the distance when you finish and it counts toward race week.",
+            },
+          ],
+        },
+      ];
+      w.notes = ["You trained for this all winter. Run your own race.", "Pick this on race day only. Earlier in race week, choose a short easy run instead."];
+      return w;
+    }
+
+    if (rp.kind === "long") {
+      const t = timeRangeText(m, 11, 12);
+      const extra = (rp.peakDay ? " " + PEAK_DAY_TEXT : "") + (rp.cutback ? " It is a little shorter this week because this is a lighter week." : "");
+      if (base.id === "lr-short-bridge") {
+        w.title = "Shorter long run, about 5 miles";
+        w.summary =
+          "A fallback for a week that is already packed: about 5 easy miles in 60 minutes. Only use it if the full long run of about " + fmtMiles(m) + " can't happen this week; the full long run matters most, so try to fit it on your next day off shift instead.";
+        w.notes = ["An in-between option. Keep it very easy.", "The full long run this week is about " + fmtMiles(m) + "."];
+        return w;
+      }
+      w.durationMin = Math.round((m * (base.id === "lr-trail-long" ? 13.5 : 11.5)) / 5) * 5;
+      w.notes = [LONG_RUN_RULE].concat(rp.fueling ? [FUEL_TEXT] : []).concat((base.notes || []).filter((n) => !/TEST|fire-pace/i.test(n)));
+      w.fueling = !!rp.fueling;
+      if (base.id === "lr-progressive") {
+        const mid = fmtMinutes(m * 11.5);
+        w.title = "Long easy run by time, about " + mid;
+        w.summary = "Build the long run by time: about " + mid + " of easy running, which is roughly " + fmtMiles(m) + ". " + LONG_RUN_RULE + extra;
+        if (first && first[0]) {
+          first[0].name = "Easy continuous run, about " + mid;
+          first[0].detail = "Run easy for about " + mid + ", which is roughly " + fmtMiles(m) + " at 11 to 12 minutes per mile. Keep it easy enough to talk in full sentences.";
+          first[0].note = "You can mix jogging and hiking on trails. Progress comes from lasting longer, not running faster. " + LONG_RUN_FUEL;
+        }
+        return w;
+      }
+      if (base.id === "lr-trail-long") {
+        const tt = timeRangeText(m, 13, 14);
+        w.title = "Long easy trail run, about " + fmtMiles(m);
+        w.summary = "A long easy trail outing for 100K practice: about " + fmtMiles(m) + ", " + tt + " with the climbs hiked. " + LONG_RUN_RULE + extra;
+        if (first && first[0]) {
+          first[0].name = "Easy trail run, about " + fmtMiles(m);
+          first[0].detail = "About " + fmtMiles(m) + " on trail at 13 to 14 minutes per mile with the climbs hiked, " + tt + ". Keep it easy enough to talk in full sentences.";
+          first[0].note = "Power-hike the climbs and stay on soft ground. " + LONG_RUN_FUEL;
+        }
+        return w;
+      }
+      w.title = "Long easy run, about " + fmtMiles(m);
+      w.summary = "Your main ultra session this week: about " + fmtMiles(m) + " easy, " + t + ". " + LONG_RUN_RULE + extra;
+      if (first && first[0]) {
+        first[0].name = "Easy continuous run, " + fmtMiles(m);
+        first[0].detail = "About " + fmtMiles(m) + " at 11 to 12 minutes per mile, " + t + ". Keep it easy enough to talk in full sentences.";
+        first[0].note = "Walk short hills if you need to. " + LONG_RUN_FUEL;
+      }
+      return w;
+    }
+
+    if (rp.kind === "easy" || rp.kind === "flex") {
+      let em = m;
+      let lo = 11;
+      let hi = 12;
+      let extraMin = 8;
+      let label = "Easy run, ";
+      if (base.id === "sp-short-easy") {
+        em = clampNum(Math.min(m, 4), 3, 4);
+        extraMin = 5;
+        label = "Very easy run, ";
+      } else if (base.id === "sp-trail-volume") {
+        em = Math.min(m, 6.5);
+        lo = 12;
+        hi = 13;
+        extraMin = 6;
+        label = "Easy trail jog and hike, ";
+      } else if (base.id === "fx-second-aerobic") {
+        extraMin = 6;
+        label = "Very easy jog or incline walk, ";
+      }
+      const t = timeRangeText(em, lo, hi);
+      w.displayMiles = em;
+      w.durationMin = Math.max(30, Math.min(90, Math.round((em * ((lo + hi) / 2) + extraMin) / 5) * 5));
+      if (base.id === "sp-short-easy") w.title = "Short easy run, " + fmtMiles(em);
+      else if (base.id === "sp-trail-volume") w.title = "Easy trail run, " + fmtMiles(em);
+      else if (base.id === "fx-second-aerobic") w.title = "Extra easy run, " + fmtMiles(em);
+      else w.title = "Easy conversational run, " + fmtMiles(em);
+      w.summary =
+        "An easy " + fmtMiles(em) + ", " + t + ". Easy enough to talk in full sentences the whole way. Speed comes with volume, so there are no intervals today." +
+        (rp.double && base.id !== "sp-short-easy" ? " An optional second easy run of about " + fmtMiles(rp.double) + " later in the day helps reach this week's miles." : "");
+      if (first && first[0]) {
+        first[0].name = label + fmtMiles(em);
+        first[0].detail =
+          "About " + fmtMiles(em) + " at " + lo + " to " + hi + " minutes per mile, " + t + "." +
+          (base.id === "fx-second-aerobic" ? " An incline walk is slower, so go by time if you walk." : "") +
+          " Keep it easy enough to talk in full sentences.";
+        first[0].note = (rp.tired ? "Second day on tired legs, so this run gets a little longer in later phases. " : "") + (rp.note || "");
+      }
+      if (rp.double && base.id !== "sp-short-easy" && first) first.push(doubleItem(rp.double));
+      return w;
+    }
+
+    if (rp.kind === "hills") {
+      if (rp.downhill) w.notes = [DOWNHILL_TEXT].concat(w.notes || []);
+      if (base.id === "eh-hyper-hills") {
+        const hm = clampNum(Math.min(m, 4), 2, 4);
+        const t = timeRangeText(hm, 14, 16);
+        w.title = "Hyper Pro and easy hills, " + fmtMiles(hm) + " of incline";
+        w.durationMin = Math.min(90, Math.round((hm * 15 + 25) / 5) * 5);
+        w.summary = "About " + fmtMiles(hm) + " of easy incline walking and jogging, then Hyper Pro back and knee work for Black Canyon climbs and multi-day hunts. Easy enough to talk.";
+        if (first && first[0]) {
+          first[0].name = "Wahoo Incline Walk or Jog, " + fmtMiles(hm);
+          first[0].detail = "About " + fmtMiles(hm) + " of easy incline walking and jogging, " + t + ". Load a hilly course import on the Wahoo so the grade rises and falls like real terrain. Keep it easy enough to talk.";
+          first[0].note = "Builds climbing fitness for Black Canyon and your hunts at the same time. " + (rp.note || "");
+        }
+        return w;
+      }
+      if (base.id === "eh-trail-easy") {
+        const tm = clampNum(Math.min(m, 5.5), 2, 5.5);
+        const t = timeRangeText(tm, 14, 16);
+        w.title = "Easy trail with light pack, " + fmtMiles(tm);
+        w.durationMin = Math.min(90, Math.round((tm * 15 + 6) / 5) * 5);
+        w.summary = "About " + fmtMiles(tm) + " of easy trail hiking and jogging with a light pack, " + t + ". Toughens your feet for the ultra and feels like a hunt.";
+        if (first && first[0]) {
+          first[0].name = "Easy trail hike and jog with a light pack, " + fmtMiles(tm);
+          first[0].detail = "About " + fmtMiles(tm) + " at 14 to 16 minutes per mile, " + t + ". Hike the steep parts and keep it easy enough to talk.";
+          first[0].note = "Carry an optional 10 to 20 lb pack to build toward hunting days. " + (rp.note || "");
+        }
+        return w;
+      }
+      return w;
+    }
+    return w;
+  }
+
+  /** Base workout plus any stored run sizing (used for options, the active session, and finishing). */
+  function resolveWorkout(slotId, workoutId, runPlan) {
+    const base = findWorkout(slotId, workoutId);
+    if (!base || !runPlan) return base;
+    return applyRunPlan(slotId, base, runPlan);
+  }
+
+  function sizeOption(slotId, workout, sizing, tired) {
+    const rp = runPlanFor(slotId, workout, sizing, tired);
+    return rp ? applyRunPlan(slotId, workout, rp) : workout;
+  }
+
+  // ——— Weekly mileage tracker UI ———
+  function phaseSentence(plan) {
+    if (plan.phase === "race") {
+      return "Race week, week " + plan.planWeekNumber + " of the plan. About " + fmtMiles(plan.targetMiles) + " of short, easy running before " + raceWeekday() + ", then the Black Canyon 100K on " + RACE.label + ".";
+    }
+    if (plan.phase === "recovery") {
+      return "Recovery after the race. Keep runs short and easy; about " + fmtMiles(plan.targetMiles) + " is plenty this week.";
+    }
+    return (
+      plan.phaseLabel + ", week " + plan.planWeekNumber + " of the plan. " +
+      fmtNum(plan.targetMiles) + " miles is the target this week, and the long run is about " + fmtMiles(plan.longRunMiles) + "."
+    );
+  }
+
+  function raceCountdown(plan) {
+    if (plan.weeksToRace > 1) return "Race day is " + RACE.label + ", " + plan.weeksToRace + " weeks after this one.";
+    if (plan.weeksToRace === 1) return "Race day is " + RACE.label + ", next week.";
+    return "";
+  }
+
+  // ——— Early-January readiness checkpoint ———
+  function checkpointWeekIndex() {
+    const sched = getPlanSchedule();
+    const row = sched.find((r) => r.checkpoint);
+    return row ? row.weekIndex : raceWeekIndex() - 5;
+  }
+
+  /** Longest single logged run and the average of the last 3 full weeks before the given week. */
+  function readinessCheck(atWeek) {
+    const cw = checkpointWeekIndex();
+    const cur = atWeek != null ? atWeek : getProgramWeekIndex();
+    const upTo = Math.min(cur, cw);
+    const runs = loadMiles().filter((e) => (e.kind === "run" || e.kind === "long") && e.weekIndex <= cur);
+    const longest = runs.reduce((mx, e) => Math.max(mx, Number(e.miles) || 0), 0);
+    const weeks = [];
+    for (let w = Math.max(0, upTo - 3); w < upTo; w++) weeks.push(milesForWeek(w, { skipRace: true }));
+    const avg = weeks.length ? weeks.reduce((a, b) => a + b, 0) / weeks.length : 0;
+    const reached = cur >= cw;
+    let status;
+    const cp = PLAN_META.checkpoint;
+    if (longest >= cp.longestRunMiles && avg >= cp.recentAvgMiles) status = "on_track";
+    else if (longest >= cp.closeLongestMiles || avg >= cp.closeAvgMiles) status = "close";
+    else status = "behind";
+    const cpStart = weekStartDate(cw);
+    let text = "You're on track if you've finished a long run of about 20 miles feeling okay and your recent weeks have been in the 40s. ";
+    text += (longest > 0 ? "So far your longest logged run is " + fmtMiles(longest) : "No runs are logged yet") + (weeks.length ? ", and your last " + weeks.length + (weeks.length === 1 ? " week" : " weeks") + " averaged " + fmtMiles(avg) + "." : ".");
+    let verdict = "";
+    if (!reached) {
+      verdict = "This check happens the week of " + longDate(cpStart) + ". There is plenty of time to get there, so keep stacking easy weeks.";
+    } else if (status === "on_track") {
+      verdict = "You're on track. Keep the next few weeks easy and consistent, and the peak and taper will take care of the rest.";
+    } else if (status === "close") {
+      verdict = "You're close. The next two weeks are the biggest of the plan, so keep them easy and steady, and don't try to make up missed miles all at once.";
+    } else {
+      verdict = "Training hasn't lined up with the plan this time, and that happens, especially with shift work and hunting season. You can still take the start easy and hike more, or switch to the Black Canyon 50K the next day, which is a great race in its own right. Check Aravaipa's rules for changing distances if you go that way.";
+    }
+    return { longest, avg, weeks, status, reached, text, verdict, checkpointWeek: cw, cpStart };
+  }
+
+  function mileageCallout(plan) {
+    if (plan.phase === "race") return { cls: "race", text: "Race week. Just a few short, easy runs of about 3 miles to stay loose, then the race on " + raceWeekday() + ". Rest is part of the plan now." };
+    if (plan.isCutback) return { cls: "", text: "This is a lighter week on purpose. The mileage drops about 20 percent so your body can absorb the last three weeks of work and come back stronger. Don't add miles to make up for it; the next build starts next week." };
+    if (plan.peakLongDay) return { cls: "peak", text: "Your biggest day before the race is this week: a long run of about 24 miles or about 5 hours on your feet, whichever comes first. Put it on a day off shift and practice race-day eating and drinking." };
+    if (plan.phase === "taper" && plan.taperPct === 70) return { cls: "", text: "Taper, first week: about 70 percent of your peak mileage. Keep every run easy and let your legs freshen up." };
+    if (plan.phase === "taper") return { cls: "", text: "Taper, second week: about half of your peak mileage. The fitness is already built; now you are getting fresh, so resist adding miles." };
+    return null;
+  }
+
+  function sizingSummary(sizing) {
+    const plan = sizing.plan;
+    if (plan.phase === "race") return "";
+    if (sizing.ahead) return "You have hit this week's target. Anything else this week can stay short and easy.";
+    const parts = [];
+    const names = { long_run: "a long run of about ", speed_run: "an easy run of about ", easy_hike: "a hills session of about ", flex: "an extra easy run of about " };
+    sizing.counted.forEach((s) => {
+      if (sizing.sizes[s] != null) parts.push(names[s] + fmtMiles(sizing.sizes[s]));
+    });
+    let text = fmtMiles(sizing.remaining) + " to go";
+    if (parts.length) {
+      const list = parts.length > 1 ? parts.slice(0, -1).join(", ") + (parts.length > 2 ? "," : "") + " and " + parts[parts.length - 1] : parts[0];
+      text += ". The runs left this week are sized to get you there: " + list + ".";
+    } else {
+      text += ".";
+    }
+    if (Object.keys(sizing.doubles).length) text += " Easy days also offer an optional short second run later in the day.";
+    if (!sizing.behind && sizing.shortfall >= 1.5) {
+      text += " Those runs cover all but about " + fmtMiles(sizing.shortfall) + " of the target. A hike or pack walk can fill the gap, or let it go; close is good enough.";
+    }
+    if (sizing.behind) {
+      text += " You are behind this week's target, and that is fine. Don't cram extra miles into the last days; the runs stay at a normal size, and missing the target by a few miles will not hurt your race.";
+    }
+    return text;
+  }
+
+  function entries0(w) {
+    return milesEntriesForWeek(w);
+  }
+
+  function mileageCardHtml(prefix, opts) {
+    opts = opts || {};
+    const sizing = computeWeekSizing();
+    const plan = sizing.plan;
+    const logged = sizing.logged;
+    const target = plan.targetMiles;
+    const pct = target > 0 ? Math.min(100, (logged / target) * 100) : 0;
+    let call = mileageCallout(plan);
+    const raceEntry = plan.phase === "race" ? entries0(sizing.w).find((e) => e.kind === "race") : null;
+    if (raceEntry) call = { cls: "race", text: "You finished the Black Canyon 100K: " + fmtMiles(raceEntry.miles) + ". Rest, eat, and sleep. Easy recovery weeks come next." };
+    const pending = pendingSessionMiles();
+    const entries = milesEntriesForWeek(sizing.w);
+    const weekEnd = weekStartDate(sizing.w + 1);
+    weekEnd.setDate(weekEnd.getDate() - 1);
+    let html = '<section class="mileage-card' + (plan.isCutback ? " cutback" : "") + '" aria-label="Weekly running miles">';
+    html += '<div class="mileage-head"><span class="mileage-eyebrow">Weekly miles · ' + escapeHtml(shortDate(plan.weekStart) + " to " + shortDate(weekEnd)) + "</span>";
+    html +=
+      '<div class="mileage-total" id="' + prefix + '-mileage-total">This week: ' + fmtNum(logged) + " of " + fmtNum(target) + " miles" +
+      (plan.phase === "race" ? " before the race" : "") + "</div></div>";
+    html += '<div class="mileage-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + target + '" aria-valuenow="' + fmtNum(logged) + '"><span style="width:' + pct.toFixed(1) + '%"></span></div>';
+    html += '<p class="mileage-text">' + escapeHtml(phaseSentence(plan)) + "</p>";
+    if (call) html += '<p class="mileage-callout ' + call.cls + '">' + escapeHtml(call.text) + "</p>";
+    if (sizing.w === checkpointWeekIndex()) {
+      const rc = readinessCheck(sizing.w);
+      html +=
+        '<div class="mileage-callout checkpoint ' + rc.status + '"><strong>Early-January checkpoint</strong><p>' +
+        escapeHtml(rc.text) + "</p><p>" + escapeHtml(rc.verdict) + "</p></div>";
+    }
+    const summary = sizingSummary(sizing);
+    if (summary) html += '<p class="mileage-note">' + escapeHtml(summary) + "</p>";
+    if (pending > 0) html += '<p class="mileage-note">' + escapeHtml(fmtMiles(pending) + " from the workout you have in progress will count when you tap Finish.") + "</p>";
+    if (opts.full) {
+      const cd = raceCountdown(plan);
+      if (cd) html += '<p class="mileage-note">' + escapeHtml(cd) + "</p>";
+      html += '<p class="mileage-note">' + escapeHtml("What counts: runs, trail runs, hills sessions, hikes and hunting hikes, and incline walks or jogs, as long as you enter the distance in Active Workout, plus anything you add here. Strength, core, and recovery sessions don't count.") + "</p>";
+    }
+    html += '<form class="miles-add" data-miles-form="' + prefix + '" novalidate>';
+    html += '<label class="miles-add-label" for="' + prefix + '-miles-input">Add miles done outside the app, like a hunting hike</label>';
+    html += '<div class="miles-add-row">';
+    html += '<input type="text" inputmode="decimal" id="' + prefix + '-miles-input" data-miles-input placeholder="Miles" autocomplete="off" aria-label="Miles" />';
+    html +=
+      '<select data-miles-kind aria-label="Type of outing">' +
+      '<option value="run">Run</option>' +
+      '<option value="hike">Hike or hunting hike</option>' +
+      '<option value="incline">Incline or pack walk</option>' +
+      "</select>";
+    html += '<button type="submit" class="btn-bench primary" data-miles-add>Add miles</button>';
+    html += "</div>";
+    html += '<p class="miles-status" data-miles-status aria-live="polite"></p>';
+    html += "</form>";
+    if (entries.length) {
+      html += '<details class="miles-entries"><summary>' + escapeHtml("Miles logged this week (" + entries.length + (entries.length === 1 ? " entry)" : " entries)")) + "</summary><ul>";
+      entries.forEach((e) => {
+        const d = e.dateKey ? new Date(e.dateKey + "T12:00:00") : new Date(e.ts || Date.now());
+        const what = (MILES_KINDS[e.kind] || "Miles") + (e.source === "manual" ? ", added by hand" : e.title ? ", " + e.title : "");
+        html +=
+          '<li><span class="me-what">' + escapeHtml(d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) + " · " + what) + "</span>" +
+          '<span class="me-mi">' + escapeHtml(fmtMiles(e.miles)) + "</span>" +
+          '<button type="button" class="me-del" data-miles-del="' + escapeHtml(e.id) + '" aria-label="Delete this entry">✕</button></li>';
+      });
+      html += "</ul></details>";
+    }
+    html += "</section>";
+    return html;
+  }
+
+  function bindMileageCard(root) {
+    const form = root.querySelector("[data-miles-form]");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = form.querySelector("[data-miles-input]");
+        const kind = form.querySelector("[data-miles-kind]").value;
+        const status = form.querySelector("[data-miles-status]");
+        const raw = String(input.value || "").trim().replace(/,/g, ".");
+        const miles = Number(raw);
+        if (!raw || Number.isNaN(miles) || miles <= 0 || miles > 100) {
+          status.textContent = "Enter the miles as a number, like 4 or 6.5.";
+          status.className = "miles-status err";
+          return;
+        }
+        const now = new Date();
+        addMilesEntry({
+          source: "manual",
+          dateKey: localDateKey(now),
+          weekIndex: getProgramWeekIndex(),
+          miles: Math.round(miles * 10) / 10,
+          kind: kind,
+          ts: now.getTime(),
+        });
+        render();
+        const again = document.querySelector('[data-miles-form="' + form.getAttribute("data-miles-form") + '"] [data-miles-status]');
+        if (again) {
+          again.textContent = "Added " + fmtMiles(miles) + " to this week.";
+          again.className = "miles-status ok";
+        }
+      });
+    }
+    root.querySelectorAll("[data-miles-del]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!confirm("Delete these miles from this week?")) return;
+        deleteMilesEntry(btn.getAttribute("data-miles-del"));
+        render();
+      });
+    });
+  }
+
+  function renderMileage() {
+    const t = document.getElementById("mileage-today");
+    if (t) {
+      t.innerHTML = mileageCardHtml("today", { full: false });
+      bindMileageCard(t);
+    }
+    const wk = document.getElementById("mileage-week");
+    if (wk) {
+      wk.innerHTML = mileageCardHtml("week", { full: true });
+      bindMileageCard(wk);
+    }
+  }
+
+  function fuelNotesHtml() {
+    const seen = {};
+    const notes = [];
+    loadHistory().concat(loadMiles()).forEach((e) => {
+      if (!e || !e.fuelNote) return;
+      const key = (e.dateKey || "") + "|" + (e.slotId || "") + "|" + e.fuelNote;
+      if (seen[key]) return;
+      seen[key] = true;
+      notes.push(e);
+    });
+    if (!notes.length) return "";
+    notes.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    return (
+      '<details class="plan-details fuel-notes"><summary>' + escapeHtml("Fueling notes from long runs (" + notes.length + ")") + '</summary><ul class="plan-rows">' +
+      notes.slice(0, 12).map((e) => {
+        const d = e.dateKey ? new Date(e.dateKey + "T12:00:00") : new Date(e.ts || Date.now());
+        return '<li><div class="pr-top"><span>' + escapeHtml(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " · " + (e.title || "Long run")) + '</span></div><div class="pr-sub">' + escapeHtml(e.fuelNote) + "</div></li>";
+      }).join("") +
+      "</ul></details>"
+    );
+  }
+
+  function mileageHistoryHtml() {
+    const cur = getProgramWeekIndex();
+    const sched = getPlanSchedule();
+    const rw = raceWeekIndex();
+    const maxTarget = Math.max.apply(null, sched.filter((r) => r.phase !== "race").map((r) => r.targetMiles));
+    let rows = "";
+    for (let w = 0; w <= Math.min(cur, sched.length - 1); w++) {
+      const p = getWeekPlan(w);
+      const actual = milesForWeek(w);
+      const trackPct = Math.max(8, Math.min(100, (p.targetMiles / maxTarget) * 100));
+      const fillPct = p.targetMiles > 0 ? Math.min(100, (milesForWeek(w, { skipRace: true }) / p.targetMiles) * 100) : 0;
+      const tags = [p.phaseLabel];
+      if (p.isCutback) tags.push("lighter week");
+      if (w === cur) tags.push("this week");
+      rows +=
+        '<div class="mh-row' + (p.isCutback ? " cutback" : "") + (w === cur ? " current" : "") + '">' +
+        '<div class="mh-top"><span class="mh-week">' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart)) + "</span>" +
+        '<span class="mh-val">' + escapeHtml(p.phase === "race" ? fmtNum(actual) + " miles, including the race" : fmtNum(actual) + " of " + fmtNum(p.targetMiles) + " miles") + "</span></div>" +
+        '<div class="mh-track" style="width:' + trackPct.toFixed(1) + '%"><span class="mh-fill" style="width:' + fillPct.toFixed(1) + '%"></span></div>' +
+        '<div class="mh-sub">' + escapeHtml(tags.join(" · ")) + "</div></div>";
+    }
+    let planRows = "";
+    for (let w = 0; w <= rw; w++) {
+      const p = getWeekPlan(w);
+      const lr = p.phase === "race" ? "Race day: Black Canyon 100K, " + raceWeekday() : "Long run about " + fmtMiles(p.longRunMiles) + (p.peakLongDay ? ", or about 5 hours on your feet" : "");
+      planRows +=
+        '<li class="' + (w === cur ? "current" : "") + (p.isCutback ? " cutback" : "") + '">' +
+        '<div class="pr-top"><span>' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart)) + "</span><span>" + escapeHtml(fmtNum(p.targetMiles) + " miles") + "</span></div>" +
+        '<div class="pr-sub">' + escapeHtml(p.phaseLabel + (p.isCutback ? ", lighter week" : "") + ". " + lr + ".") + "</div></li>";
+    }
+    return (
+      '<article class="bench-card mileage-history">' +
+      '<div class="bench-card-head"><div><h3>Weekly running miles</h3><span class="bench-unit">target and actual for each week</span></div></div>' +
+      '<p class="sub">The green fill is what you logged. The dashed outline is that week\'s target, drawn to scale so you can compare weeks. Lighter weeks are marked.</p>' +
+      '<div class="mh-list">' + rows + "</div>" +
+      fuelNotesHtml() +
+      '<details class="plan-details"><summary>See the full plan to race day</summary><ul class="plan-rows">' + planRows + "</ul></details>" +
+      "</article>"
+    );
+  }
+
+
   // ——— Today's options ———
   function pickOptionsForToday(st) {
     st = ensureAssignments(st);
@@ -1981,13 +2902,18 @@
     // Prefer diversity: try to include a short option overall
     const options = [];
     const usedWorkouts = new Set();
+    const sizing = computeWeekSizing();
 
     function addOption(slotId, preferShort) {
       if (options.length >= 3) return;
       if (options.some((o) => o.slotId === slotId)) return;
       const pool = WORKOUTS[slotId] || [];
       let workout = null;
-      if (preferShort) {
+      // Higher-volume weeks: the flex day offers the extra easy run when the other runs can't cover the miles.
+      if (slotId === "flex" && sizing.flexNeeded) {
+        workout = pool.find((w) => w.id === "fx-second-aerobic" && !usedWorkouts.has(w.id)) || null;
+      }
+      if (!workout && preferShort) {
         workout = pool.find((w) => w.lengthClass === "short" && !usedWorkouts.has(w.id));
       }
       if (!workout) {
@@ -2053,12 +2979,12 @@
     }
 
     const tired = tiredLegsFromYesterday();
-    if (tired) {
-      options.forEach((o) => {
-        if (isEasyRunOption(o.slotId, o.workout)) o.tiredLegs = tiredLegsMessage(tired);
-      });
-    }
-    return { done: false, options, rem, tiredLegs: tired };
+    options.forEach((o) => {
+      const easy = isEasyRunOption(o.slotId, o.workout);
+      if (tired && easy) o.tiredLegs = tiredLegsMessage(tired);
+      o.workout = sizeOption(o.slotId, o.workout, sizing, tired && easy ? tired : null);
+    });
+    return { done: false, options, rem, tiredLegs: tired, sizing };
   }
 
   // ——— Actions / active session ———
@@ -2201,6 +3127,7 @@
       slotId: slotId,
       workoutId: workout.id,
       title: workout.title,
+      runPlan: workout.runPlan || null,
       startedAt: Date.now(),
       warmup: (workout.warmup || []).map(function () {
         return false;
@@ -2216,7 +3143,7 @@
   /** Refresh suggested loads from current working 1RMs; keep user overrides. */
   function refreshSessionSuggestedLoads(sess) {
     if (!sess || !sess.logs) return sess;
-    const workout = findWorkout(sess.slotId, sess.workoutId);
+    const workout = resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
     if (!workout) return sess;
     (workout.blocks || []).forEach(function (block, bi) {
       (block.items || []).forEach(function (item, ii) {
@@ -2310,6 +3237,7 @@
       slotName: SLOT_META[slotId].name,
       isTest: !!workout.isTest,
       metricId: workout.metricId || null,
+      runPlan: workout.runPlan || null,
       status: "active",
     };
     // Do NOT mark completed yet — only lock choice + reshuffle remaining week slots
@@ -2325,11 +3253,27 @@
     const sess = state.activeSession;
     if (!sess) return;
     const today = getTodayInfo();
-    const workout = findWorkout(sess.slotId, sess.workoutId);
+    const workout = resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
     if (!workout) return;
 
     const finishedAt = Date.now();
     const cardioSum = summarizeCardioLogs(sess.logs);
+    const countsMiles = workoutCountsMiles(sess.slotId, workout);
+    const fuelNote = workout.fueling ? String(sess.fuelNote || "").trim().slice(0, 400) : "";
+    if (countsMiles && cardioSum.miles > 0) {
+      addMilesEntry({
+        fuelNote: fuelNote || undefined,
+        source: "workout",
+        dateKey: localDateKey(finishedAt),
+        weekIndex: getProgramWeekIndex(),
+        miles: Math.round(cardioSum.miles * 100) / 100,
+        kind: milesKindFor(sess.slotId, workout),
+        slotId: sess.slotId,
+        workoutId: workout.id,
+        title: workout.title,
+        ts: finishedAt,
+      });
+    }
     recordHistory({
       dateKey: localDateKey(finishedAt),
       slotId: sess.slotId,
@@ -2338,6 +3282,7 @@
       durationMin: workout.durationMin,
       loggedMiles: cardioSum.miles,
       loggedMinutes: cardioSum.minutes,
+      fuelNote: fuelNote || undefined,
       ts: finishedAt,
     });
     state.completed[sess.slotId] = {
@@ -2350,6 +3295,9 @@
       durationMin: workout.durationMin,
       isTest: !!workout.isTest,
       sessionLog: sess.logs,
+      countsMiles: countsMiles,
+      loggedMiles: Math.round(cardioSum.miles * 100) / 100,
+      fuelNote: fuelNote || undefined,
     };
     if (state.todayPick) state.todayPick.status = "finished";
     const metricQueue = [];
@@ -2455,6 +3403,7 @@
     if (finished) {
       const c = state.completed[slotId];
       removeHistory((c && c.dateKey) || localDateKey(new Date()), slotId);
+      removeWorkoutMiles((c && c.dateKey) || localDateKey(new Date()), slotId);
     }
     delete state.completed[slotId];
     state.todayPick = null;
@@ -2468,8 +3417,8 @@
 
   function resetWeek() {
     if (state.activeSession && sessionHasProgress(state.activeSession)) {
-      if (!confirm("Reset Week 1? In-progress workout and all completions will be cleared.")) return;
-    } else if (!confirm("Reset Week 1? All completions will be cleared.")) {
+      if (!confirm("Reset this week? The workout in progress and all of this week's completions will be cleared. Logged miles stay.")) return;
+    } else if (!confirm("Reset this week? All of this week's completions will be cleared. Logged miles stay.")) {
       return;
     }
     state = defaultState();
@@ -2525,6 +3474,8 @@
       const i = parseInt(el.getAttribute("data-warmup-idx"), 10);
       if (!isNaN(i)) sess.warmup[i] = !!el.checked;
     });
+    const fuelEl = body.querySelector('[data-field="fuel-note"]');
+    if (fuelEl) sess.fuelNote = fuelEl.value;
     body.querySelectorAll(".log-ex").forEach(function (ex) {
       const key = ex.getAttribute("data-log-key");
       if (!key || !sess.logs[key]) return;
@@ -2574,9 +3525,10 @@
     const sess = state.activeSession;
     const body = document.getElementById("active-body");
     if (!sess || !body) return;
-    const workout = findWorkout(sess.slotId, sess.workoutId);
+    const workout = resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
     if (!workout) return;
     const meta = SLOT_META[sess.slotId];
+    const countsMiles = workoutCountsMiles(sess.slotId, workout);
     document.getElementById("active-slot").textContent = slotCardLabel(meta, !!workout.isTest);
     document.getElementById("active-title").textContent = workout.title;
     document.getElementById("active-meta").textContent = sessionMetaLine(workout);
@@ -2722,6 +3674,12 @@
             '" /></label>';
           html += "</div>";
           html +=
+            '<p class="cardio-count-note">' +
+            (countsMiles
+              ? "Enter the distance, and these miles count toward this week's total when you tap Finish."
+              : "This one does not count toward your weekly running miles.") +
+            "</p>";
+          html +=
             '<button type="button" class="btn-ex-done' +
             (log.done ? " on" : "") +
             '" data-action="toggle-ex-done">' +
@@ -2743,7 +3701,7 @@
             '<button type="button" class="btn-log-test" data-action="log-test" data-metric="' +
             escapeHtml(workout.metricId) +
             '">' +
-            (already ? "Result logged · edit in Progress" : "Log top result → Progress") +
+            (already ? "Result logged. Edit it in Progress." : "Log your top result in Progress") +
             "</button>";
         }
         html += "</div>";
@@ -2757,6 +3715,15 @@
         html += "<li>" + escapeHtml(n) + "</li>";
       });
       html += "</ul></div>";
+    }
+
+    if (workout.fueling) {
+      html +=
+        '<div class="active-block fuel-block"><h4>How did fueling go?</h4>' +
+        '<label class="fuel-label" for="fuel-note-input">Optional. What you ate and drank, and what sat well or didn\'t. It is saved with this run when you tap Finish.</label>' +
+        '<textarea id="fuel-note-input" class="fuel-note" data-field="fuel-note" rows="3" maxlength="400" placeholder="For example: 2 gels and a bar, 20 ounces an hour, stomach fine">' +
+        escapeHtml(sess.fuelNote || "") +
+        "</textarea></div>";
     }
 
     body.innerHTML = html;
@@ -2774,7 +3741,10 @@
     saveState(state);
 
     const today = getTodayInfo();
-    $("#week-label").textContent = "Week 1 · Ultra volume first";
+    const wkPlan = getWeekPlan(getProgramWeekIndex());
+    $("#week-label").textContent = "Week " + wkPlan.planWeekNumber + " · " + wkPlan.phaseLabel;
+    const resetBtn = document.getElementById("btn-reset-week");
+    if (resetBtn) resetBtn.textContent = "Reset this week";
     $("#today-date").textContent = formatTodayLabel(today.now) + " · MT";
 
     const doneCount = Object.keys(state.completed).length;
@@ -2783,6 +3753,7 @@
 
     renderToday();
     renderWeek();
+    renderMileage();
     renderProgress();
     renderGoals();
     renderProfileBody();
@@ -2802,7 +3773,7 @@
         badge.textContent = "Logged";
         badge.classList.remove("in-progress");
       }
-      $("#done-title").textContent = "Week 1 complete";
+      $("#done-title").textContent = "Week " + (getProgramWeekIndex() + 1) + " complete";
       $("#done-meta").textContent = "All seven workouts for the week are done. Great work.";
       $("#btn-undo").classList.add("hidden");
       $("#today-sub").textContent = "Everything for this week is finished.";
@@ -2847,7 +3818,7 @@
           const pick = state.todayPick;
           if (!pick) return;
           if (!state.activeSession) {
-            const w = findWorkout(pick.slotId, pick.workoutId);
+            const w = resolveWorkout(pick.slotId, pick.workoutId, pick.runPlan);
             if (w) state.activeSession = buildActiveSession(pick.slotId, w, getTodayInfo());
             saveState(state);
           }
@@ -2883,6 +3854,10 @@
         : result.pick.slotId === "long_run"
         ? "Done for today. If you feel up to it, an easy run tomorrow would make a good second day on tired legs. That is only a suggestion, so pick whatever fits tomorrow."
         : "Done for today. Come back tomorrow for fresh options.";
+      const doneC = state.completed[result.pick.slotId];
+      if (doneC && doneC.countsMiles && !(doneC.loggedMiles > 0)) {
+        $("#today-sub").textContent += " No distance was entered for this workout, so it did not add to your weekly miles. Use Add miles above to enter it.";
+      }
       return;
     }
 
@@ -2945,7 +3920,8 @@
       btn.addEventListener("click", () => {
         const slotId = btn.getAttribute("data-slot");
         const wid = btn.getAttribute("data-workout");
-        const workout = findWorkout(slotId, wid);
+        const opt = result.options.find((o) => o.slotId === slotId && o.workout.id === wid);
+        const workout = opt ? opt.workout : findWorkout(slotId, wid);
         if (!workout) return;
         openModal(slotId, workout);
       });
@@ -2963,19 +3939,31 @@
         "Built around your goals: athletic look, hunting fitness, ultra volume, personal PT marks, and strong core.";
     }
 
+    const wkSizing = computeWeekSizing();
+    function runSizeLine(slotId) {
+      const sz = wkSizing.sizes[slotId];
+      if (sz == null) return "";
+      if (wkSizing.plan.phase === "race" && slotId === "long_run") return " This week it is the race itself, on " + raceWeekday() + ".";
+      if (slotId === "long_run") return " This week: about " + fmtMiles(sz) + ". Schedule it on a day off shift.";
+      if (slotId === "speed_run") return " This week: about " + fmtMiles(sz) + ".";
+      if (slotId === "easy_hike") return " This week: about " + fmtMiles(sz) + " of hills or incline.";
+      if (slotId === "flex" && wkSizing.flexIsRun) return " This week it can be an extra easy run of about " + fmtMiles(sz) + ", or a core or catch-up session.";
+      return "";
+    }
     list.innerHTML = SLOT_ORDER.map((slotId) => {
       const meta = SLOT_META[slotId];
       const done = state.completed[slotId];
       let status = "remaining";
       let statusIcon = "○";
       let dayLabel = "—";
-      let detail = meta.blurb;
+      const blurb = meta.blurb + runSizeLine(slotId);
+      let detail = blurb;
 
       if (done) {
         status = "done";
         statusIcon = "✓";
         dayLabel = done.dayLabel || "Done";
-        detail = done.title + " · " + done.durationMin + " min";
+        detail = done.title + ", about " + done.durationMin + " minutes" + (done.countsMiles && done.loggedMiles > 0 ? ", " + fmtMiles(done.loggedMiles) + " logged" : "") + ".";
       } else if (
         state.todayPick &&
         state.todayPick.slotId === slotId &&
@@ -2985,9 +3973,9 @@
         statusIcon = "▶";
         dayLabel = today.day.label;
         if (state.activeSession && state.activeSession.slotId === slotId) {
-          detail = "Started — finish to complete · " + (state.todayPick.title || meta.blurb);
+          detail = "Started — finish to complete · " + (state.todayPick.title || blurb);
         } else {
-          detail = "Chosen today — open Active Workout to log · " + (state.todayPick.title || meta.blurb);
+          detail = "Chosen today — open Active Workout to log · " + (state.todayPick.title || blurb);
         }
       } else {
         const dayKey = Object.keys(state.dayAssignments || {}).find(
@@ -2999,15 +3987,15 @@
           if (d && d.offset === today.offset) {
             status = "scheduled";
             statusIcon = "▶";
-            detail = "Available in today's choices — " + meta.blurb;
+            detail = "Available in today's choices — " + blurb;
           } else if (d && d.offset > today.offset) {
             status = "scheduled";
             statusIcon = "·";
-            detail = "On the board later this week — " + meta.blurb;
+            detail = "On the board later this week — " + blurb;
           } else {
             status = "remaining";
             statusIcon = "!";
-            detail = "Catch-up window — " + meta.blurb;
+            detail = "Catch-up window — " + blurb;
           }
         }
       }
@@ -3082,6 +4070,7 @@
       '</div><p class="onerm-status" id="onerm-status" aria-live="polite"></p></article>';
 
     root.innerHTML =
+      mileageHistoryHtml() +
       oneRmCard +
       BENCH_GROUPS.map((g) => {
       const metrics = BENCH_METRICS.filter((m) => m.group === g.id);
@@ -3401,52 +4390,125 @@
 
   function renderGoals() {
     const el = $("#goals-content");
+    const cur = getWeekPlan(getProgramWeekIndex());
+    const rw = raceWeekIndex();
     el.innerHTML = `
       <div class="goal-card">
+        <h3>Black Canyon 100K mileage plan</h3>
+        <div class="goal-row"><span>Race date</span><strong>${escapeHtml(RACE.label)}${RACE.edited ? " (edited)" : ""}</strong></div>
+        <form class="race-date-form" id="race-date-form" novalidate>
+          <label class="miles-add-label" for="race-date-input">Race date (saved on this device; the plan shifts so the peak and taper still land before it)</label>
+          <div class="miles-add-row">
+            <input type="date" id="race-date-input" value="${isoDate(RACE.date)}" min="2026-11-01" max="2027-12-31" />
+            <button type="submit" class="btn-bench primary">Save race date</button>
+            ${RACE.edited ? '<button type="button" class="btn-bench" id="race-date-reset">Use the confirmed date</button>' : ""}
+          </div>
+          <p class="miles-status" id="race-date-status" aria-live="polite"></p>
+        </form>
+        <div class="goal-row"><span>Race</span><strong>Black Canyon 100K, 62 miles, Arizona</strong></div>
+        <div class="goal-row"><span>This week</span><strong>${escapeHtml("Week " + cur.planWeekNumber + " of " + (rw + 1) + ", " + fmtNum(cur.targetMiles) + " miles")}</strong></div>
+        <div class="goal-row"><span>Peak</span><strong>About 50 miles a week in mid-January</strong></div>
+        <p class="goal-note" style="margin-top:10px">${PLAN_META.provisional ? "These weekly targets are a first version and may change. " : ""}Your weekly running miles build from about 20 now to a peak of about 50 in mid-January, then taper into race day. The plan is counted backward from the race date so the peak and the taper land in the right weeks. The race date is confirmed on ${escapeHtml(RACE.source)}.</p>
+        <ul class="notes-list plan-rules">
+          <li>Weekly miles go up by no more than about 10 percent at a time, or 2 to 3 miles while the mileage is still low.</li>
+          <li>Every fourth week is a lighter week, about 20 to 25 percent less, so your body can absorb the work before the next build.</li>
+          <li>Almost every run is easy enough to talk in full sentences. There are no speed sessions, because the speed will come with volume.</li>
+          <li>The long run is the only session that goes past 90 minutes. Every other session stays between 30 and 90 minutes. Put the long run on a day off shift.</li>
+          <li>Hills, trails, and the Wahoo incline treadmill with course imports build your climbing. Backcountry hunting hikes and pack incline walks count as time on your feet, so add those miles on the Today tab.</li>
+          <li>From November on, long runs and long hikes over about 90 minutes are fueling practice: about 200 to 300 calories and regular drinks every hour, using your race-day foods. The long run has a short "How did fueling go?" note you can fill in when you finish.</li>
+          <li>From December on, hills sessions include easy, controlled downhill running, because Black Canyon drops more than it climbs.</li>
+          <li>About four weeks before the race you do one big day of about 24 miles or about 5 hours on your feet.</li>
+          <li>The last two weeks before race week drop to about 70 percent and then about half of your peak. Race week is a few short, easy runs and then the race.</li>
+          <li>You still pick each day's workout in any order. The run options resize themselves to fit the miles left in the week, and if you fall behind, the app will not ask you to cram.</li>
+        </ul>
+      </div>
+      ${(function () {
+        const rc = readinessCheck();
+        return (
+          '<div class="goal-card checkpoint-card"><h3>Early-January checkpoint</h3>' +
+          '<div class="goal-row"><span>Checkpoint week</span><strong>' + escapeHtml(longDate(rc.cpStart)) + "</strong></div>" +
+          '<div class="goal-row"><span>Longest logged run</span><strong>' + escapeHtml(rc.longest > 0 ? fmtMiles(rc.longest) : "None logged yet") + "</strong></div>" +
+          '<div class="goal-row"><span>Last 3 weeks, average</span><strong>' + escapeHtml(rc.weeks.length ? fmtMiles(rc.avg) : "Not enough weeks yet") + "</strong></div>" +
+          '<p class="goal-note" style="margin-top:10px">' + escapeHtml(rc.text) + "</p>" +
+          '<p class="goal-note checkpoint-verdict ' + (rc.reached ? rc.status : "pending") + '" style="margin-top:8px">' + escapeHtml(rc.verdict) + "</p></div>"
+        );
+      })()}
+      <div class="goal-card">
         <h3>Five North-Star Pillars</h3>
-        <div class="goal-row"><span>1 · Physique</span><strong>Athletic look · arms/delts/upper back</strong></div>
-        <div class="goal-row"><span>2 · Hunting</span><strong>Multi-day elk/deer hike capacity</strong></div>
-        <div class="goal-row"><span>3 · Ultra</span><strong>Black Canyon 100k · easy volume first</strong></div>
-        <div class="goal-row"><span>4 · PT marks</span><strong>Personal test targets (occasional checks)</strong></div>
-        <div class="goal-row"><span>5 · Beast Core</span><strong>Armor low back · minimize pain</strong></div>
-        <p class="goal-note" style="margin-top:10px">Running identity = ultra volume. Speed for timed checks comes mostly from that base — rare TEST days only. Not programming “job fitness.” Flag low-back flares; don’t over-coddle by default.</p>
+        <div class="goal-row"><span>1 · Physique</span><strong>Athletic look: arms, shoulders, and upper back</strong></div>
+        <div class="goal-row"><span>2 · Hunting</span><strong>Multi-day elk and deer hiking</strong></div>
+        <div class="goal-row"><span>3 · Ultra</span><strong>Black Canyon 100K, easy volume first</strong></div>
+        <div class="goal-row"><span>4 · PT marks</span><strong>Personal test targets, checked now and then</strong></div>
+        <div class="goal-row"><span>5 · Beast Core</span><strong>Armor for the low back</strong></div>
+        <p class="goal-note" style="margin-top:10px">Your running is built on ultra volume. Speed for timed checks comes mostly from that base, not from speed work. This is not job fitness programming. Flag low-back flares, but don't baby your back by default.</p>
       </div>
       <div class="goal-card">
         <h3>Race, Role &amp; Schedule</h3>
         <div class="goal-row"><span>Athlete</span><strong>Nathan · 37 · 215 lbs</strong></div>
-        <div class="goal-row"><span>Schedule</span><strong>48/96 fire</strong></div>
-        <div class="goal-row"><span>Week 1 start</span><strong>Wed Sep 23 2026 8am MT off</strong></div>
-        <div class="goal-row"><span>Session length</span><strong>30–90 min</strong></div>
+        <div class="goal-row"><span>Schedule</span><strong>48 hours on, 96 hours off</strong></div>
+        <div class="goal-row"><span>Goal race</span><strong>${escapeHtml(RACE.label)}</strong></div>
+        <div class="goal-row"><span>Week 1 started</span><strong>Wednesday, September 23, 2026</strong></div>
+        <div class="goal-row"><span>Weeks run</span><strong>Wednesday to Tuesday</strong></div>
+        <div class="goal-row"><span>Session length</span><strong>30 to 90 minutes; the long run can go longer</strong></div>
       </div>
       <div class="goal-card">
         <h3>Personal PT / Strength Targets</h3>
-        <p class="goal-note" style="margin-bottom:8px">Tracked in Progress. Timed run checks are rare — volume does the work.</p>
-        <div class="goal-row"><span>Longest easy (primary)</span><strong>Build past 10 mi</strong></div>
-        <div class="goal-row"><span>1.95 mi (rare check)</span><strong>≤12:00</strong></div>
-        <div class="goal-row"><span>Mile (rare check)</span><strong>~7:30 → faster via volume</strong></div>
-        <div class="goal-row"><span>HR push-ups / 2 min</span><strong>70 <small style="color:var(--text-dim)">(now ~40)</small></strong></div>
-        <div class="goal-row"><span>Dead-hang pull-ups</span><strong>30 <small style="color:var(--text-dim)">(now ~21)</small></strong></div>
-        <div class="goal-row"><span>Deadlift</span><strong>405 <small style="color:var(--text-dim)">(now ~345)</small></strong></div>
-        <div class="goal-row"><span>Bench</span><strong>315 <small style="color:var(--text-dim)">(now ~275)</small></strong></div>
-        <div class="goal-row"><span>Back squat</span><strong>405 <small style="color:var(--text-dim)">(now ~315)</small></strong></div>
-        <div class="goal-row"><span>Plank</span><strong>3 min maxed → weighted planks, rollouts, hanging</strong></div>
+        <p class="goal-note" style="margin-bottom:8px">Tracked in Progress. Timed run checks are rare, and none happen during the Black Canyon build; volume does the work.</p>
+        <div class="goal-row"><span>Longest easy run (primary)</span><strong>Build past 10 miles</strong></div>
+        <div class="goal-row"><span>1.95 miles (rare check)</span><strong>12 minutes or less</strong></div>
+        <div class="goal-row"><span>Mile (rare check)</span><strong>About 7 minutes 30 seconds now, faster through volume</strong></div>
+        <div class="goal-row"><span>Hand-release push-ups in 2 minutes</span><strong>70 <small style="color:var(--text-dim)">(now about 40)</small></strong></div>
+        <div class="goal-row"><span>Dead-hang pull-ups</span><strong>30 <small style="color:var(--text-dim)">(now about 21)</small></strong></div>
+        <div class="goal-row"><span>Deadlift</span><strong>405 <small style="color:var(--text-dim)">(now about 345)</small></strong></div>
+        <div class="goal-row"><span>Bench</span><strong>315 <small style="color:var(--text-dim)">(now about 275)</small></strong></div>
+        <div class="goal-row"><span>Back squat</span><strong>405 <small style="color:var(--text-dim)">(now about 315)</small></strong></div>
+        <div class="goal-row"><span>Plank</span><strong>3 minutes, maxed; now weighted planks, rollouts, and hanging work</strong></div>
       </div>
       <div class="goal-card">
         <h3>Ultra Aerobic · How We Run</h3>
-        <div class="goal-row"><span>10 mi continuous</span><strong>~11:00 / mi easy</strong></div>
-        <div class="goal-row"><span>Daily run identity</span><strong>Conversational volume</strong></div>
-        <div class="goal-row"><span>Speed / intervals</span><strong>Not a weekly focus</strong></div>
-        <p class="goal-note" style="margin-top:10px">The long easy run, hills and hike legs, and easy runs stack Black Canyon fitness with hunting time on feet. You pick each day in any order. When an easy run lands the day after a long run, the app flags it as a second day on tired legs. “The speed will come with volume.”</p>
+        <div class="goal-row"><span>10 miles continuous</span><strong>About 11 minutes per mile, easy</strong></div>
+        <div class="goal-row"><span>Daily runs</span><strong>Easy and conversational</strong></div>
+        <div class="goal-row"><span>Speed work</span><strong>None; speed comes with volume</strong></div>
+        <p class="goal-note" style="margin-top:10px">The long easy run, hills and hike legs, and easy runs stack Black Canyon fitness with hunting time on feet. You pick each day in any order. When an easy run lands the day after a long run, the app flags it as a second day on tired legs, and that run gets a little longer in later phases. “The speed will come with volume.”</p>
       </div>
       <div class="goal-card">
         <h3>Physique (without killing endurance)</h3>
-        <p class="goal-note">Hypertrophy-friendly accessories on Strength A/B: lateral raises, curl bar arms, rear-delt dumbbell flyes, balanced push-pull. Kept after main strength/PT so they don't cannibalize long ultra volume.</p>
+        <p class="goal-note">Muscle-building extras on the strength days: lateral raises, curl bar arm work, rear-delt dumbbell flyes, and balanced pushing and pulling. They come after the main strength and PT work so they don't eat into your ultra volume.</p>
       </div>
       <div class="goal-card">
         <h3>Beast Core (back-pain insurance)</h3>
         <p class="goal-note">Resist arching with barbell rollouts from the knees, weighted front planks, and dead bugs. Resist twisting with single-arm dumbbell rows and Russian twists. Resist leaning with side planks and one-dumbbell suitcase carries. Build grip and posture with heavy farmer carries, and hang from the bar for knee raises working toward toes-to-bar. Freak Athlete Hyper Pro back extensions, full-range reverse hypers, Sorensen holds, side raises, and an occasional small dose of GHD sit-ups round it out. Core finishers come after strength days, plus the flex-day core session.</p>
       </div>
     `;
+    const rf = document.getElementById("race-date-form");
+    if (rf) {
+      rf.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const v = document.getElementById("race-date-input").value;
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || "");
+        const d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+        if (!d || isNaN(d) || d <= new Date(2026, 10, 1)) {
+          const st = document.getElementById("race-date-status");
+          st.textContent = "Pick a race date after November 1, 2026.";
+          st.className = "miles-status err";
+          return;
+        }
+        saveRaceDate(v);
+        render();
+        const st2 = document.getElementById("race-date-status");
+        if (st2) {
+          st2.textContent = "Saved. The plan now counts back from " + RACE.label + ".";
+          st2.className = "miles-status ok";
+        }
+      });
+      const rr = document.getElementById("race-date-reset");
+      if (rr) {
+        rr.addEventListener("click", () => {
+          saveRaceDate("");
+          render();
+        });
+      }
+    }
   }
 
   function renderProfileBody() {
@@ -3505,7 +4567,7 @@
         '<div class="tired-legs-note"><p>' +
         escapeHtml(tiredLegsMessage(tired)) +
         "</p><p>" +
-        escapeHtml(TIRED_LEGS_PRESCRIPTION) +
+        escapeHtml(tiredLegsPrescription(workout)) +
         "</p></div>";
     }
     if (workout.warmup && workout.warmup.length) {
@@ -3727,7 +4789,7 @@
         persistTimer = setTimeout(() => {
           persistActiveFromDom();
           const sess = state.activeSession;
-          const workout = sess && findWorkout(sess.slotId, sess.workoutId);
+          const workout = sess && resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
           if (sess && workout) {
             const prog = countSessionProgress(sess, workout);
             const line = document.getElementById("active-progress-line");

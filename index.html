@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233dffa8'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%230a0e14'%3ENC%3C/text%3E%3C/svg%3E" />
   <title>Nathan · Adaptive Coach</title>
-  <link rel="stylesheet" href="styles.css?v=1790293900" />
+  <link rel="stylesheet" href="styles.css?v=1790367838" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
@@ -20,7 +20,7 @@
         <span class="brand-mark">NC</span>
         <div class="brand-text">
           <strong>Adaptive Coach</strong>
-          <span id="week-label">Week 1 · Fire off Wed</span>
+          <span id="week-label">Week 1 · Base building</span>
         </div>
       </div>
       <button type="button" id="btn-profile" class="icon-btn" aria-label="Athlete profile" title="Profile">
@@ -43,6 +43,7 @@
           <h1>Pick today's workout</h1>
           <p class="sub" id="today-sub">Pick one to start. The rest of the week reshuffles after you choose.</p>
         </div>
+        <div id="mileage-today" class="mileage-slot"></div>
         <div id="options-list" class="options-list"></div>
         <div id="today-done" class="today-done hidden">
           <div class="done-card">
@@ -63,8 +64,9 @@
           <p class="sub" id="week-pillars" style="margin-top:4px;color:var(--text-dim);font-size:12px;">Built around: athletic look, hunting fitness, ultra volume, personal PT marks, and strong core.</p>
         </div>
         <div class="progress-bar" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
+        <div id="mileage-week" class="mileage-slot"></div>
         <div id="slots-list" class="slots-list"></div>
-        <button type="button" id="btn-reset-week" class="btn-danger-ghost">Reset Week 1</button>
+        <button type="button" id="btn-reset-week" class="btn-danger-ghost">Reset this week</button>
       </section>
 
       <!-- Progress / benchmarks -->
@@ -72,7 +74,7 @@
         <div class="day-hero">
           <p class="eyebrow">Benchmarks</p>
           <h1>Progress</h1>
-          <p class="sub">Log your 1RMs, run marks, and PT scores · best vs goal · working weights pull from your strength maxes</p>
+          <p class="sub">Weekly running miles, your 1RMs, run marks, and PT scores. Working weights come from your strength maxes.</p>
         </div>
         <div id="progress-content" class="progress-content"></div>
       </section>
@@ -188,6 +190,6 @@
         <p id="pr-toast-msg"></p>
       </div>
     </div>
-  <script src="app.js?v=1790293900"></script>
+  <script src="app.js?v=1790367838"></script>
 </body>
 </html>
