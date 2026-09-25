@@ -448,7 +448,7 @@
     reverseHyper: "Set the Freak Athlete Hyper Pro in 90-degree back extension mode and attach the GHD Attachment pad. Use the footplate handles to climb on, lie face down with your hips at the top edge of the GHD pad, keep holding the handles, and let your legs hang straight down behind you for the full range. Squeeze your glutes to lift both legs until they line up with your body, pause for one second, and lower slowly all the way down with no swinging. Stop when your legs reach level; kicking higher only arches your low back. Body weight only, smooth and easy to moderate effort. It should feel like a warm pump in your glutes and low back, never a pinch.",
     nordic: "Set the Hyper Pro in Nordic mode at an incline you can control, around 30 to 45 degrees to start (a higher angle is easier). Kneel on the pad with your ankles locked between the rollers and your feet flat on the footplate. Squeeze your glutes and keep a straight line from knees to shoulders, then lower yourself as slowly as you can, aiming for 3 to 5 seconds. When you can't hold it any longer, catch yourself with your hands and push back up to the start. End each set 1 to 2 reps before your form breaks. When every rep of every set feels controlled, drop the incline one notch the next week.",
     reverseNordic: "Set the Hyper Pro in Nordic mode (Freak Athlete's beginner workout uses the 20-degree setting). Kneel on the pad with your ankles locked in the rollers, just like a Nordic curl, and sit tall. Squeeze your glutes so your hips stay straight, then lean your whole body back from the knees as far as you can control, pause for a second, and pull yourself back up with your thighs. Start with a shallow lean and go a little deeper each week. Moderate effort; stop if you feel sharp pain in the knee. Keep your ribs down so your low back does not arch.",
-    hipThrust: "Set the Hyper Pro to hip thrust mode: flip the post at the base up to vertical and move the top ankle roller onto it so it becomes your back rest. Sit on the floor with your upper back across the roller, feet flat about shoulder-width apart, and a padded barbell or one heavy dumbbell across your hips. Tuck your chin, drive through your heels, and squeeze your glutes until your body is flat from knees to shoulders, pause for two seconds, then lower under control. The rep ends when your hips are straight, so do not arch your low back to go higher. Pick a load you could lift 2 to 3 more times at the end of each set, and log the weight you used.",
+    hipThrust: "Set the Hyper Pro to hip thrust mode: flip the post at the base so it stands straight up and move the top ankle roller onto it so it becomes your back rest. Sit on the floor with your upper back across the roller, feet flat about shoulder-width apart, and a padded barbell or one heavy dumbbell across your hips. Tuck your chin, drive through your heels, and squeeze your glutes until your body is flat from knees to shoulders, pause for two seconds, then lower under control. The rep ends when your hips are straight, so do not arch your low back to go higher. Pick a load you could lift 2 to 3 more times at the end of each set, and log the weight you used.",
     gluteHam: "Set the Hyper Pro in GHD mode with the GHD Attachment pad, and slide the pad so your knees sit just behind its back edge with your feet flat on the footplate and locked between the rollers. Start with your body straight and level with the floor, then pull yourself up by digging your toes into the footplate and curling with your hamstrings until you are upright, keeping your hips straight the whole time. Lower back down slowly over about 3 seconds. Easier version: raise the machine's incline, use a shorter range, or lower slowly and push off the floor with your hands to get back up. Harder version: full range at a flatter angle, a slower lowering, then a light plate held at your chest. End each set 1 to 2 reps before your hips start to bend.",
     sorensen: "Set the Hyper Pro in 90-degree back extension mode with the GHD Attachment pad, and slide it so your hip bones are just past the front edge with your ankles locked in the rollers. Cross your arms on your chest and hold your body in one straight line, level with the floor, from head to heels. Squeeze your glutes and keep your ribs down so your low back does not sag or arch. Start with 30 to 40 second holds, add 5 to 10 seconds each week, and hold a plate at your chest once 90 seconds is easy. If your low back complains, put your hands on the floor for help and shorten the hold. Log the seconds and any added plate.",
     ghdSitUp: "Set the Hyper Pro in GHD mode with the GHD Attachment pad, sit on the pad with your hips just past its edge, and lock your feet in the rollers with your knees slightly bent. Cross your arms on your chest, lean back under control only until your body is about level with the floor, stopping well short of full extension, then sit up by pulling with your abs and hips. Keep it smooth and moderate, with no bouncing or throwing your arms. Skip this exercise and do a side plank instead if your low back is flaring or you feel nerve pain down your leg.",
@@ -731,7 +731,7 @@
           {
             name: "Easy aerobic miles",
             items: [
-              { name: "Easy continuous run, 40 to 50 minutes", detail: "About 11 to 12 minutes per mile. Keep it easy enough to talk in full sentences.", note: "Talk in full sentences the whole way. Walk brief hills if needed. Black Canyon base." },
+              { name: "Easy continuous run, 40 to 50 minutes", detail: "Keep your heart rate at or below your cap. Keep it easy enough to talk in full sentences.", note: "Talk in full sentences the whole way. Walk brief hills if needed. Black Canyon base." },
             ],
           },
           {
@@ -841,18 +841,18 @@
       },
       {
         id: "eh-trail-easy",
-        title: "Easy trail with light pack",
+        title: "Easy trail hike and jog",
         durationMin: 60,
         lengthClass: "medium",
         location: "Outdoor / Trail",
         rpe: "4–5",
-        summary: "An easy trail outing with a light pack that toughens your feet for the ultra and feels like a hunt: time on your feet, strong hips, and patience under load.",
+        summary: "An easy trail outing that toughens your feet for the ultra and feels like a hunt: time on your feet, strong hips, and patience.",
         warmup: ["3 minutes of loosening up at the trailhead"],
         blocks: [
           {
             name: "Trail time",
             items: [
-              { name: "Easy trail outing, 45 to 55 minutes", detail: "Steady effort. Hike the steep parts.", note: "Carry an optional 10 to 20 lb pack to build toward hunting days. Breathe through your nose when you can." },
+              { name: "Easy trail outing, 45 to 55 minutes", detail: "Steady effort. Hike the steep parts.", note: "Keep your heart rate at or below your cap. Breathe through your nose when you can." },
             ],
           },
           {
@@ -903,7 +903,7 @@
           {
             name: "Ultra long easy run",
             items: [
-              { name: "Easy continuous run, 9 to 11 miles", detail: "Average about 11 minutes per mile. Keep it easy enough to talk in full sentences.", note: "Your starting point is 10 miles at about 11 minutes per mile. Walk short hills if you need to. Eat and drink if you are out longer than 75 minutes." },
+              { name: "Easy continuous run, 9 to 11 miles", detail: "Keep your heart rate at or below your cap, even if that means walking hills. Keep it easy enough to talk in full sentences.", note: "Your starting point is 10 miles at about 11 minutes per mile. Walk short hills if you need to. Eat and drink if you are out longer than 75 minutes." },
             ],
           },
           {
@@ -960,7 +960,7 @@
           {
             name: "Long trail easy",
             items: [
-              { name: "Easy trail run, 75 to 95 minutes", detail: "Easy enough to talk in full sentences.", note: "Power-hike the climbs and stay on soft ground. You can add a light pack in later weeks." },
+              { name: "Easy trail run, 75 to 95 minutes", detail: "Easy enough to talk in full sentences.", note: "Power-hike the climbs and stay on soft ground." },
               hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
@@ -980,7 +980,7 @@
           {
             name: "Easy volume",
             items: [
-              { name: "Easy run, 60 minutes", detail: "About 11 to 12 minutes per mile.", note: "Do not race it. Save this one for after a night shift or a heavy strength day." },
+              { name: "Easy run, 60 minutes", detail: "Keep your heart rate at or below your cap.", note: "Do not race it. Save this one for after a night shift or a heavy strength day." },
               hyperProReverseHyper(3, 12, "Only if you're home. Easy flush after the run.", "Post-run Hyper Pro Reverse Hyper (if home)"),
             ],
           },
@@ -1315,6 +1315,92 @@
         },
       ],
       notes: ["Rare test day. It counts as your easy run for the week when you choose it. It is not a weekly speed day."],
+    },    {
+      id: "test-aet-drift",
+      slotId: "speed_run",
+      metricId: null,
+      aerobicTest: "drift",
+      countsMiles: true,
+      title: "Heart rate drift test",
+      durationMin: 75,
+      lengthClass: "medium",
+      location: "Home · Wahoo treadmill",
+      rpe: "4–5",
+      isTest: true,
+      summary: "Optional, and it counts as an easy run. This finds your aerobic threshold heart rate, which sets the heart rate cap for all your easy running. About 1 mile of easy warm-up, then 4 to 5 miles at one steady pace on the treadmill at a 3 percent incline.",
+      warmup: [
+        "Put on your chest strap heart rate monitor and start recording on your watch or phone app. Wrist heart rate is not accurate enough for this test.",
+        "Set the treadmill to a 3 percent incline and leave it there for the whole test.",
+      ],
+      blocks: [
+        {
+          name: "Warm-up",
+          items: [
+            { name: "Easy warm-up jog, about 1 mile", detail: "Walk, then jog easily for about 1 mile, which takes 10 to 15 minutes. Raise the pace slowly until your heart rate has been steady for 2 to 3 minutes just under your current cap of {AET}. Then press Lap on your watch.", note: "Do not skip the warm-up. It keeps the first half of the test from reading low." },
+          ],
+        },
+        {
+          name: "The steady part of the test",
+          items: [
+            { name: "Steady treadmill run, 4 to 5 miles at one pace", detail: "Hold the same pace and the same 3 percent incline for about 4 to 5 miles. The test needs at least 40 minutes of steady running, so this should take about 45 minutes or more. Do not change the pace, even when your heart rate creeps up.", note: "Pick the pace that puts your heart rate near your current cap of {AET} at the start, then leave the pace alone and let your heart rate do whatever it does. Note the distance at the halfway point so both halves are the same length. Press Lap when you finish the steady part." },
+          ],
+        },
+        {
+          name: "Cool-down",
+          items: [
+            { name: "Easy cool-down walk, about 10 minutes", detail: "Walk or jog very easily for about 10 minutes.", note: "Enter the distance of each part so the miles count toward this week." },
+          ],
+        },
+      ],
+      notes: [
+        "Optional. Nothing else in the week depends on the day you do it.",
+        "Do it well rested, not the day after your long run.",
+        "Use the treadmill or a flat track, not trails, because hills change your heart rate and spoil the test.",
+        "Afterward, look at your watch or app for the average heart rate of the first half and the second half of the steady part only, and enter them below.",
+      ],
+    },
+    {
+      id: "test-ant-30",
+      slotId: "flex",
+      metricId: null,
+      aerobicTest: "ant",
+      countsMiles: true,
+      title: "Optional 30-minute threshold test",
+      durationMin: 60,
+      lengthClass: "medium",
+      location: "Outdoor or Wahoo",
+      rpe: "7–8",
+      isTest: true,
+      summary: "Optional and easy to skip. One 30-minute run at the hardest steady effort you can hold, which finds your anaerobic threshold heart rate. Comparing it with your aerobic threshold shows how well built your aerobic base is. Skip it if you would rather keep every run easy.",
+      warmup: [
+        "Only do this rested: at least 3 days after any hard effort, and not the day after your long run.",
+        "Put on your chest strap heart rate monitor and start recording.",
+      ],
+      blocks: [
+        {
+          name: "Warm-up",
+          items: [
+            { name: "Easy warm-up jog, about 15 minutes", detail: "Jog easily for about 15 minutes, roughly 1 to 1.5 miles, with your heart rate at or below {AET}.", note: "Warm up well. Press Lap on your watch when you start the test." },
+          ],
+        },
+        {
+          name: "The test",
+          items: [
+            { name: "30-minute threshold run", detail: "Run the hardest steady effort you can hold for the full 30 minutes, on the treadmill at a 3 percent incline or on flat ground.", note: "Start a little under what you think you can hold so you don't fade after 5 minutes. By the end you should be just about spent. Your average heart rate for the whole 30 minutes is your anaerobic threshold heart rate. Press Lap at the end." },
+          ],
+        },
+        {
+          name: "Cool-down",
+          items: [
+            { name: "Easy cool-down walk or jog, about 10 minutes", detail: "Walk or jog very easily for about 10 minutes.", note: "Enter the distance of each part so the miles count toward this week." },
+          ],
+        },
+      ],
+      notes: [
+        "Optional and skippable. The plan works fine without it.",
+        "This is a one-time check, not training. No harder sessions are added to the plan whatever the result.",
+        "Afterward, enter the average heart rate for the 30 minutes below.",
+      ],
     },
   ];
 
@@ -1840,6 +1926,12 @@
     if (week < 3 || week <= raceWeekIndex()) {
       pool = pool.filter((tw) => tw.metricId !== "fire_195" && tw.metricId !== "mile");
     }
+    // Heart rate tests are offered separately (pickAerobicTests), never through this rotation.
+    pool = pool.filter((tw) => !tw.aerobicTest);
+    // Strength maintenance (race-specific build through the recovery weeks): no max attempts or 1RM test days.
+    if (strengthMaintenanceWeek(getWeekPlan(week))) {
+      pool = pool.filter((tw) => tw.slotId !== "strength_a" && tw.slotId !== "strength_b");
+    }
     if (!pool.length) return null;
     // Rotate which test appears so the pool stays fresh
     const idx = (today.offset + week * 3) % pool.length;
@@ -1886,13 +1978,34 @@
   function summarizeCardioLogs(logs) {
     let miles = 0;
     let minutes = 0;
+    let hrSum = 0;
+    let hrWeight = 0;
+    let paceMiles = 0;
+    let paceMinutes = 0;
     Object.values(logs || {}).forEach((log) => {
       if (!log || log.type !== "cardio") return;
       const d = parseFloat(String(log.distance || "").replace(/[^0-9.]/g, ""));
-      if (!isNaN(d)) miles += d;
-      minutes += parseMinutes(log.time);
+      const segMiles = !isNaN(d) && d > 0 ? d : 0;
+      miles += segMiles;
+      const t = parseMinutes(log.time);
+      minutes += t;
+      const hr = Number(String(log.hr || "").replace(/[^0-9.]/g, ""));
+      if (hr >= 70 && hr <= 215) {
+        const wgt = segMiles || 1;
+        hrSum += hr * wgt;
+        hrWeight += wgt;
+      }
+      // Pace for this segment: typed pace, or time divided by distance.
+      let pace = parsePace(log.pace);
+      if (!pace && segMiles > 0 && t > 0) pace = t / segMiles;
+      if (pace && pace >= 4 && pace <= 30 && segMiles > 0) {
+        paceMiles += segMiles;
+        paceMinutes += pace * segMiles;
+      }
     });
-    return { miles, minutes };
+    const avgHr = hrWeight ? Math.round(hrSum / hrWeight) : null;
+    const paceMin = paceMiles ? paceMinutes / paceMiles : null;
+    return { miles, minutes, avgHr, paceMin };
   }
 
   function recordHistory(entry) {
@@ -2023,10 +2136,9 @@
   }
 
   const PHASES = {
-    base: { label: "Base building", tiredMiles: 4, minEasy: 3 },
-    build: { label: "Building volume", tiredMiles: 5, minEasy: 4 },
-    block: { label: "Big mileage block", tiredMiles: 6, minEasy: 4 },
-    peak: { label: "Peak weeks", tiredMiles: 6.5, minEasy: 4 },
+    transition: { label: "Getting started", tiredMiles: 4, minEasy: 3 },
+    base: { label: "Aerobic base", tiredMiles: 5, minEasy: 4 },
+    specific: { label: "Race-specific build", tiredMiles: 6, minEasy: 4 },
     taper: { label: "Taper", tiredMiles: 4, minEasy: 3 },
     race: { label: "Race week", tiredMiles: 3, minEasy: 3 },
     recovery: { label: "Recovery after the race", tiredMiles: 3, minEasy: 3 },
@@ -2034,46 +2146,55 @@
 
   /**
    * ===== PLAN DATA (swappable) =====
-   * PROVISIONAL numbers: a first-pass miles progression. Another methodology can replace PLAN_META and
-   * PLAN_WEEKS without touching the tracker, history, sizing, or UI code, as long as the shape stays the same.
+   * Uphill Athlete (Scott Johnston) aerobic-base plan, adapted for Nathan in miles only.
+   * Source notes: UPHILL_ATHLETE_PLAN.md. Build weeks rise 10 percent or less, three build weeks then one
+   * recovery week (30 to 50 percent lighter), a two-week style taper, and race week. Everything is capped by heart
+   * rate at or below the aerobic threshold (see the heart-rate section below). No hill sprints, no weighted
+   * uphill hikes, and no harder zone sessions are included.
+   * Still provisional: the numbers can change after the first drift tests.
    *
    * PLAN_WEEKS row shape (miles only):
-   *   { weekIndex, targetMiles, longRunMiles, isCutback, phase, peakLongDay?, taperPct?, raceWeek?, checkpoint? }
+   *   { weekIndex, targetMiles, longRunMiles, recoveryWeek, phase, secondDayMiles?, driftTest?, thresholdTest?,
+   *     peakLongDay?, taperPct?, raceWeek?, checkpoint? }
    *   weekIndex 0 = the week of Wed Sep 23, 2026 (weeks run Wednesday to Tuesday).
-   *   phase is a key of PHASES (base, build, block, peak, taper, race; recovery is generated after the race).
+   *   phase is a key of PHASES (transition, base, specific, taper, race; recovery weeks after the race are generated).
+   *   secondDayMiles: in the race-specific build, the easy run the day after a logged long run is sized to this.
+   *     It is never a pre-labeled slot; the "second day on tired legs" logic applies it only after a long run is logged.
+   *   driftTest / thresholdTest: weeks where the optional heart rate drift test or 30-minute threshold test is offered.
    *   The LAST row must be race week. getPlanSchedule() anchors that last row to RACE.date, so if the race
-   *   date moves the rows shift (peak and taper still land right before race day) and early weeks are smoothed
-   *   to the 10 percent rule. Written for the Feb 13, 2027 race, which falls in weekIndex 20.
+   *   date moves, the rows shift and early weeks are smoothed to the 10 percent rule.
    */
   const PLAN_META = {
-    name: "Black Canyon 100K miles plan",
+    name: "Uphill Athlete aerobic base plan for Black Canyon",
     provisional: true,
-    startWeeklyMiles: 20, // current base is about 15 to 20 miles a week
+    method: "Uphill Athlete (Scott Johnston)",
+    startWeeklyMiles: 17, // about 15 to 20 miles a week before the plan
+    peakMiles: 47,
     // Early-January readiness check: longest single logged run and the average of the last 3 weeks.
-    checkpoint: { longestRunMiles: 18, recentAvgMiles: 38, closeLongestMiles: 14, closeAvgMiles: 30 },
+    checkpoint: { longestRunMiles: 16, recentAvgMiles: 34, closeLongestMiles: 13, closeAvgMiles: 27 },
   };
   const PLAN_WEEKS = [
-    { weekIndex: 0, targetMiles: 20, longRunMiles: 10, isCutback: false, phase: "base" },
-    { weekIndex: 1, targetMiles: 22, longRunMiles: 11, isCutback: false, phase: "base" },
-    { weekIndex: 2, targetMiles: 24, longRunMiles: 12, isCutback: false, phase: "base" },
-    { weekIndex: 3, targetMiles: 19, longRunMiles: 9, isCutback: true, phase: "base" },
-    { weekIndex: 4, targetMiles: 26, longRunMiles: 12, isCutback: false, phase: "base" },
-    { weekIndex: 5, targetMiles: 28, longRunMiles: 13, isCutback: false, phase: "base" },
-    { weekIndex: 6, targetMiles: 30, longRunMiles: 14, isCutback: false, phase: "build" },
-    { weekIndex: 7, targetMiles: 24, longRunMiles: 10, isCutback: true, phase: "build" },
-    { weekIndex: 8, targetMiles: 33, longRunMiles: 15, isCutback: false, phase: "build" },
-    { weekIndex: 9, targetMiles: 36, longRunMiles: 16, isCutback: false, phase: "build" },
-    { weekIndex: 10, targetMiles: 39, longRunMiles: 17, isCutback: false, phase: "build" },
-    { weekIndex: 11, targetMiles: 31, longRunMiles: 13, isCutback: true, phase: "block" },
-    { weekIndex: 12, targetMiles: 42, longRunMiles: 18, isCutback: false, phase: "block" },
-    { weekIndex: 13, targetMiles: 45, longRunMiles: 20, isCutback: false, phase: "block" },
-    { weekIndex: 14, targetMiles: 48, longRunMiles: 22, isCutback: false, phase: "block" },
-    { weekIndex: 15, targetMiles: 38, longRunMiles: 14, isCutback: true, phase: "block", checkpoint: true },
-    { weekIndex: 16, targetMiles: 50, longRunMiles: 24, isCutback: false, phase: "peak", peakLongDay: true },
-    { weekIndex: 17, targetMiles: 46, longRunMiles: 18, isCutback: false, phase: "peak" },
-    { weekIndex: 18, targetMiles: 35, longRunMiles: 14, isCutback: false, phase: "taper", taperPct: 70 },
-    { weekIndex: 19, targetMiles: 25, longRunMiles: 10, isCutback: false, phase: "taper", taperPct: 50 },
-    { weekIndex: 20, targetMiles: 8, longRunMiles: 62.2, isCutback: false, phase: "race", raceWeek: true },
+    { weekIndex: 0, targetMiles: 18, longRunMiles: 10, recoveryWeek: false, phase: "transition" },
+    { weekIndex: 1, targetMiles: 19, longRunMiles: 10, recoveryWeek: false, phase: "transition", driftTest: true },
+    { weekIndex: 2, targetMiles: 21, longRunMiles: 11, recoveryWeek: false, phase: "transition" },
+    { weekIndex: 3, targetMiles: 13, longRunMiles: 8, recoveryWeek: true, phase: "transition", thresholdTest: true },
+    { weekIndex: 4, targetMiles: 23, longRunMiles: 11, recoveryWeek: false, phase: "base" },
+    { weekIndex: 5, targetMiles: 25, longRunMiles: 12, recoveryWeek: false, phase: "base" },
+    { weekIndex: 6, targetMiles: 27, longRunMiles: 13, recoveryWeek: false, phase: "base" },
+    { weekIndex: 7, targetMiles: 16, longRunMiles: 9, recoveryWeek: true, phase: "base", driftTest: true },
+    { weekIndex: 8, targetMiles: 29, longRunMiles: 13, recoveryWeek: false, phase: "base" },
+    { weekIndex: 9, targetMiles: 31, longRunMiles: 14, recoveryWeek: false, phase: "base" },
+    { weekIndex: 10, targetMiles: 34, longRunMiles: 15, recoveryWeek: false, phase: "base" },
+    { weekIndex: 11, targetMiles: 20, longRunMiles: 10, recoveryWeek: true, phase: "base" },
+    { weekIndex: 12, targetMiles: 36, longRunMiles: 15, recoveryWeek: false, phase: "specific", secondDayMiles: 6 },
+    { weekIndex: 13, targetMiles: 38, longRunMiles: 16, recoveryWeek: false, phase: "specific", secondDayMiles: 7 },
+    { weekIndex: 14, targetMiles: 41, longRunMiles: 17, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
+    { weekIndex: 15, targetMiles: 25, longRunMiles: 12, recoveryWeek: true, phase: "specific", driftTest: true, thresholdTest: true, checkpoint: true },
+    { weekIndex: 16, targetMiles: 43, longRunMiles: 18, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
+    { weekIndex: 17, targetMiles: 45, longRunMiles: 19, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
+    { weekIndex: 18, targetMiles: 47, longRunMiles: 20, recoveryWeek: false, phase: "specific", secondDayMiles: 8, peakLongDay: true },
+    { weekIndex: 19, targetMiles: 35, longRunMiles: 12, recoveryWeek: false, phase: "taper", taperPct: 75 },
+    { weekIndex: 20, targetMiles: 10, longRunMiles: 62.2, recoveryWeek: false, phase: "race", raceWeek: true },
   ];
   // ===== end PLAN DATA =====
   const TABLE_RACE_WEEK = PLAN_WEEKS.length - 1;
@@ -2100,7 +2221,7 @@
       const src = w - shift;
       let row;
       if (src < 0) {
-        row = Object.assign({}, PLAN_WEEKS[0], { isCutback: false, checkpoint: false });
+        row = Object.assign({}, PLAN_WEEKS[0], { recoveryWeek: false, checkpoint: false, driftTest: false, thresholdTest: false });
       } else if (src <= TABLE_RACE_WEEK) {
         row = Object.assign({}, PLAN_WEEKS[src]);
       } else {
@@ -2108,12 +2229,12 @@
         row = {
           targetMiles: after === 1 ? 6 : after === 2 ? 12 : 18,
           longRunMiles: after === 1 ? 3 : after === 2 ? 6 : 8,
-          isCutback: false,
+          recoveryWeek: true,
           phase: "recovery",
         };
       }
       // Smoothing: full weeks never jump more than about 10 percent (or 2 to 3 miles at low volume).
-      if (!row.isCutback && (row.phase === "base" || row.phase === "build" || row.phase === "block" || row.phase === "peak")) {
+      if (!row.recoveryWeek && (row.phase === "transition" || row.phase === "base" || row.phase === "specific")) {
         const cap = Math.round(Math.max(lastFull * 1.1, lastFull + 2));
         if (row.targetMiles > cap) {
           row.targetMiles = cap;
@@ -2182,13 +2303,320 @@
     return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   }
 
+  // ——— Heart rate: aerobic threshold (AeT), zones, drift test, and threshold test ———
+  // Uphill Athlete's 4-zone model: Zone 1 = 80 to 90 percent of AeT heart rate, Zone 2 = 90 to 100 percent of AeT,
+  // Zone 3 = AeT up to the anaerobic threshold (AnT), Zone 4 = above AnT. Easy running is capped at AeT.
+  const HR_KEY = "nc-adaptive-coach-hr-v1";
+  const ATHLETE_AGE = 37;
+  const DEFAULT_AET = 180 - ATHLETE_AGE; // 143: starting cap until the first drift test
+
+  function loadHr() {
+    try {
+      const o = JSON.parse(localStorage.getItem(HR_KEY) || "{}");
+      return { history: Array.isArray(o.history) ? o.history : [] };
+    } catch {
+      return { history: [] };
+    }
+  }
+  function saveHr(hr) {
+    localStorage.setItem(HR_KEY, JSON.stringify({ history: (hr.history || []).slice(-200) }));
+  }
+  function hrHistory() {
+    return loadHr().history.slice().sort((a, b) => (a.ts || 0) - (b.ts || 0));
+  }
+  /** The newest entry that set an aerobic threshold (a drift test or a number typed in by hand). */
+  function latestAetEntry() {
+    const h = hrHistory().filter((e) => (e.type === "drift" || e.type === "manual") && Number(e.aetAfter) > 0);
+    return h.length ? h[h.length - 1] : null;
+  }
+  function getAeT() {
+    const e = latestAetEntry();
+    return e ? Math.round(Number(e.aetAfter)) : DEFAULT_AET;
+  }
+  function aetIsProvisional() {
+    return !latestAetEntry();
+  }
+  function latestAntEntry() {
+    const h = hrHistory().filter((e) => e.type === "ant" && Number(e.antHr) > 0);
+    return h.length ? h[h.length - 1] : null;
+  }
+  function getHrZones() {
+    const aet = getAeT();
+    const ant = latestAntEntry();
+    return {
+      aet: aet,
+      z1lo: Math.round(aet * 0.8),
+      z1hi: Math.round(aet * 0.9),
+      z2lo: Math.round(aet * 0.9),
+      z2hi: aet,
+      ant: ant ? Math.round(Number(ant.antHr)) : null,
+      provisional: aetIsProvisional(),
+    };
+  }
+  function aetLabel() {
+    return aetIsProvisional()
+      ? getAeT() + " beats per minute, your starting cap until your first drift test (180 minus your age)"
+      : getAeT() + " beats per minute, from your drift test";
+  }
+  function addHrEntry(entry) {
+    const hr = loadHr();
+    entry.id = "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    hr.history.push(entry);
+    saveHr(hr);
+    return entry;
+  }
+  function deleteHrEntry(id) {
+    const hr = loadHr();
+    hr.history = hr.history.filter((e) => e.id !== id);
+    saveHr(hr);
+  }
+  function validHr(n) {
+    const v = Number(n);
+    return Number.isFinite(v) && v >= 70 && v <= 215 ? Math.round(v) : null;
+  }
+  /** "11:45" or "11:45/mi" or "11.75" to minutes per mile, or null. */
+  function parsePace(str) {
+    const s = String(str || "").trim().replace(/\s*(\/\s*mi(le)?|per mile|min)\s*$/i, "");
+    if (!s) return null;
+    let v = null;
+    const m = /^(\d{1,2}):(\d{1,2})$/.exec(s);
+    if (m) v = +m[1] + +m[2] / 60;
+    else if (/^\d+(\.\d+)?$/.test(s)) v = parseFloat(s);
+    return v && v >= 4 && v <= 30 ? v : null;
+  }
+  function fmtPace(minPerMile) {
+    if (!minPerMile) return "";
+    let m = Math.floor(minPerMile);
+    let sec = Math.round((minPerMile - m) * 60);
+    if (sec === 60) {
+      m += 1;
+      sec = 0;
+    }
+    return m + ":" + String(sec).padStart(2, "0") + " per mile";
+  }
+
+  /**
+   * Drift test math and advice. drift % = (second half average / first half average − 1) × 100.
+   * 3.5 to 5 percent: the first-half heart rate is the aerobic threshold.
+   * Under 3.5 percent: the threshold is higher. The app raises the cap 3 beats above the first-half heart rate
+   *   (never lowering it) as a careful provisional step, and suggests retesting about 5 beats higher.
+   * Over 5 percent: the threshold is lower. The app lowers the cap to 3 beats under the first-half heart rate
+   *   (never raising it) and suggests retesting about 5 beats lower.
+   */
+  function evaluateDrift(first, second, current) {
+    const drift = Math.round((second / first - 1) * 1000) / 10;
+    const cur = current || getAeT();
+    let aetAfter;
+    let band;
+    let text;
+    if (drift >= 3.5 && drift <= 5) {
+      band = "found";
+      aetAfter = first;
+      text =
+        "Your heart rate drifted " + fmtNum(drift) + " percent, right in the 3.5 to 5 percent window. That means the heart rate you held at the start, about " + first +
+        ", is your aerobic threshold. Your easy-run cap is now " + aetAfter + ".";
+    } else if (drift < 3.5) {
+      band = "low";
+      aetAfter = Math.max(cur, first + 3);
+      text =
+        "Your heart rate drifted only " + fmtNum(Math.max(0, drift)) + " percent, under 3.5 percent, so you started below your aerobic threshold and it is higher than " + first +
+        ". To stay careful, the app " + (aetAfter > cur ? "raises your cap a little, to " + aetAfter : "keeps your cap at " + aetAfter) +
+        " for now. Next time, start the steady part about 5 beats higher, near " + (first + 5) + ".";
+    } else {
+      band = "high";
+      aetAfter = Math.min(cur, first - 3);
+      text =
+        "Your heart rate drifted " + fmtNum(drift) + " percent, over 5 percent, so you started above your aerobic threshold and it is lower than " + first +
+        ". " + (aetAfter < cur ? "The app lowers your cap to " + aetAfter + " for now." : "Your cap of " + aetAfter + " is already below that, so it stays where it is for now.") + " Next time, start the steady part about 5 beats lower, near " + (first - 5) + ".";
+    }
+    return { drift: drift, band: band, aetAfter: aetAfter, text: text };
+  }
+
+  function evaluateThreshold(antHr, aet) {
+    const gap = Math.round((antHr / aet - 1) * 1000) / 10;
+    const text =
+      gap > 10
+        ? "Your threshold test heart rate of " + antHr + " is " + fmtNum(gap) + " percent above your aerobic threshold of " + aet +
+          ". A gap over 10 percent means your aerobic base still has room to grow, so keep building it with easy volume only. That is exactly what this plan does."
+        : "Your threshold test heart rate of " + antHr + " is only " + fmtNum(gap) + " percent above your aerobic threshold of " + aet +
+          ". A gap of 10 percent or less means your aerobic base is well built. The plan still keeps every run easy through Black Canyon.";
+    return { gap: gap, text: text };
+  }
+
+  /** Previous drift test whose result set the threshold (3.5 to 5 percent) with a logged pace. */
+  function previousFoundDrift(beforeTs) {
+    const h = hrHistory().filter((e) => e.type === "drift" && e.band === "found" && e.paceMin && (e.ts || 0) < beforeTs);
+    return h.length ? h[h.length - 1] : null;
+  }
+
+  /** Save a drift test and return the explanation, plus any celebration. */
+  function recordDriftTest(d) {
+    const first = validHr(d.first);
+    const second = validHr(d.second);
+    if (!first || !second) return null;
+    const startHr = validHr(d.start);
+    const before = getAeT();
+    const wasProvisional = aetIsProvisional();
+    const ev = evaluateDrift(first, second, before);
+    const paceMin = parsePace(d.pace);
+    const ts = d.ts || Date.now();
+    const prevFound = previousFoundDrift(ts);
+    const entry = addHrEntry({
+      type: "drift",
+      dateKey: localDateKey(ts),
+      weekIndex: getProgramWeekIndex(),
+      ts: ts,
+      startHr: startHr || undefined,
+      firstHalf: first,
+      secondHalf: second,
+      paceMin: paceMin || undefined,
+      drift: ev.drift,
+      band: ev.band,
+      aetBefore: before,
+      aetAfter: ev.aetAfter,
+    });
+    const cheers = [];
+    if (!wasProvisional && ev.band === "found" && ev.aetAfter > before) {
+      cheers.push("Your aerobic threshold went up from " + before + " to " + ev.aetAfter + ". That is the aerobic base growing.");
+    }
+    if (ev.band === "found" && paceMin && prevFound && paceMin < prevFound.paceMin - 0.05) {
+      const secs = Math.round((prevFound.paceMin - paceMin) * 60);
+      cheers.push("Your pace at your aerobic threshold is " + secs + " seconds per mile faster than your last good test (" + fmtPace(paceMin) + " versus " + fmtPace(prevFound.paceMin) + ").");
+    }
+    let text = ev.text;
+    if (wasProvisional && ev.aetAfter !== before) text += " This replaces the starting cap of " + before + ".";
+    return { entry: entry, text: text, cheers: cheers, aet: ev.aetAfter, drift: ev.drift, band: ev.band };
+  }
+
+  function recordThresholdTest(d) {
+    const antHr = validHr(d.ant);
+    if (!antHr) return null;
+    const aet = getAeT();
+    const ts = d.ts || Date.now();
+    const ev = evaluateThreshold(antHr, aet);
+    const entry = addHrEntry({
+      type: "ant",
+      dateKey: localDateKey(ts),
+      weekIndex: getProgramWeekIndex(),
+      ts: ts,
+      antHr: antHr,
+      aetAtTest: aet,
+      gap: ev.gap,
+    });
+    let text = ev.text;
+    if (aetIsProvisional()) text += " Your aerobic threshold is still the starting estimate, so this gap will be more accurate after your first drift test.";
+    return { entry: entry, text: text, cheers: [], gap: ev.gap };
+  }
+
+  /**
+   * Plain-English heart rate cap for a session.
+   * kind: "easy" (cap at AeT, mostly Zone 1 and 2), "recovery" (Zone 1 cap), "hills" (AeT, even on climbs),
+   * "long" (AeT), "second" (second day on tired legs, AeT), "race".
+   */
+  function hrCapText(kind) {
+    const z = getHrZones();
+    const tail = z.provisional ? " " + z.aet + " is your starting cap until your first drift test." : "";
+    if (kind === "recovery") {
+      return "Keep your heart rate at or below " + z.z1hi + ", the top of Zone 1, because this is a recovery run. Walk whenever you need to in order to stay under it." + tail;
+    }
+    if (kind === "hills") {
+      return "Keep your heart rate at or below " + z.aet + ", even on the climbs. Slow down or walk the steep parts if you need to in order to stay under it." + tail;
+    }
+    if (kind === "race") {
+      return "For the first half of the race, keep your heart rate at or below about " + z.aet + " as much as you can. The first 20 miles are fast and downhill, and holding back there is what lets you run the second half.";
+    }
+    const zones = " Most of it should sit in Zone 1 and Zone 2, about " + z.z1lo + " to " + z.aet + ".";
+    if (kind === "second") {
+      return "Keep your heart rate at or below " + z.aet + ". On tired legs it climbs sooner, so walk the hills if you need to in order to stay under it." + zones + tail;
+    }
+    return "Keep your heart rate at or below " + z.aet + ". Walk the hills if you need to in order to stay under it." + zones + tail;
+  }
+
+  /** Which heart rate cap applies to a sized option or session (a kind for hrCapText), or null when none applies. */
+  function hrCapKind(slotId, workout) {
+    if (!workout || workout.isTest) return null;
+    const rp = workout.runPlan || null;
+    const phase = rp ? rp.phase : null;
+    const recoveryPhase = phase === "recovery" || phase === "race";
+    if (slotId === "long_run") return rp && rp.kind === "race" ? "race" : recoveryPhase ? "recovery" : "long";
+    if (slotId === "easy_hike") return recoveryPhase ? "recovery" : "hills";
+    if (slotId === "speed_run" || (slotId === "flex" && workout.id === "fx-second-aerobic")) {
+      if (rp && rp.tired) return "second";
+      if (workout.id === "sp-short-easy" || recoveryPhase) return "recovery";
+      return "easy";
+    }
+    return null;
+  }
+  function hrCapFor(slotId, workout) {
+    const k = hrCapKind(slotId, workout);
+    return k ? hrCapText(k) : null;
+  }
+  function hrCapShort(slotId, workout) {
+    const k = hrCapKind(slotId, workout);
+    if (!k) return null;
+    const z = getHrZones();
+    if (k === "recovery") return "Heart rate cap: " + z.z1hi + ", the top of Zone 1.";
+    if (k === "race") return "Heart rate: about " + z.aet + " or lower for the first half.";
+    if (k === "hills") return "Heart rate cap: " + z.aet + ", even on the climbs. Walk the steep parts to stay under it.";
+    return "Heart rate cap: " + z.aet + ". Walk the hills if you need to in order to stay under it.";
+  }
+  function hrCapBlockHtml(slotId, workout, cls) {
+    const t = hrCapFor(slotId, workout);
+    if (!t) return "";
+    return '<div class="hr-cap-note ' + (cls || "") + '"><strong>Heart rate cap</strong><p>' + escapeHtml(t) + "</p></div>";
+  }
+
+  /** Fill the current cap into a drift or threshold test's instructions. */
+  function personalizeAerobicTest(base) {
+    const w = JSON.parse(JSON.stringify(base));
+    const aet = String(getAeT()) + (aetIsProvisional() ? " (your starting cap)" : "");
+    const fill = (t) => (typeof t === "string" ? t.replace(/\{AET\}/g, aet) : t);
+    w.summary = fill(w.summary);
+    w.warmup = (w.warmup || []).map(fill);
+    (w.blocks || []).forEach((b) => (b.items || []).forEach((it) => {
+      it.detail = fill(it.detail);
+      it.note = fill(it.note);
+    }));
+    w.notes = (w.notes || []).map(fill);
+    return w;
+  }
+
+  function hrTestsInWeek(w, type) {
+    return hrHistory().filter((e) => e.weekIndex === w && e.type === type);
+  }
+
+  /** Drift and threshold test cards offered today (never forced; offered every day of their week until logged). */
+  function pickAerobicTests(rem, today, plan) {
+    const out = [];
+    const w = plan.weekIndex;
+    const used = [];
+    function slotFor(prefs) {
+      const s = prefs.find((x) => rem.includes(x) && !used.includes(x));
+      if (s) used.push(s);
+      return s || null;
+    }
+    if (plan.driftTest && !hrTestsInWeek(w, "drift").length) {
+      const slot = slotFor(["speed_run", "flex"]);
+      const tw = TEST_WORKOUTS.find((t) => t.id === "test-aet-drift");
+      if (slot && tw) out.push({ slotId: slot, workout: tw });
+    }
+    const todayKey = localDateKey(new Date());
+    const driftToday = hrHistory().some((e) => e.type === "drift" && e.dateKey === todayKey);
+    if (plan.thresholdTest && !hrTestsInWeek(w, "ant").length && today.offset >= 2 && !driftToday) {
+      const slot = slotFor(["flex", "speed_run"]);
+      const tw = TEST_WORKOUTS.find((t) => t.id === "test-ant-30");
+      if (slot && tw) out.push({ slotId: slot, workout: tw });
+    }
+    return out;
+  }
+
   // ——— Miles log (runs, hikes, incline walks; survives week resets) ———
   const MILES_KINDS = {
     run: "Run",
     long: "Long run",
     hills: "Hills or incline session",
     hike: "Hike or hunting hike",
-    incline: "Incline or pack walk",
+    incline: "Incline walk",
     race: "Race",
   };
 
@@ -2229,6 +2657,7 @@
   /** Which sessions add their logged cardio distance to the weekly miles. */
   const MILES_SLOTS = ["speed_run", "long_run", "easy_hike"];
   function workoutCountsMiles(slotId, workout) {
+    if (workout && workout.countsMiles) return true;
     if (MILES_SLOTS.includes(slotId)) return true;
     return !!workout && workout.id === "fx-second-aerobic";
   }
@@ -2313,7 +2742,7 @@
       }
       shortfall = Math.max(0, pool - used);
       // At higher volume, easy days can add an optional short second run (each run stays under 90 minutes).
-      const doublesOk = plan.phase === "block" || plan.phase === "peak" || plan.phase === "build";
+      const doublesOk = plan.phase === "specific";
       if (doublesOk && shortfall >= 1.5 && easySlots.length) {
         easySlots.forEach((s) => {
           if (shortfall < 1.5) return;
@@ -2343,7 +2772,7 @@
       sizes.easy_hike = HILLS_MIN;
     }
     // What a full, untouched week can hold, so a small built-in gap is not called "behind".
-    const doublesPossible = plan.phase === "block" || plan.phase === "peak" || plan.phase === "build";
+    const doublesPossible = plan.phase === "specific";
     const fullCapacity =
       plan.longRunMiles + RUN_CAPS.speed_run + RUN_CAPS.easy_hike + (flexIsRun ? RUN_CAPS.flex : 0) +
       (doublesPossible ? 4 * (flexIsRun ? 2 : 1) : 0);
@@ -2352,30 +2781,54 @@
     return { w, plan, phase, logged, remaining, daysLeft, open, counted, sizes, doubles, shortfall: Math.round(shortfall * 10) / 10, behind, ahead, flexIsRun, flexNeeded };
   }
 
+  /** Strength sessions that switch to maintenance from the race-specific build through the recovery weeks. */
+  const STRENGTH_MAINT_IDS = ["fx-catchup-strength"];
+  function isStrengthSession(slotId, workout) {
+    if (!workout || workout.isTest) return false;
+    return slotId === "strength_a" || slotId === "strength_b" || STRENGTH_MAINT_IDS.includes(workout.id);
+  }
+  function strengthMaintenanceWeek(plan) {
+    return plan.phase === "specific" || plan.phase === "taper" || plan.phase === "race" || plan.phase === "recovery";
+  }
+  /** Fueling practice on long runs over about 90 minutes from November on (not race week or after the race). */
+  function fuelingWeek(plan) {
+    const weekEnd = new Date(plan.weekStart.getFullYear(), plan.weekStart.getMonth(), plan.weekStart.getDate() + 6);
+    return weekEnd >= new Date(2026, 10, 4) && plan.phase !== "race" && plan.phase !== "recovery";
+  }
+
   /** Plan object stored on a sized option, the started session, and today's pick. */
   function runPlanFor(slotId, workout, sizing, tired) {
     if (!workout || workout.isTest) return null;
     const plan = sizing.plan;
-    const base = { weekIndex: sizing.w, phase: plan.phase, targetMiles: plan.targetMiles, cutback: !!plan.isCutback };
+    const base = { weekIndex: sizing.w, phase: plan.phase, targetMiles: plan.targetMiles, cutback: !!plan.recoveryWeek };
+    if (isStrengthSession(slotId, workout)) {
+      return strengthMaintenanceWeek(plan) ? Object.assign(base, { kind: "maintenance" }) : null;
+    }
     if (slotId === "long_run") {
       if (plan.raceWeek) return Object.assign(base, { kind: "race", miles: RACE.miles });
-      // Fueling practice from the Build phase (November) onward on long runs over about 90 minutes.
-      const fueling = plan.phase !== "base" && plan.longRunMiles * 11.5 > 90;
-      return Object.assign(base, { kind: "long", miles: plan.longRunMiles, peakDay: !!plan.peakLongDay, fueling: fueling });
+      const fueling = fuelingWeek(plan) && plan.longRunMiles * 11.5 > 90;
+      return Object.assign(base, { kind: "long", miles: plan.longRunMiles, peakDay: !!plan.peakLongDay, fueling: fueling, secondDay: plan.secondDayMiles || 0 });
     }
     const note = sizingNote(slotId, sizing);
+    // Second day on tired legs: in the race-specific build the easy run the day after a logged long run
+    // is sized to that week's second-day target; earlier it grows a little by phase.
+    function tiredMiles(miles, cap) {
+      if (sizing.ahead) return sizing.phase.minEasy;
+      if (plan.secondDayMiles && tired.reason === "long_run") return plan.secondDayMiles;
+      return Math.min(cap, Math.max(sizing.phase.tiredMiles, miles));
+    }
     if (slotId === "speed_run") {
       let miles = sizing.sizes.speed_run;
-      if (tired) miles = sizing.ahead ? sizing.phase.minEasy : Math.min(RUN_CAPS.speed_run, Math.max(sizing.phase.tiredMiles, miles));
-      return Object.assign(base, { kind: "easy", miles: miles, double: sizing.doubles.speed_run || 0, tired: !!tired, note: note });
+      if (tired) miles = tiredMiles(miles, RUN_CAPS.speed_run);
+      return Object.assign(base, { kind: "easy", miles: miles, double: tired ? 0 : sizing.doubles.speed_run || 0, tired: !!tired, secondDay: !!(tired && plan.secondDayMiles && tired.reason === "long_run"), note: note });
     }
     if (slotId === "easy_hike") {
       return Object.assign(base, { kind: "hills", miles: sizing.sizes.easy_hike, note: note, downhill: downhillWeek(plan) });
     }
     if (slotId === "flex" && workout.id === "fx-second-aerobic") {
       let miles = sizing.sizes.flex;
-      if (tired) miles = sizing.ahead ? sizing.phase.minEasy : Math.min(RUN_CAPS.flex, Math.max(sizing.phase.tiredMiles, miles));
-      return Object.assign(base, { kind: "flex", miles: miles, double: sizing.doubles.flex || 0, tired: !!tired, note: note });
+      if (tired) miles = tiredMiles(miles, RUN_CAPS.flex);
+      return Object.assign(base, { kind: "flex", miles: miles, double: tired ? 0 : sizing.doubles.flex || 0, tired: !!tired, secondDay: !!(tired && plan.secondDayMiles && tired.reason === "long_run"), note: note });
     }
     return null;
   }
@@ -2407,7 +2860,7 @@
   function doubleItem(d) {
     return {
       name: "Optional second easy run later today, " + fmtMiles(d),
-      detail: "About " + fmtMiles(d) + ", " + timeRangeText(d, 11, 12) + ". Only if your legs feel good and you have the time. Keep it easy enough to talk in full sentences.",
+      detail: "About " + fmtMiles(d) + ", " + timeRangeText(d, 11, 12) + ". Only if your legs feel good and you have the time. Keep your heart rate at or below " + getHrZones().z1hi + ", the top of Zone 1.",
       note: "Two easy runs in one day keep every run under 90 minutes while the weekly miles climb. Skip it if you are tired; missing it is fine.",
     };
   }
@@ -2424,9 +2877,48 @@
     return weekEnd >= dec1 && plan.phase !== "race" && plan.phase !== "recovery";
   }
 
-  const LONG_RUN_RULE = "This is the only session of the week allowed to go past 90 minutes, so schedule it on a day off shift.";
+  const LONG_RUN_RULE = "This is the longest session of the week, so schedule it on a day off shift.";
   const LONG_RUN_FUEL = "Bring water, and once you are out longer than about 75 minutes, eat something every 30 to 45 minutes.";
-  const PEAK_DAY_TEXT = "This is your biggest day before the race: about 24 miles or about 5 hours on your feet, whichever comes first. Practice race-day eating and drinking.";
+  const PEAK_DAY_TEXT = "This is your longest run before the race, about two weeks out. Wear your race shoes and pack, and practice race-day eating and drinking.";
+
+  const MAINT_TEXT = "Maintenance phase until the race. Keep the lifts, lighter volume, no max attempts. You'll chase lifting PRs after Black Canyon.";
+  const MAINT_RECOVERY_TEXT = "Easy strength while you recover from Black Canyon: keep the lifts light and the volume low. Normal lifting and PR attempts come back after the recovery weeks.";
+  const MAINT_DROP = /biceps curl|hammer curl|lateral raise|rear-delt/i;
+
+  /** Strength maintenance: main lifts keep the same percent of 1RM with 2 to 3 working sets; accessories drop to 2 sets; arm and shoulder extras are dropped. */
+  function applyStrengthMaintenance(w, rp) {
+    const text = rp.phase === "recovery" ? MAINT_RECOVERY_TEXT : MAINT_TEXT;
+    w.maintenance = true;
+    w.title = w.title + " (maintenance)";
+    w.summary = text + " " + w.summary;
+    w.blocks = (w.blocks || [])
+      .map((block) => {
+        const items = (block.items || [])
+          .filter((item) => !MAINT_DROP.test(item.name || ""))
+          .map((item) => {
+            const it = Object.assign({}, item);
+            const n = parseInt(it.sets, 10);
+            if (!n) {
+              const dm = /^(\d+)\s+(sets|rounds)\b/i.exec(String(it.detail || ""));
+              if (dm && +dm[1] > 2) it.detail = String(it.detail).replace(/^(\d+)\s+(sets|rounds)\b/i, "2 $2");
+              return it;
+            }
+            const main = !!(it.liftId || it.pct1rm);
+            const cap = n > 6 ? Math.ceil(n / 2) : main ? 3 : 2;
+            const to = Math.min(n, cap);
+            if (to === n) return it;
+            it.sets = to;
+            if (it.detail) it.detail = String(it.detail).replace(/^(\d+)\s+(sets|rounds)\b/i, to + " $2");
+            return it;
+          });
+        return Object.assign({}, block, { name: String(block.name || "").replace(/\((\d+) rounds\)/i, "(2 or 3 rounds)"), items: items });
+      })
+      .filter((block) => block.items.length);
+    w.durationMin = Math.max(25, Math.round((w.durationMin * 0.65) / 5) * 5);
+    w.lengthClass = w.durationMin <= 40 ? "short" : "medium";
+    w.notes = [text].concat(w.notes || []);
+    return w;
+  }
 
   /** Apply a stored run plan to a base workout (pure: same inputs give the same blocks and log keys). */
   function applyRunPlan(slotId, base, rp) {
@@ -2435,6 +2927,8 @@
     w.runPlan = rp;
     const first = w.blocks && w.blocks[0] && w.blocks[0].items;
     const m = Number(rp.miles) || 0;
+
+    if (rp.kind === "maintenance") return applyStrengthMaintenance(w, rp);
 
     if (rp.kind === "race") {
       w.title = "Black Canyon 100K race day";
@@ -2462,8 +2956,12 @@
     }
 
     if (rp.kind === "long") {
-      const t = timeRangeText(m, 11, 12);
-      const extra = (rp.peakDay ? " " + PEAK_DAY_TEXT : "") + (rp.cutback ? " It is a little shorter this week because this is a lighter week." : "");
+      const extra =
+        (rp.peakDay ? " " + PEAK_DAY_TEXT : "") +
+        (rp.cutback ? " It is shorter this week because this is a recovery week." : "") +
+        (rp.secondDay
+          ? " If your schedule allows, run easy again the next day for about " + fmtMiles(rp.secondDay) + " on tired legs; the app sizes that run for you after this one is logged. It is a suggestion, not a requirement."
+          : "");
       if (base.id === "lr-short-bridge") {
         w.title = "Shorter long run, about 5 miles";
         w.summary =
@@ -2473,34 +2971,33 @@
       }
       w.durationMin = Math.round((m * (base.id === "lr-trail-long" ? 13.5 : 11.5)) / 5) * 5;
       w.notes = [LONG_RUN_RULE].concat(rp.fueling ? [FUEL_TEXT] : []).concat((base.notes || []).filter((n) => !/TEST|fire-pace/i.test(n)));
+      if (rp.secondDay) w.notes.splice(1, 0, "Race-specific build: when you can, put the long run on the first day off shift so an easy run of about " + fmtMiles(rp.secondDay) + " fits the day after.");
       w.fueling = !!rp.fueling;
       if (base.id === "lr-progressive") {
-        const mid = fmtMinutes(m * 11.5);
-        w.title = "Long easy run by time, about " + mid;
-        w.summary = "Build the long run by time: about " + mid + " of easy running, which is roughly " + fmtMiles(m) + ". " + LONG_RUN_RULE + extra;
+        w.title = "Long easy run, about " + fmtMiles(m);
+        w.summary = "Build the long run by distance: about " + fmtMiles(m) + " of easy running at or under your heart rate cap. " + LONG_RUN_RULE + extra;
         if (first && first[0]) {
-          first[0].name = "Easy continuous run, about " + mid;
-          first[0].detail = "Run easy for about " + mid + ", which is roughly " + fmtMiles(m) + " at 11 to 12 minutes per mile. Keep it easy enough to talk in full sentences.";
-          first[0].note = "You can mix jogging and hiking on trails. Progress comes from lasting longer, not running faster. " + LONG_RUN_FUEL;
+          first[0].name = "Easy continuous run, about " + fmtMiles(m);
+          first[0].detail = "Run easy for about " + fmtMiles(m) + ", keeping your heart rate at or below your cap. Keep it easy enough to talk in full sentences.";
+          first[0].note = "You can mix jogging and hiking on trails. Progress comes from going farther at the same easy heart rate, not from running faster. " + LONG_RUN_FUEL;
         }
         return w;
       }
       if (base.id === "lr-trail-long") {
-        const tt = timeRangeText(m, 13, 14);
         w.title = "Long easy trail run, about " + fmtMiles(m);
-        w.summary = "A long easy trail outing for 100K practice: about " + fmtMiles(m) + ", " + tt + " with the climbs hiked. " + LONG_RUN_RULE + extra;
+        w.summary = "A long easy trail outing for 100K practice: about " + fmtMiles(m) + " with the climbs hiked to keep your heart rate under your cap. " + LONG_RUN_RULE + extra;
         if (first && first[0]) {
           first[0].name = "Easy trail run, about " + fmtMiles(m);
-          first[0].detail = "About " + fmtMiles(m) + " on trail at 13 to 14 minutes per mile with the climbs hiked, " + tt + ". Keep it easy enough to talk in full sentences.";
+          first[0].detail = "About " + fmtMiles(m) + " on trail with the climbs hiked, keeping your heart rate at or below your cap. Keep it easy enough to talk in full sentences.";
           first[0].note = "Power-hike the climbs and stay on soft ground. " + LONG_RUN_FUEL;
         }
         return w;
       }
       w.title = "Long easy run, about " + fmtMiles(m);
-      w.summary = "Your main ultra session this week: about " + fmtMiles(m) + " easy, " + t + ". " + LONG_RUN_RULE + extra;
+      w.summary = "Your main ultra session this week: about " + fmtMiles(m) + " easy, at or under your heart rate cap. " + LONG_RUN_RULE + extra;
       if (first && first[0]) {
         first[0].name = "Easy continuous run, " + fmtMiles(m);
-        first[0].detail = "About " + fmtMiles(m) + " at 11 to 12 minutes per mile, " + t + ". Keep it easy enough to talk in full sentences.";
+        first[0].detail = "About " + fmtMiles(m) + " at whatever easy pace keeps your heart rate at or below your cap. Keep it easy enough to talk in full sentences.";
         first[0].note = "Walk short hills if you need to. " + LONG_RUN_FUEL;
       }
       return w;
@@ -2517,7 +3014,7 @@
         extraMin = 5;
         label = "Very easy run, ";
       } else if (base.id === "sp-trail-volume") {
-        em = Math.min(m, 6.5);
+        em = Math.min(m, rp.secondDay ? 8 : 6.5);
         lo = 12;
         hi = 13;
         extraMin = 6;
@@ -2526,23 +3023,28 @@
         extraMin = 6;
         label = "Very easy jog or incline walk, ";
       }
-      const t = timeRangeText(em, lo, hi);
       w.displayMiles = em;
-      w.durationMin = Math.max(30, Math.min(90, Math.round((em * ((lo + hi) / 2) + extraMin) / 5) * 5));
+      w.durationMin = Math.max(30, Math.min(rp.secondDay ? 105 : 90, Math.round((em * ((lo + hi) / 2) + extraMin) / 5) * 5));
+      w.notes = (w.notes || []).filter((n) => !/TEST|fire-pace/i.test(n));
       if (base.id === "sp-short-easy") w.title = "Short easy run, " + fmtMiles(em);
       else if (base.id === "sp-trail-volume") w.title = "Easy trail run, " + fmtMiles(em);
       else if (base.id === "fx-second-aerobic") w.title = "Extra easy run, " + fmtMiles(em);
       else w.title = "Easy conversational run, " + fmtMiles(em);
       w.summary =
-        "An easy " + fmtMiles(em) + ", " + t + ". Easy enough to talk in full sentences the whole way. Speed comes with volume, so there are no intervals today." +
+        "An easy " + fmtMiles(em) + " at or under your heart rate cap. Easy enough to talk in full sentences the whole way. Speed comes with volume, so there are no intervals today." +
         (rp.double && base.id !== "sp-short-easy" ? " An optional second easy run of about " + fmtMiles(rp.double) + " later in the day helps reach this week's miles." : "");
       if (first && first[0]) {
         first[0].name = label + fmtMiles(em);
         first[0].detail =
-          "About " + fmtMiles(em) + " at " + lo + " to " + hi + " minutes per mile, " + t + "." +
-          (base.id === "fx-second-aerobic" ? " An incline walk is slower, so go by time if you walk." : "") +
+          "About " + fmtMiles(em) + " at whatever easy pace keeps your heart rate at or below your cap." +
+          (base.id === "fx-second-aerobic" ? " If you walk on an incline instead, count the miles the treadmill shows." : "") +
           " Keep it easy enough to talk in full sentences.";
-        first[0].note = (rp.tired ? "Second day on tired legs, so this run gets a little longer in later phases. " : "") + (rp.note || "");
+        first[0].note =
+          (rp.secondDay
+            ? "Second day on tired legs after yesterday's long run. In the race-specific build this run is about " + fmtMiles(em) + ", so it can run a little past 90 minutes. "
+            : rp.tired
+            ? "Second day on tired legs, so this run gets a little longer in later phases. "
+            : "") + (rp.note || "");
       }
       if (rp.double && base.id !== "sp-short-easy" && first) first.push(doubleItem(rp.double));
       return w;
@@ -2552,27 +3054,25 @@
       if (rp.downhill) w.notes = [DOWNHILL_TEXT].concat(w.notes || []);
       if (base.id === "eh-hyper-hills") {
         const hm = clampNum(Math.min(m, 4), 2, 4);
-        const t = timeRangeText(hm, 14, 16);
         w.title = "Hyper Pro and easy hills, " + fmtMiles(hm) + " of incline";
         w.durationMin = Math.min(90, Math.round((hm * 15 + 25) / 5) * 5);
         w.summary = "About " + fmtMiles(hm) + " of easy incline walking and jogging, then Hyper Pro back and knee work for Black Canyon climbs and multi-day hunts. Easy enough to talk.";
         if (first && first[0]) {
           first[0].name = "Wahoo Incline Walk or Jog, " + fmtMiles(hm);
-          first[0].detail = "About " + fmtMiles(hm) + " of easy incline walking and jogging, " + t + ". Load a hilly course import on the Wahoo so the grade rises and falls like real terrain. Keep it easy enough to talk.";
+          first[0].detail = "About " + fmtMiles(hm) + " of easy incline walking and jogging, keeping your heart rate at or below your cap. Load a hilly course import on the Wahoo so the grade rises and falls like real terrain. Keep it easy enough to talk.";
           first[0].note = "Builds climbing fitness for Black Canyon and your hunts at the same time. " + (rp.note || "");
         }
         return w;
       }
       if (base.id === "eh-trail-easy") {
         const tm = clampNum(Math.min(m, 5.5), 2, 5.5);
-        const t = timeRangeText(tm, 14, 16);
-        w.title = "Easy trail with light pack, " + fmtMiles(tm);
+        w.title = "Easy trail hike and jog, " + fmtMiles(tm);
         w.durationMin = Math.min(90, Math.round((tm * 15 + 6) / 5) * 5);
-        w.summary = "About " + fmtMiles(tm) + " of easy trail hiking and jogging with a light pack, " + t + ". Toughens your feet for the ultra and feels like a hunt.";
+        w.summary = "About " + fmtMiles(tm) + " of easy trail hiking and jogging at or under your heart rate cap. Toughens your feet for the ultra and feels like a hunt.";
         if (first && first[0]) {
-          first[0].name = "Easy trail hike and jog with a light pack, " + fmtMiles(tm);
-          first[0].detail = "About " + fmtMiles(tm) + " at 14 to 16 minutes per mile, " + t + ". Hike the steep parts and keep it easy enough to talk.";
-          first[0].note = "Carry an optional 10 to 20 lb pack to build toward hunting days. " + (rp.note || "");
+          first[0].name = "Easy trail hike and jog, " + fmtMiles(tm);
+          first[0].detail = "About " + fmtMiles(tm) + ", hiking the steep parts so your heart rate stays at or below your cap. Keep it easy enough to talk.";
+          first[0].note = "A light day pack for water is fine. Keep it an easy aerobic outing. " + (rp.note || "");
         }
         return w;
       }
@@ -2584,11 +3084,13 @@
   /** Base workout plus any stored run sizing (used for options, the active session, and finishing). */
   function resolveWorkout(slotId, workoutId, runPlan) {
     const base = findWorkout(slotId, workoutId);
+    if (base && base.aerobicTest) return personalizeAerobicTest(base);
     if (!base || !runPlan) return base;
     return applyRunPlan(slotId, base, runPlan);
   }
 
   function sizeOption(slotId, workout, sizing, tired) {
+    if (workout && workout.aerobicTest) return personalizeAerobicTest(workout);
     const rp = runPlanFor(slotId, workout, sizing, tired);
     return rp ? applyRunPlan(slotId, workout, rp) : workout;
   }
@@ -2602,8 +3104,9 @@
       return "Recovery after the race. Keep runs short and easy; about " + fmtMiles(plan.targetMiles) + " is plenty this week.";
     }
     return (
-      plan.phaseLabel + ", week " + plan.planWeekNumber + " of the plan. " +
-      fmtNum(plan.targetMiles) + " miles is the target this week, and the long run is about " + fmtMiles(plan.longRunMiles) + "."
+      plan.phaseLabel + ", week " + plan.planWeekNumber + " of the plan" + (plan.recoveryWeek ? ", a recovery week" : "") + ". " +
+      fmtNum(plan.targetMiles) + " miles is the target this week, and the long run is about " + fmtMiles(plan.longRunMiles) +
+      (plan.secondDayMiles ? ", with an easy run of about " + fmtMiles(plan.secondDayMiles) + " the day after it if your schedule allows" : "") + "."
     );
   }
 
@@ -2637,7 +3140,7 @@
     else if (longest >= cp.closeLongestMiles || avg >= cp.closeAvgMiles) status = "close";
     else status = "behind";
     const cpStart = weekStartDate(cw);
-    let text = "You're on track if you've finished a long run of about 20 miles feeling okay and your recent weeks have been in the 40s. ";
+    let text = "You're on track if you've finished a long run of about " + cp.longestRunMiles + " miles or more feeling okay and your recent weeks have averaged in the mid-30s or more. ";
     text += (longest > 0 ? "So far your longest logged run is " + fmtMiles(longest) : "No runs are logged yet") + (weeks.length ? ", and your last " + weeks.length + (weeks.length === 1 ? " week" : " weeks") + " averaged " + fmtMiles(avg) + "." : ".");
     let verdict = "";
     if (!reached) {
@@ -2652,12 +3155,31 @@
     return { longest, avg, weeks, status, reached, text, verdict, checkpointWeek: cw, cpStart };
   }
 
+  function testWeekText(plan) {
+    const parts = [];
+    if (plan.driftTest && !hrTestsInWeek(plan.weekIndex, "drift").length) parts.push("a heart rate drift test is offered as an option on the Today tab");
+    if (plan.thresholdTest && !hrTestsInWeek(plan.weekIndex, "ant").length) parts.push("an optional 30-minute threshold test shows up later in the week, and you can skip it");
+    if (!parts.length) return "";
+    return " This week " + parts.join(", and ") + ".";
+  }
+
   function mileageCallout(plan) {
-    if (plan.phase === "race") return { cls: "race", text: "Race week. Just a few short, easy runs of about 3 miles to stay loose, then the race on " + raceWeekday() + ". Rest is part of the plan now." };
-    if (plan.isCutback) return { cls: "", text: "This is a lighter week on purpose. The mileage drops about 20 percent so your body can absorb the last three weeks of work and come back stronger. Don't add miles to make up for it; the next build starts next week." };
-    if (plan.peakLongDay) return { cls: "peak", text: "Your biggest day before the race is this week: a long run of about 24 miles or about 5 hours on your feet, whichever comes first. Put it on a day off shift and practice race-day eating and drinking." };
-    if (plan.phase === "taper" && plan.taperPct === 70) return { cls: "", text: "Taper, first week: about 70 percent of your peak mileage. Keep every run easy and let your legs freshen up." };
-    if (plan.phase === "taper") return { cls: "", text: "Taper, second week: about half of your peak mileage. The fitness is already built; now you are getting fresh, so resist adding miles." };
+    if (plan.phase === "race") return { cls: "race", text: "Race week. About 8 to 12 easy miles in a few short runs to stay loose, then the race on " + raceWeekday() + ". Rest is part of the plan now." };
+    if (plan.phase === "recovery") return { cls: "", text: "Recovery after the race. Keep every run short and easy, in Zone 1, and let your legs heal." };
+    if (plan.recoveryWeek) {
+      const prev = plan.weekIndex > 0 ? getWeekPlan(plan.weekIndex - 1) : null;
+      const pct = prev && prev.targetMiles > 0 ? Math.round((1 - plan.targetMiles / prev.targetMiles) * 100) : 0;
+      return {
+        cls: "",
+        text:
+          "This is a recovery week on purpose" + (pct > 0 ? ": about " + pct + " percent fewer miles than last week" : "") +
+          ". Three building weeks, then one recovery week, is how the aerobic base absorbs the work. Don't add miles to make up for it." + testWeekText(plan),
+      };
+    }
+    if (plan.peakLongDay) return { cls: "peak", text: "Your biggest week and your longest run before the race: about " + fmtMiles(plan.longRunMiles) + ", about two weeks before race day, and an easy run of about " + fmtMiles(plan.secondDayMiles || 8) + " the day after if it fits. Put the long run on a day off shift and practice race-day eating and drinking." };
+    if (plan.phase === "taper") return { cls: "", text: "Taper: about 25 percent fewer miles than your peak week. Keep every run easy and let your legs freshen up. The fitness is already built, so resist adding miles." };
+    const t = testWeekText(plan);
+    if (t) return { cls: "", text: t.trim() };
     return null;
   }
 
@@ -2679,7 +3201,7 @@
     }
     if (Object.keys(sizing.doubles).length) text += " Easy days also offer an optional short second run later in the day.";
     if (!sizing.behind && sizing.shortfall >= 1.5) {
-      text += " Those runs cover all but about " + fmtMiles(sizing.shortfall) + " of the target. A hike or pack walk can fill the gap, or let it go; close is good enough.";
+      text += " Those runs cover all but about " + fmtMiles(sizing.shortfall) + " of the target. An easy hike or incline walk can fill the gap, or let it go; close is good enough.";
     }
     if (sizing.behind) {
       text += " You are behind this week's target, and that is fine. Don't cram extra miles into the last days; the runs stay at a normal size, and missing the target by a few miles will not hurt your race.";
@@ -2705,7 +3227,7 @@
     const entries = milesEntriesForWeek(sizing.w);
     const weekEnd = weekStartDate(sizing.w + 1);
     weekEnd.setDate(weekEnd.getDate() - 1);
-    let html = '<section class="mileage-card' + (plan.isCutback ? " cutback" : "") + '" aria-label="Weekly running miles">';
+    let html = '<section class="mileage-card' + (plan.recoveryWeek ? " cutback" : "") + '" aria-label="Weekly running miles">';
     html += '<div class="mileage-head"><span class="mileage-eyebrow">Weekly miles · ' + escapeHtml(shortDate(plan.weekStart) + " to " + shortDate(weekEnd)) + "</span>";
     html +=
       '<div class="mileage-total" id="' + prefix + '-mileage-total">This week: ' + fmtNum(logged) + " of " + fmtNum(target) + " miles" +
@@ -2728,7 +3250,7 @@
       html += '<p class="mileage-note">' + escapeHtml("What counts: runs, trail runs, hills sessions, hikes and hunting hikes, and incline walks or jogs, as long as you enter the distance in Active Workout, plus anything you add here. Strength, core, and recovery sessions don't count.") + "</p>";
     }
     html += '<form class="miles-add" data-miles-form="' + prefix + '" novalidate>';
-    html += '<label class="miles-add-label" for="' + prefix + '-miles-input">Add miles done outside the app, like a hunting hike</label>';
+    html += '<label class="miles-add-label" for="' + prefix + '-miles-input">Add miles done outside the app, like a hunting hike. Average heart rate is optional.</label>';
     html += '<div class="miles-add-row">';
     html += '<input type="text" inputmode="decimal" id="' + prefix + '-miles-input" data-miles-input placeholder="Miles" autocomplete="off" aria-label="Miles" />';
     html +=
@@ -2737,6 +3259,7 @@
       '<option value="hike">Hike or hunting hike</option>' +
       '<option value="incline">Incline or pack walk</option>' +
       "</select>";
+    html += '<input type="text" inputmode="numeric" data-miles-hr placeholder="Avg HR" autocomplete="off" aria-label="Average heart rate, optional" class="miles-hr" />';
     html += '<button type="submit" class="btn-bench primary" data-miles-add>Add miles</button>';
     html += "</div>";
     html += '<p class="miles-status" data-miles-status aria-live="polite"></p>';
@@ -2748,7 +3271,7 @@
         const what = (MILES_KINDS[e.kind] || "Miles") + (e.source === "manual" ? ", added by hand" : e.title ? ", " + e.title : "");
         html +=
           '<li><span class="me-what">' + escapeHtml(d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) + " · " + what) + "</span>" +
-          '<span class="me-mi">' + escapeHtml(fmtMiles(e.miles)) + "</span>" +
+          '<span class="me-mi">' + escapeHtml(fmtMiles(e.miles) + (e.avgHr ? ", heart rate " + e.avgHr : "")) + "</span>" +
           '<button type="button" class="me-del" data-miles-del="' + escapeHtml(e.id) + '" aria-label="Delete this entry">✕</button></li>';
       });
       html += "</ul></details>";
@@ -2772,8 +3295,18 @@
           status.className = "miles-status err";
           return;
         }
+        const hrEl = form.querySelector("[data-miles-hr]");
+        const hrRaw = hrEl ? String(hrEl.value || "").trim() : "";
+        const avgHr = hrRaw ? validHr(hrRaw) : null;
+        if (hrRaw && !avgHr) {
+          status.textContent = "Enter the average heart rate as a number, like 138, or leave it blank.";
+          status.className = "miles-status err";
+          return;
+        }
         const now = new Date();
         addMilesEntry({
+          avgHr: avgHr || undefined,
+          aetAtTime: getAeT(),
           source: "manual",
           dateKey: localDateKey(now),
           weekIndex: getProgramWeekIndex(),
@@ -2845,10 +3378,10 @@
       const trackPct = Math.max(8, Math.min(100, (p.targetMiles / maxTarget) * 100));
       const fillPct = p.targetMiles > 0 ? Math.min(100, (milesForWeek(w, { skipRace: true }) / p.targetMiles) * 100) : 0;
       const tags = [p.phaseLabel];
-      if (p.isCutback) tags.push("lighter week");
+      if (p.recoveryWeek) tags.push("recovery week");
       if (w === cur) tags.push("this week");
       rows +=
-        '<div class="mh-row' + (p.isCutback ? " cutback" : "") + (w === cur ? " current" : "") + '">' +
+        '<div class="mh-row' + (p.recoveryWeek ? " cutback" : "") + (w === cur ? " current" : "") + '">' +
         '<div class="mh-top"><span class="mh-week">' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart)) + "</span>" +
         '<span class="mh-val">' + escapeHtml(p.phase === "race" ? fmtNum(actual) + " miles, including the race" : fmtNum(actual) + " of " + fmtNum(p.targetMiles) + " miles") + "</span></div>" +
         '<div class="mh-track" style="width:' + trackPct.toFixed(1) + '%"><span class="mh-fill" style="width:' + fillPct.toFixed(1) + '%"></span></div>' +
@@ -2857,16 +3390,23 @@
     let planRows = "";
     for (let w = 0; w <= rw; w++) {
       const p = getWeekPlan(w);
-      const lr = p.phase === "race" ? "Race day: Black Canyon 100K, " + raceWeekday() : "Long run about " + fmtMiles(p.longRunMiles) + (p.peakLongDay ? ", or about 5 hours on your feet" : "");
+      const lr =
+        p.phase === "race"
+          ? "About 8 to 12 easy miles, then race day: Black Canyon 100K, " + raceWeekday()
+          : "Long run about " + fmtMiles(p.longRunMiles) +
+            (p.secondDayMiles ? ", then about " + fmtMiles(p.secondDayMiles) + " easy the next day" : "") +
+            (p.peakLongDay ? " (your longest run)" : "") +
+            (p.driftTest ? ". Drift test offered" : "") +
+            (p.thresholdTest ? ". Optional threshold test" : "");
       planRows +=
-        '<li class="' + (w === cur ? "current" : "") + (p.isCutback ? " cutback" : "") + '">' +
+        '<li class="' + (w === cur ? "current" : "") + (p.recoveryWeek ? " cutback" : "") + '">' +
         '<div class="pr-top"><span>' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart)) + "</span><span>" + escapeHtml(fmtNum(p.targetMiles) + " miles") + "</span></div>" +
-        '<div class="pr-sub">' + escapeHtml(p.phaseLabel + (p.isCutback ? ", lighter week" : "") + ". " + lr + ".") + "</div></li>";
+        '<div class="pr-sub">' + escapeHtml(p.phaseLabel + (p.recoveryWeek ? ", recovery week" : "") + ". " + lr + ".") + "</div></li>";
     }
     return (
       '<article class="bench-card mileage-history">' +
       '<div class="bench-card-head"><div><h3>Weekly running miles</h3><span class="bench-unit">target and actual for each week</span></div></div>' +
-      '<p class="sub">The green fill is what you logged. The dashed outline is that week\'s target, drawn to scale so you can compare weeks. Lighter weeks are marked.</p>' +
+      '<p class="sub">The green fill is what you logged. The dashed outline is that week\'s target, drawn to scale so you can compare weeks. Recovery weeks are marked.</p>' +
       '<div class="mh-list">' + rows + "</div>" +
       fuelNotesHtml() +
       '<details class="plan-details"><summary>See the full plan to race day</summary><ul class="plan-rows">' + planRows + "</ul></details>" +
@@ -2874,6 +3414,138 @@
     );
   }
 
+
+  // ——— Progress: heart rate card ———
+  function easyPaceRuns() {
+    return loadMiles()
+      .filter((e) => (e.kind === "run" || e.kind === "long") && e.paceMin && e.avgHr && !e.hrTest)
+      .filter((e) => {
+        const cap = Number(e.aetAtTime) || DEFAULT_AET;
+        return e.avgHr >= cap - 8 && e.avgHr <= cap + 2;
+      })
+      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+  }
+
+  function hrProgressHtml() {
+    const z = getHrZones();
+    const hist = hrHistory();
+    const ant = latestAntEntry();
+    let html = '<article class="bench-card hr-card">';
+    html += '<div class="bench-card-head"><div><h3>Heart rate and aerobic threshold</h3><span class="bench-unit">sets the cap for every easy run</span></div></div>';
+    html += '<div class="bench-stats">';
+    html += '<div class="bench-stat best"><span class="lbl">Easy-run cap</span><span class="val">' + z.aet + "</span></div>";
+    html += '<div class="bench-stat"><span class="lbl">Zone 1 top</span><span class="val">' + z.z1hi + "</span></div>";
+    html += '<div class="bench-stat goal"><span class="lbl">Threshold test</span><span class="val">' + (ant ? Math.round(ant.antHr) : "—") + "</span></div>";
+    html += "</div>";
+    html += '<p class="sub hr-cap-source">' + escapeHtml("Aerobic threshold: " + aetLabel() + ".") + "</p>";
+    html += '<ul class="hr-zones">';
+    html += "<li><strong>Zone 1</strong><span>" + escapeHtml(z.z1lo + " to " + z.z1hi + ". Recovery runs and easy walking.") + "</span></li>";
+    html += "<li><strong>Zone 2</strong><span>" + escapeHtml(z.z2lo + " to " + z.aet + ". Where most of your running lives, including long runs.") + "</span></li>";
+    html += "<li><strong>Zone 3</strong><span>" + escapeHtml("Above " + z.aet + (z.ant ? " up to " + z.ant : " up to your anaerobic threshold") + ". Not used in this plan.") + "</span></li>";
+    html += "<li><strong>Zone 4</strong><span>" + escapeHtml("Above " + (z.ant ? z.ant : "your anaerobic threshold") + ". Not used in this plan.") + "</span></li>";
+    html += "</ul>";
+    if (ant) {
+      const gapNow = evaluateThreshold(Math.round(ant.antHr), z.aet);
+      html += '<p class="goal-note">' + escapeHtml(gapNow.text) + "</p>";
+    }
+    html +=
+      '<form class="miles-add hr-manual" id="hr-manual-form" novalidate>' +
+      '<label class="miles-add-label" for="hr-manual-input">Set your aerobic threshold by hand, for example from a lab test. Drift tests set it for you.</label>' +
+      '<div class="miles-add-row"><input type="text" inputmode="numeric" id="hr-manual-input" placeholder="bpm" autocomplete="off" />' +
+      '<button type="submit" class="btn-bench primary">Save threshold</button></div>' +
+      '<p class="miles-status" id="hr-manual-status" aria-live="polite"></p></form>';
+    // Test history
+    const tests = hist.slice().reverse();
+    html += '<h4 class="hr-sub-title">Test history</h4>';
+    if (!tests.length) {
+      html += '<p class="bench-empty">No heart rate tests yet. Your first drift test is offered in week 2. Until then, the cap is ' + DEFAULT_AET + ", which is 180 minus your age.</p>";
+    } else {
+      html += '<ul class="bench-history hr-history">';
+      tests.slice(0, 12).forEach((e) => {
+        const d = new Date((e.dateKey || localDateKey(e.ts)) + "T12:00:00");
+        let what;
+        let val;
+        if (e.type === "drift") {
+          what = "Drift test, " + e.firstHalf + " then " + e.secondHalf + (e.paceMin ? " at " + fmtPace(e.paceMin) : "");
+          val = fmtNum(e.drift) + "%, cap " + e.aetAfter;
+        } else if (e.type === "ant") {
+          what = "Threshold test, gap " + fmtNum(e.gap) + " percent";
+          val = "HR " + e.antHr;
+        } else {
+          what = "Set by hand";
+          val = "cap " + e.aetAfter;
+        }
+        html +=
+          '<li><span class="h-date">' + escapeHtml(d.toLocaleDateString("en-US", { month: "short", day: "numeric" })) + "</span><span>" + escapeHtml(what) + '</span><span class="h-val">' + escapeHtml(val) + "</span>" +
+          '<button type="button" class="h-del" data-hr-del="' + escapeHtml(e.id) + '" aria-label="Delete this test">✕</button></li>';
+      });
+      html += "</ul>";
+    }
+    // Pace at easy heart rate
+    const runs = easyPaceRuns();
+    html += '<h4 class="hr-sub-title">Pace at your easy heart rate</h4>';
+    if (!runs.length) {
+      html += '<p class="bench-empty">Enter the distance, time or pace, and average heart rate on your runs. Runs that finish within a few beats under your cap show up here, so you can watch the same heart rate get faster.</p>';
+    } else {
+      if (runs.length >= 4) {
+        const n = Math.min(3, Math.floor(runs.length / 2));
+        const avg = (arr) => arr.reduce((a, e) => a + e.paceMin, 0) / arr.length;
+        const early = avg(runs.slice(0, n));
+        const late = avg(runs.slice(-n));
+        const secs = Math.round((early - late) * 60);
+        html +=
+          '<p class="goal-note">' +
+          escapeHtml(
+            secs >= 5
+              ? "Your pace at an easy heart rate has improved by about " + secs + " seconds per mile, from " + fmtPace(early) + " to " + fmtPace(late) + ". That is the aerobic base growing."
+              : secs <= -5
+              ? "Your pace at an easy heart rate is about " + -secs + " seconds per mile slower lately. Heat, hills, tiredness, and poor sleep all do this, so give it a few weeks before reading much into it."
+              : "Your pace at an easy heart rate is holding steady at about " + fmtPace(late) + "."
+          ) +
+          "</p>";
+      }
+      html += '<ul class="bench-history hr-pace">';
+      runs.slice(-8).reverse().forEach((e) => {
+        const d = new Date((e.dateKey || localDateKey(e.ts)) + "T12:00:00");
+        html +=
+          '<li><span class="h-date">' + escapeHtml(d.toLocaleDateString("en-US", { month: "short", day: "numeric" })) + "</span><span>" +
+          escapeHtml(fmtMiles(e.miles) + " at heart rate " + e.avgHr) + '</span><span class="h-val">' + escapeHtml(fmtPace(e.paceMin)) + "</span></li>";
+      });
+      html += "</ul>";
+    }
+    html += "</article>";
+    return html;
+  }
+
+  function bindHrProgress(root) {
+    const f = root.querySelector("#hr-manual-form");
+    if (f) {
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const v = validHr(root.querySelector("#hr-manual-input").value);
+        const st = root.querySelector("#hr-manual-status");
+        if (!v || v < 100 || v > 190) {
+          st.textContent = "Enter a heart rate between 100 and 190.";
+          st.className = "miles-status err";
+          return;
+        }
+        addHrEntry({ type: "manual", dateKey: localDateKey(new Date()), weekIndex: getProgramWeekIndex(), ts: Date.now(), aetBefore: getAeT(), aetAfter: v });
+        render();
+        const st2 = document.getElementById("hr-manual-status");
+        if (st2) {
+          st2.textContent = "Saved. Every heart rate cap now uses " + v + ".";
+          st2.className = "miles-status ok";
+        }
+      });
+    }
+    root.querySelectorAll("[data-hr-del]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!confirm("Delete this heart rate test? Your cap goes back to the one before it.")) return;
+        deleteHrEntry(btn.getAttribute("data-hr-del"));
+        render();
+      });
+    });
+  }
 
   // ——— Today's options ———
   function pickOptionsForToday(st) {
@@ -2977,6 +3649,25 @@
         options[options.length - 1] = testOpt;
       }
     }
+
+    // Heart rate drift test and optional threshold test (in their weeks only)
+    pickAerobicTests(rem, today, sizing.plan).forEach((t) => {
+      const opt = { slotId: t.slotId, workout: t.workout, isTest: true };
+      const same = options.findIndex((o) => o.slotId === t.slotId && !(o.workout && o.workout.aerobicTest));
+      if (same >= 0) options[same] = opt;
+      else if (options.length < 3) options.push(opt);
+      else {
+        let idx = -1;
+        for (let i = options.length - 1; i >= 0; i--) {
+          if (!options[i].isTest && options[i].slotId !== "long_run") {
+            idx = i;
+            break;
+          }
+        }
+        if (idx < 0) idx = options.findIndex((o) => !(o.workout && o.workout.aerobicTest));
+        if (idx >= 0) options[idx] = opt;
+      }
+    });
 
     const tired = tiredLegsFromYesterday();
     options.forEach((o) => {
@@ -3115,6 +3806,7 @@
             distance: "",
             time: "",
             pace: "",
+            hr: "",
             isMax: !!spec.isMax,
           };
         } else {
@@ -3195,7 +3887,7 @@
         });
       }
       if (log.type === "cardio") {
-        return !!(log.done || (log.distance && String(log.distance).trim()) || (log.time && String(log.time).trim()) || (log.pace && String(log.pace).trim()));
+        return !!(log.done || (log.distance && String(log.distance).trim()) || (log.time && String(log.time).trim()) || (log.pace && String(log.pace).trim()) || (log.hr && String(log.hr).trim()));
       }
       return !!log.done;
     });
@@ -3260,8 +3952,22 @@
     const cardioSum = summarizeCardioLogs(sess.logs);
     const countsMiles = workoutCountsMiles(sess.slotId, workout);
     const fuelNote = workout.fueling ? String(sess.fuelNote || "").trim().slice(0, 400) : "";
+    let testResult = null;
+    if (workout.aerobicTest) {
+      const td = sess.testData || {};
+      testResult =
+        workout.aerobicTest === "drift"
+          ? recordDriftTest({ first: td.first, second: td.second, start: td.start, pace: td.pace, ts: finishedAt })
+          : recordThresholdTest({ ant: td.ant, ts: finishedAt });
+      if (!testResult) testResult = { missing: true };
+      testResult.kind = workout.aerobicTest;
+    }
     if (countsMiles && cardioSum.miles > 0) {
       addMilesEntry({
+        avgHr: cardioSum.avgHr || undefined,
+        paceMin: cardioSum.paceMin ? Math.round(cardioSum.paceMin * 1000) / 1000 : undefined,
+        aetAtTime: getAeT(),
+        hrTest: workout.aerobicTest || undefined,
         fuelNote: fuelNote || undefined,
         source: "workout",
         dateKey: localDateKey(finishedAt),
@@ -3316,6 +4022,11 @@
       setTimeout(function () {
         promptTestResults(metricQueue, 0, workout.title);
       }, 280);
+    }
+    if (testResult) {
+      setTimeout(function () {
+        showHrResult(testResult);
+      }, 200);
     }
   }
 
@@ -3404,6 +4115,11 @@
       const c = state.completed[slotId];
       removeHistory((c && c.dateKey) || localDateKey(new Date()), slotId);
       removeWorkoutMiles((c && c.dateKey) || localDateKey(new Date()), slotId);
+      if (c && c.ts) {
+        const hr = loadHr();
+        hr.history = hr.history.filter((e) => !((e.type === "drift" || e.type === "ant") && e.ts === c.ts));
+        saveHr(hr);
+      }
     }
     delete state.completed[slotId];
     state.todayPick = null;
@@ -3476,6 +4192,13 @@
     });
     const fuelEl = body.querySelector('[data-field="fuel-note"]');
     if (fuelEl) sess.fuelNote = fuelEl.value;
+    const testFields = body.querySelectorAll("[data-test-field]");
+    if (testFields.length) {
+      sess.testData = sess.testData || {};
+      testFields.forEach((el) => {
+        sess.testData[el.getAttribute("data-test-field")] = el.value;
+      });
+    }
     body.querySelectorAll(".log-ex").forEach(function (ex) {
       const key = ex.getAttribute("data-log-key");
       if (!key || !sess.logs[key]) return;
@@ -3508,9 +4231,11 @@
         const d = ex.querySelector('[data-field="distance"]');
         const t = ex.querySelector('[data-field="time"]');
         const p = ex.querySelector('[data-field="pace"]');
+        const h = ex.querySelector('[data-field="hr"]');
         log.distance = d ? d.value : "";
         log.time = t ? t.value : "";
         log.pace = p ? p.value : "";
+        log.hr = h ? h.value : "";
         const doneBtn = ex.querySelector(".btn-ex-done");
         log.done = doneBtn ? doneBtn.classList.contains("on") : false;
       } else {
@@ -3536,7 +4261,7 @@
     document.getElementById("active-progress-line").textContent =
       prog.done + " / " + prog.total + " items logged";
 
-    let html = "";
+    let html = hrCapBlockHtml(sess.slotId, workout, "in-active");
     if (workout.warmup && workout.warmup.length) {
       html += '<div class="active-block"><h4>Warm-up</h4>';
       workout.warmup.forEach(function (w, i) {
@@ -3672,6 +4397,10 @@
             '<label>Pace<input type="text" data-field="pace" placeholder="/mi" value="' +
             escapeHtml(log.pace || "") +
             '" /></label>';
+          html +=
+            '<label>Avg heart rate<input type="text" inputmode="numeric" data-field="hr" placeholder="optional" value="' +
+            escapeHtml(log.hr || "") +
+            '" /></label>';
           html += "</div>";
           html +=
             '<p class="cardio-count-note">' +
@@ -3717,6 +4446,8 @@
       html += "</ul></div>";
     }
 
+    if (workout.aerobicTest) html += hrTestFormHtml(workout, sess);
+
     if (workout.fueling) {
       html +=
         '<div class="active-block fuel-block"><h4>How did fueling go?</h4>' +
@@ -3727,6 +4458,82 @@
     }
 
     body.innerHTML = html;
+  }
+
+  // ——— Heart rate test logging (Active Workout) and result sheet ———
+  function hrTestPreview(kind, td) {
+    td = td || {};
+    if (kind === "drift") {
+      const f = validHr(td.first);
+      const s2 = validHr(td.second);
+      if (!f || !s2) return "Enter both half averages to see your drift and what it means.";
+      const ev = evaluateDrift(f, s2, getAeT());
+      return "Drift: " + fmtNum(ev.drift) + " percent. " + ev.text;
+    }
+    const a = validHr(td.ant);
+    if (!a) return "Enter your average heart rate for the 30 minutes to see your gap.";
+    return evaluateThreshold(a, getAeT()).text;
+  }
+
+  function hrTestFormHtml(workout, sess) {
+    const td = sess.testData || {};
+    const field = (key, label, ph, mode) =>
+      "<label>" + escapeHtml(label) + '<input type="text" inputmode="' + (mode || "numeric") + '" data-test-field="' + key + '" placeholder="' + escapeHtml(ph) + '" value="' + escapeHtml(td[key] || "") + '" /></label>';
+    let html = '<div class="active-block hr-test-block">';
+    if (workout.aerobicTest === "drift") {
+      html +=
+        "<h4>Log your drift test</h4>" +
+        '<p class="fuel-label">After the run, open your watch or app and look only at the steady part. Enter the average heart rate for its first half and its second half. The starting heart rate and pace are optional but help track progress.</p>' +
+        '<div class="cardio-fields hr-test-fields">' +
+        field("first", "First half average", "bpm") +
+        field("second", "Second half average", "bpm") +
+        field("start", "Starting heart rate", "optional") +
+        field("pace", "Steady pace", "12:00", "text") +
+        "</div>";
+    } else {
+      html +=
+        "<h4>Log your threshold test</h4>" +
+        '<p class="fuel-label">Enter your average heart rate for the whole 30 minutes. That number is your anaerobic threshold heart rate.</p>' +
+        '<div class="cardio-fields hr-test-fields">' +
+        field("ant", "Average heart rate, 30 minutes", "bpm") +
+        "</div>";
+    }
+    html += '<p class="hr-test-preview" id="hr-test-preview" aria-live="polite">' + escapeHtml(hrTestPreview(workout.aerobicTest, td)) + "</p></div>";
+    return html;
+  }
+
+  function showHrResult(res) {
+    const modal = document.getElementById("hr-result-modal");
+    if (!modal) return;
+    let title;
+    let body = "";
+    if (res.missing) {
+      title = res.kind === "drift" ? "Drift test saved without heart rates" : "Threshold test saved without a heart rate";
+      body = "<p>The miles counted, but no heart rate numbers were entered, so your heart rate cap stayed at " + getAeT() + ". You can set your aerobic threshold by hand on the Progress tab.</p>";
+    } else if (res.kind === "drift") {
+      title = "Drift test: " + fmtNum(res.drift) + " percent";
+      body = "<p>" + escapeHtml(res.text) + "</p>";
+      const z = getHrZones();
+      body +=
+        '<p class="hr-result-zones">' +
+        escapeHtml("Your zones now: Zone 1 is " + z.z1lo + " to " + z.z1hi + ", and Zone 2 is " + z.z2lo + " to " + z.aet + ". Every easy run, long run, and hills session now shows a cap of " + z.aet + ".") +
+        "</p>";
+    } else {
+      title = "Threshold test: " + fmtNum(res.gap) + " percent gap";
+      body = "<p>" + escapeHtml(res.text) + "</p>";
+    }
+    if (res.cheers && res.cheers.length) {
+      body = '<div class="hr-cheer"><strong>Nice work!</strong>' + res.cheers.map((c) => "<p>" + escapeHtml(c) + "</p>").join("") + "</div>" + body;
+    }
+    document.getElementById("hr-result-title").textContent = title;
+    document.getElementById("hr-result-body").innerHTML = body;
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+  function closeHrResult() {
+    const modal = document.getElementById("hr-result-modal");
+    if (modal) modal.classList.add("hidden");
+    document.body.style.overflow = "";
   }
 
   // ——— Render ———
@@ -3852,7 +4659,9 @@
       $("#today-sub").textContent = result.pick.isTest
         ? "Test day finished. Check Progress for your new mark."
         : result.pick.slotId === "long_run"
-        ? "Done for today. If you feel up to it, an easy run tomorrow would make a good second day on tired legs. That is only a suggestion, so pick whatever fits tomorrow."
+        ? "Done for today. If you feel up to it, an easy run tomorrow would make a good second day on tired legs" +
+          (getWeekPlan(getProgramWeekIndex()).secondDayMiles ? ", about " + fmtMiles(getWeekPlan(getProgramWeekIndex()).secondDayMiles) + " this week" : "") +
+          ". That is only a suggestion, so pick whatever fits tomorrow."
         : "Done for today. Come back tomorrow for fresh options.";
       const doneC = state.completed[result.pick.slotId];
       if (doneC && doneC.countsMiles && !(doneC.loggedMiles > 0)) {
@@ -3872,6 +4681,8 @@
       .map(({ slotId, workout, tiredLegs }) => {
         const meta = SLOT_META[slotId];
         const isTest = !!workout.isTest;
+        const hrShort = hrCapShort(slotId, workout);
+        const testTag = workout.aerobicTest ? (workout.aerobicTest === "ant" ? "Optional test" : "Heart rate test") : "Test / PR day";
         return (
           '<button type="button" class="option-card ' +
           workout.lengthClass +
@@ -3898,8 +4709,9 @@
           escapeHtml(workout.summary) +
           "</p>" +
           (tiredLegs ? '<p class="option-tired-legs">' + escapeHtml(tiredLegs) + "</p>" : "") +
+          (hrShort ? '<p class="option-hr">' + escapeHtml(hrShort) + "</p>" : "") +
           '<div class="option-tags">' +
-          (isTest ? '<span class="tag test-tag">Test / PR day</span>' : "") +
+          (isTest ? '<span class="tag test-tag">' + escapeHtml(testTag) + "</span>" : "") +
           (tiredLegs ? '<span class="tag tired-tag">Second day on tired legs</span>' : "") +
           '<span class="tag loc">' +
           escapeHtml(plainLocation(workout.location)) +
@@ -3941,10 +4753,13 @@
 
     const wkSizing = computeWeekSizing();
     function runSizeLine(slotId) {
+      if ((slotId === "strength_a" || slotId === "strength_b") && strengthMaintenanceWeek(wkSizing.plan)) {
+        return wkSizing.plan.phase === "recovery" ? " Easy strength while you recover from the race." : " Maintenance until the race: lighter volume and no max attempts.";
+      }
       const sz = wkSizing.sizes[slotId];
       if (sz == null) return "";
       if (wkSizing.plan.phase === "race" && slotId === "long_run") return " This week it is the race itself, on " + raceWeekday() + ".";
-      if (slotId === "long_run") return " This week: about " + fmtMiles(sz) + ". Schedule it on a day off shift.";
+      if (slotId === "long_run") return " This week: about " + fmtMiles(sz) + ". Schedule it on a day off shift." + (wkSizing.plan.secondDayMiles ? " If it fits, an easy run of about " + fmtMiles(wkSizing.plan.secondDayMiles) + " the day after." : "");
       if (slotId === "speed_run") return " This week: about " + fmtMiles(sz) + ".";
       if (slotId === "easy_hike") return " This week: about " + fmtMiles(sz) + " of hills or incline.";
       if (slotId === "flex" && wkSizing.flexIsRun) return " This week it can be an extra easy run of about " + fmtMiles(sz) + ", or a core or catch-up session.";
@@ -4071,6 +4886,7 @@
 
     root.innerHTML =
       mileageHistoryHtml() +
+      hrProgressHtml() +
       oneRmCard +
       BENCH_GROUPS.map((g) => {
       const metrics = BENCH_METRICS.filter((m) => m.group === g.id);
@@ -4264,6 +5080,7 @@
       });
     }
 
+    bindHrProgress(root);
     root.querySelectorAll("[data-log]").forEach((btn) => {
       btn.addEventListener("click", () => openBenchModal(btn.getAttribute("data-log")));
     });
@@ -4394,7 +5211,7 @@
     const rw = raceWeekIndex();
     el.innerHTML = `
       <div class="goal-card">
-        <h3>Black Canyon 100K mileage plan</h3>
+        <h3>Black Canyon 100K plan (Uphill Athlete method)</h3>
         <div class="goal-row"><span>Race date</span><strong>${escapeHtml(RACE.label)}${RACE.edited ? " (edited)" : ""}</strong></div>
         <form class="race-date-form" id="race-date-form" novalidate>
           <label class="miles-add-label" for="race-date-input">Race date (saved on this device; the plan shifts so the peak and taper still land before it)</label>
@@ -4406,19 +5223,22 @@
           <p class="miles-status" id="race-date-status" aria-live="polite"></p>
         </form>
         <div class="goal-row"><span>Race</span><strong>Black Canyon 100K, 62 miles, Arizona</strong></div>
-        <div class="goal-row"><span>This week</span><strong>${escapeHtml("Week " + cur.planWeekNumber + " of " + (rw + 1) + ", " + fmtNum(cur.targetMiles) + " miles")}</strong></div>
-        <div class="goal-row"><span>Peak</span><strong>About 50 miles a week in mid-January</strong></div>
-        <p class="goal-note" style="margin-top:10px">${PLAN_META.provisional ? "These weekly targets are a first version and may change. " : ""}Your weekly running miles build from about 20 now to a peak of about 50 in mid-January, then taper into race day. The plan is counted backward from the race date so the peak and the taper land in the right weeks. The race date is confirmed on ${escapeHtml(RACE.source)}.</p>
+        <div class="goal-row"><span>This week</span><strong>${escapeHtml("Week " + cur.planWeekNumber + " of " + (rw + 1) + ", " + cur.phaseLabel + ", " + fmtNum(cur.targetMiles) + " miles")}</strong></div>
+        <div class="goal-row"><span>Peak</span><strong>About ${PLAN_META.peakMiles} miles a week in late January</strong></div>
+        <div class="goal-row"><span>Easy-run heart rate cap</span><strong>${escapeHtml(String(getAeT()) + (aetIsProvisional() ? ", starting cap until your first drift test" : ", from your drift test"))}</strong></div>
+        <p class="goal-note" style="margin-top:10px">${PLAN_META.provisional ? "These weekly targets may still change after your first heart rate tests. " : ""}This plan follows the Uphill Athlete method from Scott Johnston: build the biggest aerobic base you can with lots of easy running below your aerobic threshold. Weekly miles go from about 18 now to about ${PLAN_META.peakMiles} in late January, then taper into race day. The race date is confirmed on ${escapeHtml(RACE.source)}.</p>
         <ul class="notes-list plan-rules">
-          <li>Weekly miles go up by no more than about 10 percent at a time, or 2 to 3 miles while the mileage is still low.</li>
-          <li>Every fourth week is a lighter week, about 20 to 25 percent less, so your body can absorb the work before the next build.</li>
-          <li>Almost every run is easy enough to talk in full sentences. There are no speed sessions, because the speed will come with volume.</li>
-          <li>The long run is the only session that goes past 90 minutes. Every other session stays between 30 and 90 minutes. Put the long run on a day off shift.</li>
-          <li>Hills, trails, and the Wahoo incline treadmill with course imports build your climbing. Backcountry hunting hikes and pack incline walks count as time on your feet, so add those miles on the Today tab.</li>
-          <li>From November on, long runs and long hikes over about 90 minutes are fueling practice: about 200 to 300 calories and regular drinks every hour, using your race-day foods. The long run has a short "How did fueling go?" note you can fill in when you finish.</li>
+          <li>The phases are Getting started (weeks 1 to 4), Aerobic base (weeks 5 to 12), Race-specific build (weeks 13 to 19), Taper (week 20), and Race week.</li>
+          <li>Three building weeks, then one recovery week that is 30 to 50 percent lighter. Weekly miles never go up more than about 10 percent at a time.</li>
+          <li>Every easy run, long run, and hills session has a heart rate cap at your aerobic threshold, and recovery runs stay in Zone 1. Wear your chest strap, and walk the hills whenever you need to in order to stay under the cap.</li>
+          <li>A heart rate drift test is offered in week 2 and again every 6 to 8 weeks, in recovery weeks 8 and 16. Each one updates your cap and zones automatically.</li>
+          <li>An optional 30-minute threshold test is offered in weeks 4 and 16. It only measures how well built your base is; nothing harder is added to the plan.</li>
+          <li>There are no speed sessions. The speed will come with volume.</li>
+          <li>In the race-specific build, when an easy run comes the day after a logged long run, it grows to that week's second-day target of 6 to 8 miles. You still choose the order; it is never required.</li>
+          <li>From November on, long runs over about 90 minutes are fueling practice: about 200 to 300 calories and regular drinks every hour, using your race-day foods. The long run has a short "How did fueling go?" note you can fill in when you finish.</li>
           <li>From December on, hills sessions include easy, controlled downhill running, because Black Canyon drops more than it climbs.</li>
-          <li>About four weeks before the race you do one big day of about 24 miles or about 5 hours on your feet.</li>
-          <li>The last two weeks before race week drop to about 70 percent and then about half of your peak. Race week is a few short, easy runs and then the race.</li>
+          <li>From the week of December 16 through race week, strength is on maintenance: the same lifts at the same percent of your max, with fewer sets, fewer extras, and no max attempts. You'll chase lifting PRs after Black Canyon.</li>
+          <li>Your longest run, about 20 miles, is about two weeks before the race. The week before race week drops about 25 percent, and race week is a few short, easy runs and then the race.</li>
           <li>You still pick each day's workout in any order. The run options resize themselves to fit the miles left in the week, and if you fall behind, the app will not ask you to cram.</li>
         </ul>
       </div>
@@ -4453,7 +5273,7 @@
       </div>
       <div class="goal-card">
         <h3>Personal PT / Strength Targets</h3>
-        <p class="goal-note" style="margin-bottom:8px">Tracked in Progress. Timed run checks are rare, and none happen during the Black Canyon build; volume does the work.</p>
+        <p class="goal-note" style="margin-bottom:8px">Tracked in Progress. Timed run checks are rare, and none happen during the Black Canyon build; volume does the work. Lifting moves to maintenance from mid-December until after the race, so the big lifting PRs come after Black Canyon.</p>
         <div class="goal-row"><span>Longest easy run (primary)</span><strong>Build past 10 miles</strong></div>
         <div class="goal-row"><span>1.95 miles (rare check)</span><strong>12 minutes or less</strong></div>
         <div class="goal-row"><span>Mile (rare check)</span><strong>About 7 minutes 30 seconds now, faster through volume</strong></div>
@@ -4467,9 +5287,9 @@
       <div class="goal-card">
         <h3>Ultra Aerobic · How We Run</h3>
         <div class="goal-row"><span>10 miles continuous</span><strong>About 11 minutes per mile, easy</strong></div>
-        <div class="goal-row"><span>Daily runs</span><strong>Easy and conversational</strong></div>
+        <div class="goal-row"><span>Daily runs</span><strong>Easy, at or below your heart rate cap</strong></div>
         <div class="goal-row"><span>Speed work</span><strong>None; speed comes with volume</strong></div>
-        <p class="goal-note" style="margin-top:10px">The long easy run, hills and hike legs, and easy runs stack Black Canyon fitness with hunting time on feet. You pick each day in any order. When an easy run lands the day after a long run, the app flags it as a second day on tired legs, and that run gets a little longer in later phases. “The speed will come with volume.”</p>
+        <p class="goal-note" style="margin-top:10px">The long easy run, hills and hike legs, and easy runs stack Black Canyon fitness with hunting time on feet, all under your heart rate cap. You pick each day in any order. When an easy run lands the day after a long run, the app flags it as a second day on tired legs, and in the race-specific build that run grows to 6 to 8 miles. “The speed will come with volume.”</p>
       </div>
       <div class="goal-card">
         <h3>Physique (without killing endurance)</h3>
@@ -4559,8 +5379,9 @@
         ? "Start this test"
         : "Start this workout";
     }
+    $("#modal-slot").textContent = workout.aerobicTest ? (workout.aerobicTest === "ant" ? "Optional test" : "Heart rate test") + " · " + SLOT_META[slotId].name : slotCardLabel(meta, !!workout.isTest);
 
-    let html = "";
+    let html = hrCapBlockHtml(slotId, workout, "in-modal");
     const tired = isEasyRunOption(slotId, workout) ? tiredLegsFromYesterday() : null;
     if (tired) {
       html +=
@@ -4794,9 +5615,16 @@
             const prog = countSessionProgress(sess, workout);
             const line = document.getElementById("active-progress-line");
             if (line) line.textContent = prog.done + " / " + prog.total + " items logged";
+            const pv = document.getElementById("hr-test-preview");
+            if (pv && workout.aerobicTest) pv.textContent = hrTestPreview(workout.aerobicTest, sess.testData);
           }
         }, 200);
       });
+    }
+
+    const hrModal = $("#hr-result-modal");
+    if (hrModal) {
+      hrModal.querySelectorAll("[data-close-hr]").forEach((el) => el.addEventListener("click", closeHrResult));
     }
 
     const benchModal = $("#bench-modal");

@@ -1491,3 +1491,76 @@ body {
 .race-date-form { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
 .race-date-form input[type="date"] { flex: 1 1 160px; width: auto; }
 .race-date-form .btn-bench { flex: 1 1 100%; }
+
+/* ——— Heart rate caps, tests, and zones ——— */
+.cardio-fields { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 400px) {
+  .cardio-fields { grid-template-columns: 1fr 1fr; }
+}
+.option-hr {
+  margin: 6px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffc2c2;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+.hr-cap-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-left: 3px solid #ff6b6b;
+  background: rgba(255, 107, 107, 0.12);
+  color: #ffdede;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+.hr-cap-note strong { display: block; margin-bottom: 2px; color: #ff9d9d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.hr-cap-note p { margin: 0; }
+.hr-cap-note.in-active { margin: 0 0 12px; }
+.hr-test-block .hr-test-fields label { text-transform: none; letter-spacing: 0; font-size: 12px; }
+.hr-test-preview {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--blue-dim);
+  border-left: 3px solid var(--blue);
+  color: #d6e8ff;
+  font-size: 13.5px;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+.hr-zones { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.hr-zones li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  overflow-wrap: break-word;
+}
+.hr-zones li span { color: var(--text-muted); }
+.hr-cap-source { margin-top: 8px; }
+.hr-sub-title { margin: 14px 0 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.hr-manual { margin-top: 10px; }
+.hr-history li, .hr-pace li { overflow-wrap: break-word; }
+.hr-result-body p { margin: 0 0 10px; line-height: 1.5; overflow-wrap: break-word; }
+.hr-result-zones { color: var(--text-muted); }
+.hr-cheer {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  border-left: 3px solid var(--accent);
+  color: #d9ffee;
+}
+.hr-cheer strong { display: block; margin-bottom: 4px; }
+.hr-cheer p { margin: 0; }
+.miles-add-row input.miles-hr { flex: 0 0 92px; width: 92px; }
+.bench-history.hr-history, .bench-history.hr-pace { max-height: none; }
+.bench-history.hr-history li { grid-template-columns: 52px minmax(0, 1fr) auto auto; }
+.bench-history.hr-pace li { grid-template-columns: 52px minmax(0, 1fr) auto; }
