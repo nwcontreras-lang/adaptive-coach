@@ -1,6 +1,6 @@
 /**
  * Nathan — Adaptive Weekly Workout Coach
- * Week 1 anchor: Wed Sep 23 2026 (got off 8am MT, 48/96 fire)
+ * Week 1 anchor: Mon Sep 28 2026 (weeks run Monday to Sunday; 48/96 fire schedule)
  * Equipment rule: only well-known moves using his own gear (no ab wheel, cable, band, landmine, kettlebell, med ball, slider, sled, etc.)
  * Pillars: physique, hunting hike, ultra 100k volume, personal PT test marks, beast core
  */
@@ -8,8 +8,10 @@
 (function () {
   "use strict";
 
-  const WEEK_ID = "2026-W1-sep23";
-  const WEEK_START = new Date(2026, 8, 23); // Wed Sep 23 2026 local
+  const WEEK_ID = "2026-W1-sep28";
+  const WEEK_START = new Date(2026, 8, 28); // Mon Sep 28 2026 local; weeks run Monday to Sunday
+  const WEEK_ANCHOR_KEY = "nc-adaptive-coach-anchor-v1";
+  const WEEK_ANCHOR = "2026-09-28-mon"; // bump when WEEK_START changes; saved week numbers are re-derived from dates
   const STORAGE_KEY = "nc-adaptive-coach-v1";
   const BENCH_KEY = "nc-adaptive-coach-benchmarks-v1";
 
@@ -136,13 +138,13 @@
   ];
 
   const DAYS = [
-    { key: "wed", label: "Wed", full: "Wednesday", offset: 0 },
-    { key: "thu", label: "Thu", full: "Thursday", offset: 1 },
-    { key: "fri", label: "Fri", full: "Friday", offset: 2 },
-    { key: "sat", label: "Sat", full: "Saturday", offset: 3 },
-    { key: "sun", label: "Sun", full: "Sunday", offset: 4 },
-    { key: "mon", label: "Mon", full: "Monday", offset: 5 },
-    { key: "tue", label: "Tue", full: "Tuesday", offset: 6 },
+    { key: "mon", label: "Mon", full: "Monday", offset: 0 },
+    { key: "tue", label: "Tue", full: "Tuesday", offset: 1 },
+    { key: "wed", label: "Wed", full: "Wednesday", offset: 2 },
+    { key: "thu", label: "Thu", full: "Thursday", offset: 3 },
+    { key: "fri", label: "Fri", full: "Friday", offset: 4 },
+    { key: "sat", label: "Sat", full: "Saturday", offset: 5 },
+    { key: "sun", label: "Sun", full: "Sunday", offset: 6 },
   ];
 
   const SLOT_META = {
@@ -1420,17 +1422,47 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
       const parsed = JSON.parse(raw);
-      if (parsed.weekId !== currentWeekId()) return defaultState();
+      if (parsed.weekId !== currentWeekId()) return carryOverState(parsed);
       return Object.assign(defaultState(), parsed);
     } catch {
       return defaultState();
     }
   }
 
+  /**
+   * A new week (or a saved state from the old Wednesday-to-Tuesday weeks): start fresh, but keep anything
+   * whose date belongs to the current week, matched by date instead of by the saved week id.
+   * Finished workouts already live in history and the miles log, so nothing logged is lost either way.
+   */
+  function carryOverState(parsed) {
+    const st = defaultState();
+    if (!parsed || typeof parsed !== "object") return st;
+    const todayKey = localDateKey(new Date());
+    const started = planStarted();
+    const curWeek = currentCalendarWeekIndex();
+    const inCurrentPeriod = (dk) => !!dk && (started ? weekIndexForDate(dk) === curWeek : dk === todayKey);
+    Object.keys(parsed.completed || {}).forEach((slotId) => {
+      const c = parsed.completed[slotId];
+      if (!c) return;
+      const dk = c.dateKey || (c.ts ? localDateKey(c.ts) : null);
+      if (inCurrentPeriod(dk)) st.completed[slotId] = c;
+    });
+    const sess = parsed.activeSession;
+    const sessDay = sess && sess.startedAt ? localDateKey(sess.startedAt) : null;
+    if (sess && sessDay === todayKey && inCurrentPeriod(sessDay)) {
+      st.activeSession = sess;
+      if (parsed.todayPick && parsed.todayPick.slotId === sess.slotId) st.todayPick = parsed.todayPick;
+    } else if (parsed.todayPick && st.completed[parsed.todayPick.slotId] && st.completed[parsed.todayPick.slotId].dateKey === todayKey) {
+      st.todayPick = parsed.todayPick;
+    }
+    return st;
+  }
+
   function saveState(state) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
+  migrateWeekAnchor();
   let state = loadState();
 
   // ——— Benchmarks (separate key so week reset keeps PRs) ———
@@ -1786,21 +1818,89 @@
     return Math.round((cur - start) / 86400000);
   }
 
-  /** Calendar program week (0 = week of Wed Sep 23, 2026). Weeks run Wednesday to Tuesday. */
+  /** Accepts a Date, a timestamp, or a "YYYY-MM-DD" local date key. */
+  function toLocalDate(d) {
+    if (d instanceof Date) return d;
+    if (typeof d === "string") {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+      if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+    }
+    return new Date(d);
+  }
+
+  /** Program week for any date, NOT clamped: 0 = Mon Sep 28 to Sun Oct 4, 2026; days before the plan give -1 or less. */
+  function weekIndexForDate(d) {
+    const x = toLocalDate(d);
+    if (isNaN(x)) return null;
+    return Math.floor(dayOffsetFromWeekStart(x) / 7);
+  }
+
+  /** True from Monday, Sep 28, 2026 on. Before that the app shows a Week 1 preview instead of a half-week. */
+  function planStarted(d) {
+    return dayOffsetFromWeekStart(d ? toLocalDate(d) : new Date()) >= 0;
+  }
+
+  /** Week a saved entry belongs to, always re-derived from its date so it follows the Monday-to-Sunday weeks. */
+  function entryWeek(e) {
+    if (!e) return null;
+    if (e.dateKey) {
+      const w = weekIndexForDate(e.dateKey);
+      if (w != null) return w;
+    }
+    if (e.ts) return weekIndexForDate(e.ts);
+    return e.weekIndex;
+  }
+
+  /** Calendar program week (0 = week of Mon Sep 28, 2026). Weeks run Monday to Sunday. Before the start this is 0 (the Week 1 preview). */
   function currentCalendarWeekIndex() {
     return Math.max(0, Math.floor(dayOffsetFromWeekStart(new Date()) / 7));
   }
 
-  /** Week 1 keeps its original id so saved Week 1 progress still loads; later weeks start fresh. */
+  /** Each Monday-to-Sunday week has its own id so a new week starts fresh; before Sep 28 there is a separate preview id. */
   function currentWeekId() {
+    if (!planStarted()) return "2026-prestart";
     const idx = currentCalendarWeekIndex();
-    return idx === 0 ? WEEK_ID : "2026-prog-week-" + (idx + 1);
+    return idx === 0 ? WEEK_ID : "2026-mon-week-" + (idx + 1);
+  }
+
+  /**
+   * One-time, idempotent migration when the week anchor changes (Pass 12: Wed Sep 23 to Mon Sep 28).
+   * Logged miles and heart rate tests are re-bucketed by their own date, never by the old week number.
+   * The old number is kept as legacyWeekIndex for reference. Entries dated before Sep 28 get a negative
+   * week and don't count toward Week 1.
+   */
+  function migrateWeekAnchor() {
+    try {
+      if (localStorage.getItem(WEEK_ANCHOR_KEY) === WEEK_ANCHOR) return;
+      const fix = (e) => {
+        if (!e || typeof e !== "object") return e;
+        const w = entryWeek(e);
+        if (w == null) return e;
+        if (e.weekIndex !== w) {
+          if (e.legacyWeekIndex == null && e.weekIndex != null) e.legacyWeekIndex = e.weekIndex;
+          e.weekIndex = w;
+        }
+        return e;
+      };
+      const miles = JSON.parse(localStorage.getItem("nc-adaptive-coach-miles-v1") || "[]");
+      if (Array.isArray(miles) && miles.length) {
+        localStorage.setItem("nc-adaptive-coach-miles-v1", JSON.stringify(miles.map(fix)));
+      }
+      const hr = JSON.parse(localStorage.getItem("nc-adaptive-coach-hr-v1") || "{}");
+      if (hr && Array.isArray(hr.history) && hr.history.length) {
+        hr.history = hr.history.map(fix);
+        localStorage.setItem("nc-adaptive-coach-hr-v1", JSON.stringify(hr));
+      }
+      localStorage.setItem(WEEK_ANCHOR_KEY, WEEK_ANCHOR);
+    } catch (err) {
+      // Leave the data untouched; readers derive the week from each entry's date anyway.
+    }
   }
 
   function getTodayInfo() {
     const now = new Date();
     let offset = dayOffsetFromWeekStart(now) - 7 * currentCalendarWeekIndex();
-    // Clamp inside the current Wednesday-to-Tuesday week
+    // Clamp inside the current Monday-to-Sunday week (before Sep 28 this shows Week 1's Monday)
     if (offset < 0) offset = 0;
     if (offset > 6) offset = 6;
     const day = DAYS[offset];
@@ -1894,7 +1994,7 @@
   }
 
   // ——— Occasional Test / PR options (NOT weekly required) ———
-  /** Program week index from the Week 1 anchor (0 = week of Wed Sep 23, 2026). state.testWeekIndex simulates a week. */
+  /** Program week index from the Week 1 anchor (0 = week of Mon Sep 28, 2026). state.testWeekIndex simulates a week (plan only; logged entries follow their dates). */
   function getProgramWeekIndex() {
     if (state && state.testWeekIndex != null && !isNaN(Number(state.testWeekIndex))) return Number(state.testWeekIndex);
     return currentCalendarWeekIndex();
@@ -1903,7 +2003,7 @@
   /**
    * Offer a Test option only on sparse days — not every week, not every day.
    * Cadence: weeks where weekIndex % 3 === 0 (wk 1, 4, 7…) on Wed/Sat;
-   * and weeks where weekIndex % 3 === 1 on Fri only.
+   * and weeks where weekIndex % 3 === 1 on Fri only. (Offsets are from Monday: Wed 2, Fri 4, Sat 5.)
    * → roughly 2 days every 3 weeks, or ~every 2–4 weeks of exposure.
    */
   function shouldOfferTestToday(today) {
@@ -1911,8 +2011,8 @@
     const d = today.offset;
     // Week 1 (index 0): no TEST options — lock in ultra volume identity first
     if (w === 0) return false;
-    if (w % 3 === 0) return d === 0 || d === 3; // Wed or Sat on later cycle weeks
-    if (w % 3 === 1) return d === 2; // Fri only
+    if (w % 3 === 0) return d === 2 || d === 5; // Wed or Sat on later cycle weeks
+    if (w % 3 === 1) return d === 4; // Fri only
     return false; // off weeks: no test options
   }
 
@@ -2156,7 +2256,7 @@
    * PLAN_WEEKS row shape (miles only):
    *   { weekIndex, targetMiles, longRunMiles, recoveryWeek, phase, secondDayMiles?, driftTest?, thresholdTest?,
    *     peakLongDay?, taperPct?, raceWeek?, checkpoint? }
-   *   weekIndex 0 = the week of Wed Sep 23, 2026 (weeks run Wednesday to Tuesday).
+   *   weekIndex 0 = the week of Mon Sep 28, 2026 (weeks run Monday to Sunday). 20 weeks through race week.
    *   phase is a key of PHASES (transition, base, specific, taper, race; recovery weeks after the race are generated).
    *   secondDayMiles: in the race-specific build, the easy run the day after a logged long run is sized to this.
    *     It is never a pre-labeled slot; the "second day on tired legs" logic applies it only after a long run is logged.
@@ -2174,27 +2274,26 @@
     checkpoint: { longestRunMiles: 16, recentAvgMiles: 34, closeLongestMiles: 13, closeAvgMiles: 27 },
   };
   const PLAN_WEEKS = [
-    { weekIndex: 0, targetMiles: 18, longRunMiles: 10, recoveryWeek: false, phase: "transition" },
-    { weekIndex: 1, targetMiles: 19, longRunMiles: 10, recoveryWeek: false, phase: "transition", driftTest: true },
-    { weekIndex: 2, targetMiles: 21, longRunMiles: 11, recoveryWeek: false, phase: "transition" },
-    { weekIndex: 3, targetMiles: 13, longRunMiles: 8, recoveryWeek: true, phase: "transition", thresholdTest: true },
-    { weekIndex: 4, targetMiles: 23, longRunMiles: 11, recoveryWeek: false, phase: "base" },
-    { weekIndex: 5, targetMiles: 25, longRunMiles: 12, recoveryWeek: false, phase: "base" },
-    { weekIndex: 6, targetMiles: 27, longRunMiles: 13, recoveryWeek: false, phase: "base" },
-    { weekIndex: 7, targetMiles: 16, longRunMiles: 9, recoveryWeek: true, phase: "base", driftTest: true },
-    { weekIndex: 8, targetMiles: 29, longRunMiles: 13, recoveryWeek: false, phase: "base" },
-    { weekIndex: 9, targetMiles: 31, longRunMiles: 14, recoveryWeek: false, phase: "base" },
-    { weekIndex: 10, targetMiles: 34, longRunMiles: 15, recoveryWeek: false, phase: "base" },
-    { weekIndex: 11, targetMiles: 20, longRunMiles: 10, recoveryWeek: true, phase: "base" },
-    { weekIndex: 12, targetMiles: 36, longRunMiles: 15, recoveryWeek: false, phase: "specific", secondDayMiles: 6 },
-    { weekIndex: 13, targetMiles: 38, longRunMiles: 16, recoveryWeek: false, phase: "specific", secondDayMiles: 7 },
-    { weekIndex: 14, targetMiles: 41, longRunMiles: 17, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
-    { weekIndex: 15, targetMiles: 25, longRunMiles: 12, recoveryWeek: true, phase: "specific", driftTest: true, thresholdTest: true, checkpoint: true },
-    { weekIndex: 16, targetMiles: 43, longRunMiles: 18, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
-    { weekIndex: 17, targetMiles: 45, longRunMiles: 19, recoveryWeek: false, phase: "specific", secondDayMiles: 8 },
-    { weekIndex: 18, targetMiles: 47, longRunMiles: 20, recoveryWeek: false, phase: "specific", secondDayMiles: 8, peakLongDay: true },
-    { weekIndex: 19, targetMiles: 35, longRunMiles: 12, recoveryWeek: false, phase: "taper", taperPct: 75 },
-    { weekIndex: 20, targetMiles: 10, longRunMiles: 62.2, recoveryWeek: false, phase: "race", raceWeek: true },
+    { weekIndex: 0, targetMiles: 18, longRunMiles: 10, recoveryWeek: false, phase: "transition" }, // Sep 28
+    { weekIndex: 1, targetMiles: 20, longRunMiles: 10, recoveryWeek: false, phase: "transition", driftTest: true }, // Oct 5
+    { weekIndex: 2, targetMiles: 13, longRunMiles: 8, recoveryWeek: true, phase: "transition", thresholdTest: true }, // Oct 12
+    { weekIndex: 3, targetMiles: 23, longRunMiles: 11, recoveryWeek: false, phase: "base" }, // Oct 19
+    { weekIndex: 4, targetMiles: 25, longRunMiles: 12, recoveryWeek: false, phase: "base" }, // Oct 26
+    { weekIndex: 5, targetMiles: 27, longRunMiles: 13, recoveryWeek: false, phase: "base" }, // Nov 2
+    { weekIndex: 6, targetMiles: 16, longRunMiles: 9, recoveryWeek: true, phase: "base", driftTest: true }, // Nov 9
+    { weekIndex: 7, targetMiles: 29, longRunMiles: 13, recoveryWeek: false, phase: "base" }, // Nov 16
+    { weekIndex: 8, targetMiles: 31, longRunMiles: 14, recoveryWeek: false, phase: "base" }, // Nov 23
+    { weekIndex: 9, targetMiles: 34, longRunMiles: 15, recoveryWeek: false, phase: "base" }, // Nov 30
+    { weekIndex: 10, targetMiles: 20, longRunMiles: 10, recoveryWeek: true, phase: "base" }, // Dec 7
+    { weekIndex: 11, targetMiles: 36, longRunMiles: 15, recoveryWeek: false, phase: "specific", secondDayMiles: 6 }, // Dec 14
+    { weekIndex: 12, targetMiles: 38, longRunMiles: 16, recoveryWeek: false, phase: "specific", secondDayMiles: 7 }, // Dec 21
+    { weekIndex: 13, targetMiles: 41, longRunMiles: 17, recoveryWeek: false, phase: "specific", secondDayMiles: 8 }, // Dec 28
+    { weekIndex: 14, targetMiles: 25, longRunMiles: 12, recoveryWeek: true, phase: "specific", driftTest: true, thresholdTest: true, checkpoint: true }, // Jan 4
+    { weekIndex: 15, targetMiles: 43, longRunMiles: 18, recoveryWeek: false, phase: "specific", secondDayMiles: 8 }, // Jan 11
+    { weekIndex: 16, targetMiles: 45, longRunMiles: 19, recoveryWeek: false, phase: "specific", secondDayMiles: 8 }, // Jan 18
+    { weekIndex: 17, targetMiles: 47, longRunMiles: 20, recoveryWeek: false, phase: "specific", secondDayMiles: 8, peakLongDay: true }, // Jan 25
+    { weekIndex: 18, targetMiles: 35, longRunMiles: 12, recoveryWeek: false, phase: "taper", taperPct: 75 }, // Feb 1
+    { weekIndex: 19, targetMiles: 10, longRunMiles: 62.2, recoveryWeek: false, phase: "race", raceWeek: true }, // Feb 8 to 14, race Sat Feb 13
   ];
   // ===== end PLAN DATA =====
   const TABLE_RACE_WEEK = PLAN_WEEKS.length - 1;
@@ -2233,9 +2332,9 @@
           phase: "recovery",
         };
       }
-      // Smoothing: full weeks never jump more than about 10 percent (or 2 to 3 miles at low volume).
+      // Smoothing: full weeks never jump more than about 10 percent (or 3 miles at low volume, like 20 to 23 after week 3's recovery).
       if (!row.recoveryWeek && (row.phase === "transition" || row.phase === "base" || row.phase === "specific")) {
-        const cap = Math.round(Math.max(lastFull * 1.1, lastFull + 2));
+        const cap = Math.round(Math.max(lastFull * 1.1, lastFull + 3));
         if (row.targetMiles > cap) {
           row.targetMiles = cap;
           row.longRunMiles = Math.min(row.longRunMiles, Math.round(cap * 0.48));
@@ -2464,7 +2563,7 @@
     const entry = addHrEntry({
       type: "drift",
       dateKey: localDateKey(ts),
-      weekIndex: getProgramWeekIndex(),
+      weekIndex: weekIndexForDate(ts),
       ts: ts,
       startHr: startHr || undefined,
       firstHalf: first,
@@ -2497,7 +2596,7 @@
     const entry = addHrEntry({
       type: "ant",
       dateKey: localDateKey(ts),
-      weekIndex: getProgramWeekIndex(),
+      weekIndex: weekIndexForDate(ts),
       ts: ts,
       antHr: antHr,
       aetAtTest: aet,
@@ -2582,7 +2681,7 @@
   }
 
   function hrTestsInWeek(w, type) {
-    return hrHistory().filter((e) => e.weekIndex === w && e.type === type);
+    return hrHistory().filter((e) => entryWeek(e) === w && e.type === type);
   }
 
   /** Drift and threshold test cards offered today (never forced; offered every day of their week until logged). */
@@ -2646,7 +2745,7 @@
   }
   function milesEntriesForWeek(w) {
     return loadMiles()
-      .filter((e) => e.weekIndex === w)
+      .filter((e) => entryWeek(e) === w)
       .sort((a, b) => (a.ts || 0) - (b.ts || 0));
   }
   function milesForWeek(w, opts) {
@@ -2790,10 +2889,9 @@
   function strengthMaintenanceWeek(plan) {
     return plan.phase === "specific" || plan.phase === "taper" || plan.phase === "race" || plan.phase === "recovery";
   }
-  /** Fueling practice on long runs over about 90 minutes from November on (not race week or after the race). */
+  /** Fueling practice on long runs over about 90 minutes from November on: the first week starting in November (Mon Nov 2), not race week or after the race. */
   function fuelingWeek(plan) {
-    const weekEnd = new Date(plan.weekStart.getFullYear(), plan.weekStart.getMonth(), plan.weekStart.getDate() + 6);
-    return weekEnd >= new Date(2026, 10, 4) && plan.phase !== "race" && plan.phase !== "recovery";
+    return plan.weekStart >= new Date(2026, 10, 1) && plan.phase !== "race" && plan.phase !== "recovery";
   }
 
   /** Plan object stored on a sized option, the started session, and today's pick. */
@@ -2870,7 +2968,7 @@
   const DOWNHILL_TEXT =
     "Downhill durability: Black Canyon drops more than it climbs, with roughly 7,300 feet of descent against 5,200 feet of climbing, so practice controlled, easy downhill running on trail. Take short, quick steps, stay relaxed, and let gravity do the work without braking hard. On the Wahoo KICKR RUN you can also lower the deck to its 3 percent decline for a few easy minutes at the end.";
 
-  /** Hills sessions from December onward get the downhill note (through the taper, not race week). */
+  /** Hills sessions from December onward get the downhill note: from the week of Nov 30 to Dec 6 (week 10), through the taper, not race week. */
   function downhillWeek(plan) {
     const dec1 = new Date(2026, 11, 1);
     const weekEnd = new Date(plan.weekStart.getFullYear(), plan.weekStart.getMonth(), plan.weekStart.getDate() + 6);
@@ -3128,7 +3226,7 @@
     const cw = checkpointWeekIndex();
     const cur = atWeek != null ? atWeek : getProgramWeekIndex();
     const upTo = Math.min(cur, cw);
-    const runs = loadMiles().filter((e) => (e.kind === "run" || e.kind === "long") && e.weekIndex <= cur);
+    const runs = loadMiles().filter((e) => (e.kind === "run" || e.kind === "long") && entryWeek(e) <= cur);
     const longest = runs.reduce((mx, e) => Math.max(mx, Number(e.miles) || 0), 0);
     const weeks = [];
     for (let w = Math.max(0, upTo - 3); w < upTo; w++) weeks.push(milesForWeek(w, { skipRace: true }));
@@ -3213,8 +3311,40 @@
     return milesEntriesForWeek(w);
   }
 
+  /** Before Mon Sep 28: a friendly Week 1 preview instead of a half-week tracker with a target. */
+  function preStartCardHtml(opts) {
+    opts = opts || {};
+    const plan = getWeekPlan(0);
+    const sizing = computeWeekSizing();
+    const wk1End = weekStartDate(1);
+    wk1End.setDate(wk1End.getDate() - 1);
+    const names = { long_run: "a long run of about ", speed_run: "an easy run of about ", easy_hike: "a hills session of about ", flex: "an extra easy run of about " };
+    const parts = [];
+    sizing.counted.forEach((s) => {
+      if (sizing.sizes[s] != null) parts.push(names[s] + fmtMiles(sizing.sizes[s]));
+    });
+    const list = parts.length > 1 ? parts.slice(0, -1).join(", ") + (parts.length > 2 ? "," : "") + " and " + parts[parts.length - 1] : parts[0] || "";
+    const wk2 = getWeekPlan(1);
+    let html = '<section class="mileage-card prestart" aria-label="Your plan starts Monday">';
+    html += '<div class="mileage-head"><span class="mileage-eyebrow">' + escapeHtml("Week 1 · " + shortDate(plan.weekStart) + " to " + shortDate(wk1End)) + "</span>";
+    html += '<div class="mileage-total">' + escapeHtml("Your plan starts Monday, " + shortDate(plan.weekStart)) + "</div></div>";
+    html +=
+      '<p class="mileage-text">' +
+      escapeHtml(
+        "Week 1 is " + fmtMiles(plan.targetMiles) + ", with a long run of about " + fmtMiles(plan.longRunMiles) + ". It is part of " + plan.phaseLabel +
+          ", so every run stays easy and at or below your heart rate cap of " + getAeT() + "."
+      ) +
+      "</p>";
+    if (list) html += '<p class="mileage-note">' + escapeHtml("A full Week 1 looks like " + list + ". You still pick each day's workout in any order.") + "</p>";
+    html += '<p class="mileage-note">' + escapeHtml("Your first heart rate drift test is offered in week 2, the week of " + shortDate(wk2.weekStart) + ". Race day is " + RACE.label + ", in week " + (raceWeekIndex() + 1) + ".") + "</p>";
+    html += '<p class="mileage-callout">' + escapeHtml("Until Monday, rest up or do anything easy you like. Weeks run Monday to Sunday, and miles from before Monday don't count toward Week 1.") + "</p>";
+    html += "</section>";
+    return html;
+  }
+
   function mileageCardHtml(prefix, opts) {
     opts = opts || {};
+    if (!planStarted()) return preStartCardHtml(opts);
     const sizing = computeWeekSizing();
     const plan = sizing.plan;
     const logged = sizing.logged;
@@ -3309,7 +3439,7 @@
           aetAtTime: getAeT(),
           source: "manual",
           dateKey: localDateKey(now),
-          weekIndex: getProgramWeekIndex(),
+          weekIndex: weekIndexForDate(now),
           miles: Math.round(miles * 10) / 10,
           kind: kind,
           ts: now.getTime(),
@@ -3372,7 +3502,11 @@
     const rw = raceWeekIndex();
     const maxTarget = Math.max.apply(null, sched.filter((r) => r.phase !== "race").map((r) => r.targetMiles));
     let rows = "";
-    for (let w = 0; w <= Math.min(cur, sched.length - 1); w++) {
+    const started = planStarted();
+    if (!started) {
+      rows = '<p class="bench-empty">' + escapeHtml("Your plan starts Monday, " + shortDate(weekStartDate(0)) + ". Each week's target and actual miles will show here once Week 1 begins.") + "</p>";
+    }
+    for (let w = 0; started && w <= Math.min(cur, sched.length - 1); w++) {
       const p = getWeekPlan(w);
       const actual = milesForWeek(w);
       const trackPct = Math.max(8, Math.min(100, (p.targetMiles / maxTarget) * 100));
@@ -3398,9 +3532,11 @@
             (p.peakLongDay ? " (your longest run)" : "") +
             (p.driftTest ? ". Drift test offered" : "") +
             (p.thresholdTest ? ". Optional threshold test" : "");
+      const wEnd = weekStartDate(w + 1);
+      wEnd.setDate(wEnd.getDate() - 1);
       planRows +=
-        '<li class="' + (w === cur ? "current" : "") + (p.recoveryWeek ? " cutback" : "") + '">' +
-        '<div class="pr-top"><span>' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart)) + "</span><span>" + escapeHtml(fmtNum(p.targetMiles) + " miles") + "</span></div>" +
+        '<li class="' + (started && w === cur ? "current" : "") + (p.recoveryWeek ? " cutback" : "") + '">' +
+        '<div class="pr-top"><span>' + escapeHtml("Week " + (w + 1) + " · " + shortDate(p.weekStart) + " to " + shortDate(wEnd)) + "</span><span>" + escapeHtml(fmtNum(p.targetMiles) + " miles") + "</span></div>" +
         '<div class="pr-sub">' + escapeHtml(p.phaseLabel + (p.recoveryWeek ? ", recovery week" : "") + ". " + lr + ".") + "</div></li>";
     }
     return (
@@ -3409,7 +3545,7 @@
       '<p class="sub">The green fill is what you logged. The dashed outline is that week\'s target, drawn to scale so you can compare weeks. Recovery weeks are marked.</p>' +
       '<div class="mh-list">' + rows + "</div>" +
       fuelNotesHtml() +
-      '<details class="plan-details"><summary>See the full plan to race day</summary><ul class="plan-rows">' + planRows + "</ul></details>" +
+      '<details class="plan-details"' + (started ? "" : " open") + '><summary>' + escapeHtml("See the full plan to race day (" + (rw + 1) + " weeks, Monday to Sunday)") + '</summary><ul class="plan-rows">' + planRows + "</ul></details>" +
       "</article>"
     );
   }
@@ -3529,7 +3665,7 @@
           st.className = "miles-status err";
           return;
         }
-        addHrEntry({ type: "manual", dateKey: localDateKey(new Date()), weekIndex: getProgramWeekIndex(), ts: Date.now(), aetBefore: getAeT(), aetAfter: v });
+        addHrEntry({ type: "manual", dateKey: localDateKey(new Date()), weekIndex: weekIndexForDate(new Date()), ts: Date.now(), aetBefore: getAeT(), aetAfter: v });
         render();
         const st2 = document.getElementById("hr-manual-status");
         if (st2) {
@@ -3575,6 +3711,10 @@
     const options = [];
     const usedWorkouts = new Set();
     const sizing = computeWeekSizing();
+    const tired = tiredLegsFromYesterday();
+    // Race-specific build, the day after a logged long run: the easy run card uses a full-length variant so it can
+    // carry that week's next-day target (6 to 8 miles). Nothing is labeled ahead of time; this only kicks in after the long run is logged.
+    const secondDayToday = !!(tired && tired.reason === "long_run" && sizing.plan.secondDayMiles && !sizing.ahead);
 
     function addOption(slotId, preferShort) {
       if (options.length >= 3) return;
@@ -3584,6 +3724,13 @@
       // Higher-volume weeks: the flex day offers the extra easy run when the other runs can't cover the miles.
       if (slotId === "flex" && sizing.flexNeeded) {
         workout = pool.find((w) => w.id === "fx-second-aerobic" && !usedWorkouts.has(w.id)) || null;
+      }
+      if (!workout && slotId === "speed_run" && secondDayToday) {
+        const idx0 = today.offset % pool.length;
+        workout =
+          pool.find((w, i) => i >= idx0 && w.lengthClass !== "short" && !usedWorkouts.has(w.id)) ||
+          pool.find((w) => w.lengthClass !== "short" && !usedWorkouts.has(w.id)) ||
+          null;
       }
       if (!workout && preferShort) {
         workout = pool.find((w) => w.lengthClass === "short" && !usedWorkouts.has(w.id));
@@ -3621,7 +3768,7 @@
           } else {
             const last = options[options.length - 1];
             const shortSame = (WORKOUTS[last.slotId] || []).find((w) => w.lengthClass === "short");
-            if (shortSame) {
+            if (shortSame && !(secondDayToday && last.slotId === "speed_run")) {
               last.workout = shortSame;
             }
           }
@@ -3669,7 +3816,6 @@
       }
     });
 
-    const tired = tiredLegsFromYesterday();
     options.forEach((o) => {
       const easy = isEasyRunOption(o.slotId, o.workout);
       if (tired && easy) o.tiredLegs = tiredLegsMessage(tired);
@@ -3971,7 +4117,7 @@
         fuelNote: fuelNote || undefined,
         source: "workout",
         dateKey: localDateKey(finishedAt),
-        weekIndex: getProgramWeekIndex(),
+        weekIndex: weekIndexForDate(finishedAt),
         miles: Math.round(cardioSum.miles * 100) / 100,
         kind: milesKindFor(sess.slotId, workout),
         slotId: sess.slotId,
@@ -4549,14 +4695,24 @@
 
     const today = getTodayInfo();
     const wkPlan = getWeekPlan(getProgramWeekIndex());
-    $("#week-label").textContent = "Week " + wkPlan.planWeekNumber + " · " + wkPlan.phaseLabel;
+    const started = planStarted();
+    $("#week-label").textContent = started ? "Week " + wkPlan.planWeekNumber + " · " + wkPlan.phaseLabel : "Week 1 starts Mon, " + shortDate(weekStartDate(0));
     const resetBtn = document.getElementById("btn-reset-week");
-    if (resetBtn) resetBtn.textContent = "Reset this week";
+    if (resetBtn) {
+      resetBtn.textContent = "Reset this week";
+      resetBtn.style.display = started ? "" : "none";
+    }
     $("#today-date").textContent = formatTodayLabel(today.now) + " · MT";
 
     const doneCount = Object.keys(state.completed).length;
-    $("#week-progress").textContent = doneCount + " of 7 workouts done this week";
-    $("#progress-fill").style.width = (doneCount / 7) * 100 + "%";
+    const wk1End = weekStartDate(1);
+    wk1End.setDate(wk1End.getDate() - 1);
+    $("#week-progress").textContent = started
+      ? doneCount + " of 7 workouts done this week"
+      : "Week 1 runs from Monday, " + shortDate(weekStartDate(0)) + " to Sunday, " + shortDate(wk1End) + ". Here is what it holds.";
+    $("#progress-fill").style.width = (started ? (doneCount / 7) * 100 : 0) + "%";
+    const weekH1 = document.querySelector("#view-week .day-hero h1");
+    if (weekH1) weekH1.textContent = started ? "This week's workouts" : "Week 1 preview";
 
     renderToday();
     renderWeek();
@@ -4569,6 +4725,17 @@
   function renderToday() {
     const list = $("#options-list");
     const doneWrap = $("#today-done");
+    const todayH1 = document.querySelector("#view-today .day-hero h1");
+    if (!planStarted() && !state.todayPick) {
+      if (todayH1) todayH1.textContent = "Almost time";
+      list.innerHTML = "";
+      doneWrap.classList.add("hidden");
+      const contBtn = document.getElementById("btn-continue-workout");
+      if (contBtn) contBtn.classList.add("hidden");
+      $("#today-sub").textContent = "Your plan starts Monday, " + shortDate(weekStartDate(0)) + ". Workout choices show up here that morning.";
+      return;
+    }
+    if (todayH1) todayH1.textContent = "Pick today's workout";
     const result = pickOptionsForToday(state);
     const badge = document.getElementById("done-badge");
 
@@ -4774,6 +4941,13 @@
       const blurb = meta.blurb + runSizeLine(slotId);
       let detail = blurb;
 
+      if (!planStarted() && !done) {
+        return (
+          '<div class="slot-row scheduled"><div class="slot-status scheduled">·</div>' +
+          '<div class="slot-info"><h3>' + escapeHtml(meta.name) + "</h3><p>" + escapeHtml(blurb.replace(/ This week: about /g, " In Week 1 it is about ").replace(/ This week it /g, " In Week 1 it ")) + "</p></div>" +
+          '<div class="slot-day">Any day</div></div>'
+        );
+      }
       if (done) {
         status = "done";
         statusIcon = "✓";
@@ -5223,21 +5397,21 @@
           <p class="miles-status" id="race-date-status" aria-live="polite"></p>
         </form>
         <div class="goal-row"><span>Race</span><strong>Black Canyon 100K, 62 miles, Arizona</strong></div>
-        <div class="goal-row"><span>This week</span><strong>${escapeHtml("Week " + cur.planWeekNumber + " of " + (rw + 1) + ", " + cur.phaseLabel + ", " + fmtNum(cur.targetMiles) + " miles")}</strong></div>
+        <div class="goal-row"><span>This week</span><strong>${escapeHtml(planStarted() ? "Week " + cur.planWeekNumber + " of " + (rw + 1) + ", " + cur.phaseLabel + ", " + fmtNum(cur.targetMiles) + " miles" : "Your plan starts Monday, September 28. Week 1 of " + (rw + 1) + " is " + fmtNum(cur.targetMiles) + " miles.")}</strong></div>
         <div class="goal-row"><span>Peak</span><strong>About ${PLAN_META.peakMiles} miles a week in late January</strong></div>
         <div class="goal-row"><span>Easy-run heart rate cap</span><strong>${escapeHtml(String(getAeT()) + (aetIsProvisional() ? ", starting cap until your first drift test" : ", from your drift test"))}</strong></div>
         <p class="goal-note" style="margin-top:10px">${PLAN_META.provisional ? "These weekly targets may still change after your first heart rate tests. " : ""}This plan follows the Uphill Athlete method from Scott Johnston: build the biggest aerobic base you can with lots of easy running below your aerobic threshold. Weekly miles go from about 18 now to about ${PLAN_META.peakMiles} in late January, then taper into race day. The race date is confirmed on ${escapeHtml(RACE.source)}.</p>
         <ul class="notes-list plan-rules">
-          <li>The phases are Getting started (weeks 1 to 4), Aerobic base (weeks 5 to 12), Race-specific build (weeks 13 to 19), Taper (week 20), and Race week.</li>
+          <li>The phases are Getting started (weeks 1 to 3), Aerobic base (weeks 4 to 11), Race-specific build (weeks 12 to 18), Taper (week 19), and Race week (week 20).</li>
           <li>Three building weeks, then one recovery week that is 30 to 50 percent lighter. Weekly miles never go up more than about 10 percent at a time.</li>
           <li>Every easy run, long run, and hills session has a heart rate cap at your aerobic threshold, and recovery runs stay in Zone 1. Wear your chest strap, and walk the hills whenever you need to in order to stay under the cap.</li>
-          <li>A heart rate drift test is offered in week 2 and again every 6 to 8 weeks, in recovery weeks 8 and 16. Each one updates your cap and zones automatically.</li>
-          <li>An optional 30-minute threshold test is offered in weeks 4 and 16. It only measures how well built your base is; nothing harder is added to the plan.</li>
+          <li>A heart rate drift test is offered in week 2 and again in recovery weeks 7 and 15. Each one updates your cap and zones automatically.</li>
+          <li>An optional 30-minute threshold test is offered in weeks 3 and 15. It only measures how well built your base is; nothing harder is added to the plan.</li>
           <li>There are no speed sessions. The speed will come with volume.</li>
           <li>In the race-specific build, when an easy run comes the day after a logged long run, it grows to that week's second-day target of 6 to 8 miles. You still choose the order; it is never required.</li>
           <li>From November on, long runs over about 90 minutes are fueling practice: about 200 to 300 calories and regular drinks every hour, using your race-day foods. The long run has a short "How did fueling go?" note you can fill in when you finish.</li>
           <li>From December on, hills sessions include easy, controlled downhill running, because Black Canyon drops more than it climbs.</li>
-          <li>From the week of December 16 through race week, strength is on maintenance: the same lifts at the same percent of your max, with fewer sets, fewer extras, and no max attempts. You'll chase lifting PRs after Black Canyon.</li>
+          <li>From the week of December 14 through race week, strength is on maintenance: the same lifts at the same percent of your max, with fewer sets, fewer extras, and no max attempts. You'll chase lifting PRs after Black Canyon.</li>
           <li>Your longest run, about 20 miles, is about two weeks before the race. The week before race week drops about 25 percent, and race week is a few short, easy runs and then the race.</li>
           <li>You still pick each day's workout in any order. The run options resize themselves to fit the miles left in the week, and if you fall behind, the app will not ask you to cram.</li>
         </ul>
@@ -5267,8 +5441,8 @@
         <div class="goal-row"><span>Athlete</span><strong>Nathan · 37 · 215 lbs</strong></div>
         <div class="goal-row"><span>Schedule</span><strong>48 hours on, 96 hours off</strong></div>
         <div class="goal-row"><span>Goal race</span><strong>${escapeHtml(RACE.label)}</strong></div>
-        <div class="goal-row"><span>Week 1 started</span><strong>Wednesday, September 23, 2026</strong></div>
-        <div class="goal-row"><span>Weeks run</span><strong>Wednesday to Tuesday</strong></div>
+        <div class="goal-row"><span>${planStarted() ? "Week 1 started" : "Week 1 starts"}</span><strong>Monday, September 28, 2026</strong></div>
+        <div class="goal-row"><span>Weeks run</span><strong>Monday to Sunday</strong></div>
         <div class="goal-row"><span>Session length</span><strong>30 to 90 minutes; the long run can go longer</strong></div>
       </div>
       <div class="goal-card">
