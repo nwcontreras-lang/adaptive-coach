@@ -206,6 +206,8 @@
   /** Plain-English effort from RPE codes (shown to users instead of raw RPE). */
   function plainEffort(rpe) {
     const s = String(rpe || "").trim();
+    // Combined day: the run stays easy, and the effort label describes the lifting part.
+    if (s.indexOf("run+") === 0) return "Easy run, then " + plainEffort(s.slice(4)).toLowerCase().replace(" — ", ", ");
     if (s === "2" || s === "2–3" || s === "2-3") return "Easy recovery";
     if (s === "3") return "Easy — conversational";
     if (s === "3–4" || s === "3-4") return "Easy — conversational";
@@ -232,6 +234,7 @@
 
   function plainLocation(loc) {
     const s = String(loc || "");
+    if (/^Run: /.test(s)) return s; // combined sessions already carry a plain label
     if (/Fire Station/i.test(s)) return "Fire station";
     if (/Trail/i.test(s) && /Outdoor/i.test(s)) return "Trail / outdoors";
     if (/Outdoor/i.test(s) && /Wahoo/i.test(s)) return "Outside or treadmill";
@@ -1925,7 +1928,7 @@
   function assignableSlots(st) {
     const rem = remainingSlots(st);
     if (st.todayPick && st.todayPick.slotId && !st.completed[st.todayPick.slotId]) {
-      return rem.filter((id) => id !== st.todayPick.slotId);
+      return rem.filter((id) => id !== st.todayPick.slotId && id !== st.todayPick.pairSlotId);
     }
     return rem;
   }
@@ -1938,7 +1941,7 @@
       Object.keys(st.dayAssignments).length !== 7 ||
       rem.some((s) => !Object.values(st.dayAssignments).includes(s)) ||
       Object.values(st.dayAssignments).some(
-        (s) => s && !rem.includes(s) && !st.completed[s] && !(st.todayPick && st.todayPick.slotId === s)
+        (s) => s && !rem.includes(s) && !st.completed[s] && !(st.todayPick && (st.todayPick.slotId === s || st.todayPick.pairSlotId === s))
       );
 
     if (!needRebuild && st.dayAssignments) {
@@ -2138,7 +2141,9 @@
   /** Does a finished workout count as a big day that leaves the legs tired? Returns a reason or null. */
   function bigDayReason(e) {
     if (!e) return null;
-    const planned = Number(e.durationMin) || 0;
+    // A combined day counts only its run part here, so the lifting minutes don't make it look like a long hike.
+    const runPart = e.parts && e.parts[0] && e.parts[0].kind === "run" ? e.parts[0] : null;
+    const planned = runPart ? Number(runPart.minutes) || 0 : Number(e.durationMin) || 0;
     const miles = Number(e.loggedMiles) || 0;
     const mins = Number(e.loggedMinutes) || 0;
     if (e.slotId === "long_run") return "long_run";
@@ -2179,6 +2184,7 @@
 
   /** Is this an easy-run option that should carry the tired-legs note? */
   function isEasyRunOption(slotId, workout) {
+    if (workout && workout.isCombo) return isEasyRunOption(workout.combo.runSlot, workout.combo.runWorkout);
     if (!workout || workout.isTest) return false;
     if (slotId === "speed_run") return true;
     return workout.id === "fx-second-aerobic";
@@ -2633,6 +2639,7 @@
 
   /** Which heart rate cap applies to a sized option or session (a kind for hrCapText), or null when none applies. */
   function hrCapKind(slotId, workout) {
+    if (workout && workout.isCombo) return hrCapKind(workout.combo.runSlot, workout.combo.runWorkout);
     if (!workout || workout.isTest) return null;
     const rp = workout.runPlan || null;
     const phase = rp ? rp.phase : null;
@@ -2756,11 +2763,13 @@
   /** Which sessions add their logged cardio distance to the weekly miles. */
   const MILES_SLOTS = ["speed_run", "long_run", "easy_hike"];
   function workoutCountsMiles(slotId, workout) {
+    if (workout && workout.isCombo) return true;
     if (workout && workout.countsMiles) return true;
     if (MILES_SLOTS.includes(slotId)) return true;
     return !!workout && workout.id === "fx-second-aerobic";
   }
   function milesKindFor(slotId, workout) {
+    if (workout && workout.isCombo) return milesKindFor(workout.combo.runSlot, workout.combo.runWorkout);
     if (workout && workout.runPlan && workout.runPlan.kind === "race") return "race";
     if (slotId === "long_run") return "long";
     if (slotId === "easy_hike") return "hills";
@@ -2798,7 +2807,7 @@
     const nonLong = plan.targetMiles - plan.longRunMiles;
     const flexIsRun = plan.phase === "race" || (plan.phase !== "recovery" && nonLong > 11);
     const order = ["long_run", "speed_run", "easy_hike"].concat(flexIsRun ? ["flex"] : []);
-    const open = order.filter((s) => !state.completed[s] && !(pick && pick.slotId === s));
+    const open = order.filter((s) => !state.completed[s] && !(pick && (pick.slotId === s || pick.pairSlotId === s)));
     const counted = open.slice(0, daysLeft);
 
     const sizes = {};
@@ -3020,6 +3029,36 @@
 
   /** Apply a stored run plan to a base workout (pure: same inputs give the same blocks and log keys). */
   function applyRunPlan(slotId, base, rp) {
+    const w = applyRunPlanCore(slotId, base, rp);
+    if (rp && rp.kind === "long" && w && w !== base) lightenLongRunCore(w);
+    return w;
+  }
+
+  /**
+   * The long run is never paired with strength. At most it keeps a short, light, optional core finish of about 10 minutes:
+   * two easy bodyweight exercises, 2 sets each, and no barbell rollouts.
+   */
+  function lightenLongRunCore(w) {
+    w.blocks = (w.blocks || [])
+      .map((b, bi) => {
+        if (bi === 0) return b;
+        const items = (b.items || [])
+          .filter((it) => !/rollout/i.test(it.name || ""))
+          .slice(0, 2)
+          .map((it) => {
+            const x = Object.assign({}, it);
+            const n = parseInt(x.sets, 10);
+            if (n > 2) x.sets = 2;
+            if (x.detail) x.detail = String(x.detail).replace(/^(\d+)\s+(sets|rounds)\b/i, (m, k, u) => Math.min(2, +k) + " " + u);
+            return x;
+          });
+        return Object.assign({}, b, { name: "Optional light core, about 10 minutes (skip it if you are done for the day)", items: items });
+      })
+      .filter((b) => (b.items || []).length);
+    return w;
+  }
+
+  function applyRunPlanCore(slotId, base, rp) {
     if (!base || !rp) return base;
     const w = JSON.parse(JSON.stringify(base));
     w.runPlan = rp;
@@ -3152,6 +3191,7 @@
       if (rp.downhill) w.notes = [DOWNHILL_TEXT].concat(w.notes || []);
       if (base.id === "eh-hyper-hills") {
         const hm = clampNum(Math.min(m, 4), 2, 4);
+        w.displayMiles = hm;
         w.title = "Hyper Pro and easy hills, " + fmtMiles(hm) + " of incline";
         w.durationMin = Math.min(90, Math.round((hm * 15 + 25) / 5) * 5);
         w.summary = "About " + fmtMiles(hm) + " of easy incline walking and jogging, then Hyper Pro back and knee work for Black Canyon climbs and multi-day hunts. Easy enough to talk.";
@@ -3164,6 +3204,7 @@
       }
       if (base.id === "eh-trail-easy") {
         const tm = clampNum(Math.min(m, 5.5), 2, 5.5);
+        w.displayMiles = tm;
         w.title = "Easy trail hike and jog, " + fmtMiles(tm);
         w.durationMin = Math.min(90, Math.round((tm * 15 + 6) / 5) * 5);
         w.summary = "About " + fmtMiles(tm) + " of easy trail hiking and jogging at or under your heart rate cap. Toughens your feet for the ultra and feels like a hunt.";
@@ -3181,10 +3222,272 @@
 
   /** Base workout plus any stored run sizing (used for options, the active session, and finishing). */
   function resolveWorkout(slotId, workoutId, runPlan) {
+    if (runPlan && runPlan.kind === "combo") return buildComboWorkout(runPlan);
     const base = findWorkout(slotId, workoutId);
     if (base && base.aerobicTest) return personalizeAerobicTest(base);
     if (!base || !runPlan) return base;
     return applyRunPlan(slotId, base, runPlan);
+  }
+
+
+  // ——— Combined run + strength days (Pass 13) ———
+  // Uphill Athlete pairing rules, in miles only:
+  //  - An easy run pairs with any strength or core session.
+  //  - A heavy lower-body day (squat, deadlift, split squats, Nordic-heavy work) pairs only with a short easy run (3 to 4 miles).
+  //  - The long run is never paired with strength (it keeps only an optional light core finish).
+  //  - A hills day pairs with upper body or core only.
+  //  - The easy run the day after a logged long run (worked out from the logs) pairs with upper body or core only.
+  //  - Heart rate tests and 1RM or PT max test days stay standalone.
+  //  - In strength-maintenance weeks the strength part is the maintenance version.
+  //  - The whole session stays within 30 to 90 minutes; if it would run long, accessories come out of the strength part, never miles from the run.
+  const COMBO_SPLIT_NOTE =
+    "You can do both parts together, running first and then lifting, or split them across the day, for example an easy run in the morning and the lift in the evening. Either way, log both parts here and tap Finish once.";
+  const COMBO_STRENGTH = {
+    "sb-short-pt-core": { label: "upper body strength", kind: "upper" },
+    "fx-core-density": { label: "core", kind: "core" },
+    "sa-short-squat-core": { label: "front squat and core", kind: "legs" },
+    "sa-back-squat-press": { label: "squat and bench strength", kind: "legs" },
+    "sb-hinge-pt": { label: "deadlift and pull-up strength", kind: "legs" },
+    "sb-hyper-row": { label: "Hyper Pro hinge and row strength", kind: "legs" },
+  };
+  const COMBO_RUN = {
+    "sp-easy-volume": { label: "Easy run", pace: 11.5 },
+    "sp-short-easy": { label: "Short easy run", pace: 11.5 },
+    "fx-second-aerobic": { label: "Extra easy run", pace: 12 },
+    "eh-hyper-hills": { label: "Easy incline hills", pace: 15 },
+    "eh-trail-easy": { label: "Easy trail hike and jog", pace: 15 },
+  };
+  const COMBO_MAX_MIN = 90;
+  const COMBO_MIN_MIN = 30;
+  const COMBO_MIN_STRENGTH_MIN = 15;
+  const COMBO_WARMUP_SKIP = /treadmill|walking|jogging|march in place|easy movement/i;
+
+  function listPlain(arr) {
+    if (!arr.length) return "";
+    if (arr.length === 1) return arr[0];
+    return arr.slice(0, -1).join(", ") + (arr.length > 2 ? "," : "") + " and " + arr[arr.length - 1];
+  }
+
+  /** Only the run itself from a sized run workout (its own post-run extras are left out; the strength part covers that). */
+  function comboRunItems(runW) {
+    const b0 = (runW.blocks || [])[0];
+    const first = ((b0 && b0.items) || []).find((it) => parseExerciseSpec(it).type === "cardio");
+    return first ? [Object.assign({}, first)] : [];
+  }
+
+  /** Shrink a strength session to fit the minutes left: physique extras go first, then other accessories; main lifts stay. */
+  function comboTrimStrength(strW, maxMin) {
+    const blocks = JSON.parse(JSON.stringify(strW.blocks || []));
+    const setsOf = (it) => parseInt(it.sets, 10) || 3;
+    const isMain = (it) => !!(it.liftId || it.pct1rm);
+    const all = [];
+    blocks.forEach((b, bi) => (b.items || []).forEach((it, ii) => all.push({ bi, ii, it })));
+    const totalSets = all.reduce((sum, x) => sum + setsOf(x.it), 0) || 1;
+    const perSet = Math.max(0.5, ((Number(strW.durationMin) || 45) - 8) / totalSets);
+    let est = 4 + totalSets * perSet; // about 4 minutes of lift-specific warm-up after the run
+    const order = [];
+    all.slice().reverse().forEach((x) => { if (MAINT_DROP.test(x.it.name || "")) order.push(x); });
+    all.slice().reverse().forEach((x) => { if (!isMain(x.it) && !order.includes(x)) order.push(x); });
+    const keep = new Set(all);
+    const dropped = [];
+    for (const x of order) {
+      if (est <= maxMin || keep.size <= 2) break;
+      keep.delete(x);
+      dropped.push(x.it.name);
+      est -= setsOf(x.it) * perSet;
+    }
+    if (est > maxMin) {
+      all.forEach((x) => {
+        if (!keep.has(x) || !isMain(x.it) || setsOf(x.it) <= 3 || est <= maxMin) return;
+        est -= (setsOf(x.it) - 3) * perSet;
+        x.it.sets = 3;
+        if (x.it.detail) x.it.detail = String(x.it.detail).replace(/^(\d+)\s+(sets|rounds)\b/i, "3 $2");
+      });
+    }
+    const out = blocks
+      .map((b, bi) => Object.assign({}, b, { items: all.filter((x) => x.bi === bi && keep.has(x)).map((x) => x.it) }))
+      .filter((b) => b.items.length);
+    return { blocks: out, minutes: est, dropped: dropped };
+  }
+
+  /** Build the one-session workout from a stored combo plan (pure: same plan, same blocks and log keys). */
+  function buildComboWorkout(cp) {
+    if (!cp || !cp.run || !cp.strength) return null;
+    const runW = resolveWorkout(cp.run.slotId, cp.run.workoutId, cp.run.runPlan || null);
+    const strW = resolveWorkout(cp.strength.slotId, cp.strength.workoutId, cp.strength.runPlan || null);
+    if (!runW || !strW) return null;
+    const runItems = comboRunItems(runW);
+    if (!runItems.length) return null;
+    const runInfo = COMBO_RUN[cp.run.workoutId] || { label: "Easy run", pace: 12 };
+    const sInfo = COMBO_STRENGTH[cp.strength.workoutId] || { label: "strength", kind: "upper" };
+    const miles = Number(runW.displayMiles || (cp.run.runPlan && cp.run.runPlan.miles)) || 0;
+    const runMin = Math.max(20, Math.round((miles * runInfo.pace + 3) / 5) * 5);
+    const trim = comboTrimStrength(strW, COMBO_MAX_MIN - runMin);
+    const strMin = Math.round(trim.minutes);
+    const total = Math.min(COMBO_MAX_MIN, Math.max(COMBO_MIN_MIN, Math.round((runMin + strMin) / 5) * 5));
+    const heavyLegs = sInfo.kind === "legs";
+    const maint = !!strW.maintenance;
+    const partWord = sInfo.kind === "core" ? "Core" : "Strength";
+    const title = runInfo.label + " " + fmtMiles(miles) + " + " + sInfo.label + (maint ? " (maintenance)" : "");
+    const liftWarm = (strW.warmup || []).filter((l) => !COMBO_WARMUP_SKIP.test(l)).map((l) => "Before the lifts: " + l.charAt(0).toLowerCase() + l.slice(1));
+    const notes = [COMBO_SPLIT_NOTE];
+    if (heavyLegs) notes.push("This is a heavy leg day, so the run stays short and easy, about 3 to 4 miles, and the legs stay fresh for the lifts.");
+    if (maint) notes.push(strW.runPlan && strW.runPlan.phase === "recovery" ? MAINT_RECOVERY_TEXT : MAINT_TEXT);
+    if (trim.dropped.length) notes.push("To keep the whole session to about " + total + " minutes, these accessories are left out today: " + listPlain(trim.dropped.map((n) => String(n).replace(/\s*\([^)]*\)/g, ""))) + ". The run and the main lifts stay the same.");
+    (strW.notes || []).forEach((n) => { if (!notes.includes(n) && n !== MAINT_TEXT && n !== MAINT_RECOVERY_TEXT) notes.push(n); });
+    const runPlace = plainLocation(runW.location);
+    const liftPlace = plainLocation(strW.location);
+    return {
+      id: "combo-" + cp.run.workoutId + "-" + cp.strength.workoutId,
+      isCombo: true,
+      title: title,
+      durationMin: total,
+      lengthClass: total <= 40 ? "short" : total <= 75 ? "medium" : "long",
+      location: runPlace === liftPlace ? runPlace : "Run: " + runPlace + " · " + partWord + ": " + liftPlace,
+      rpe: "run+" + (strW.rpe || "6–7"),
+      summary:
+        "Two parts in one day: about " + fmtMiles(miles) + " of easy " + (cp.run.slotId === "easy_hike" ? "incline or trail miles" : "running") +
+        " at or under your heart rate cap, then about " + strMin + " minutes of " + sInfo.label + ". " +
+        (maint ? (strW.runPlan && strW.runPlan.phase === "recovery" ? MAINT_RECOVERY_TEXT : MAINT_TEXT) + " " : "") +
+        COMBO_SPLIT_NOTE,
+      warmup: (runW.warmup || []).slice(0, 1).concat(liftWarm.slice(0, 2)),
+      blocks: [{ name: "Run: " + ((runW.blocks && runW.blocks[0] && runW.blocks[0].name) || "Easy miles"), items: runItems }].concat(
+        trim.blocks.map((b) => Object.assign({}, b, { name: partWord + ": " + b.name }))
+      ),
+      notes: notes,
+      runPlan: cp,
+      displayMiles: miles,
+      comboLabel: sInfo.kind === "core" ? "Run + core" : "Run + strength",
+      combo: {
+        runSlot: cp.run.slotId,
+        strengthSlot: cp.strength.slotId,
+        runWorkout: runW,
+        strengthWorkout: strW,
+        runTitle: runW.title,
+        strengthTitle: strW.title,
+        runMinutes: runMin,
+        strengthMinutes: strMin,
+        dropped: trim.dropped,
+        heavyLegs: heavyLegs,
+        kind: sInfo.kind,
+      },
+    };
+  }
+
+  function comboViable(w) {
+    return !!w && w.combo.strengthMinutes >= COMBO_MIN_STRENGTH_MIN && w.combo.runMinutes + w.combo.strengthMinutes <= COMBO_MAX_MIN + 2 && w.displayMiles > 0;
+  }
+
+  /** Candidate pairings for today from the open slots, following the pairing rules above. */
+  function comboCandidates(rem, sizing, tired, exclude, rot) {
+    const plan = sizing.plan;
+    if (plan.phase === "race") return [];
+    const open = (s) => rem.includes(s) && !exclude.includes(s);
+    const pickOne = (ids) => ids[rot % ids.length];
+    const upperCore = [];
+    if (open("strength_b")) upperCore.push({ slotId: "strength_b", workoutId: "sb-short-pt-core" });
+    if (open("flex") && !sizing.flexNeeded) upperCore.push({ slotId: "flex", workoutId: "fx-core-density" });
+    const legs = [];
+    // Heavy legs never go with the run after a long run or another big day (read from the logs, never pre-labeled).
+    if (!tired) {
+      if (open("strength_a")) legs.push({ slotId: "strength_a", workoutId: pickOne(["sa-short-squat-core", "sa-back-squat-press"]) });
+      if (open("strength_b")) legs.push({ slotId: "strength_b", workoutId: pickOne(["sb-hinge-pt", "sb-hyper-row"]) });
+    }
+    const out = [];
+    if (open("speed_run")) {
+      upperCore.forEach((st) => out.push({ run: { slotId: "speed_run", workoutId: "sp-easy-volume" }, strength: st }));
+      legs.forEach((st) => out.push({ run: { slotId: "speed_run", workoutId: "sp-short-easy" }, strength: st }));
+    }
+    if (open("easy_hike")) {
+      const hills = pickOne(["eh-hyper-hills", "eh-trail-easy"]);
+      upperCore.forEach((st) => out.push({ run: { slotId: "easy_hike", workoutId: hills }, strength: st }));
+    }
+    if (open("flex") && sizing.flexNeeded && open("strength_b")) {
+      out.push({ run: { slotId: "flex", workoutId: "fx-second-aerobic" }, strength: { slotId: "strength_b", workoutId: "sb-short-pt-core" } });
+    }
+    return out;
+  }
+
+  /** Size one candidate from the miles still needed (same sizing as the standalone runs) and build it. */
+  function makeComboOption(c, sizing, tired) {
+    const runBase = findWorkout(c.run.slotId, c.run.workoutId);
+    const strBase = findWorkout(c.strength.slotId, c.strength.workoutId);
+    if (!runBase || !strBase) return null;
+    const t = tired && isEasyRunOption(c.run.slotId, runBase) ? tired : null;
+    const rrp = runPlanFor(c.run.slotId, runBase, sizing, t);
+    if (!rrp || !rrp.miles) return null;
+    const srp = runPlanFor(c.strength.slotId, strBase, sizing, null); // maintenance version in maintenance weeks, else none
+    const cp = {
+      kind: "combo",
+      weekIndex: sizing.w,
+      phase: sizing.plan.phase,
+      targetMiles: sizing.plan.targetMiles,
+      double: 0,
+      run: { slotId: c.run.slotId, workoutId: c.run.workoutId, runPlan: Object.assign({}, rrp, { double: 0 }) },
+      strength: { slotId: c.strength.slotId, workoutId: c.strength.workoutId, runPlan: srp || null },
+    };
+    const w = buildComboWorkout(cp);
+    if (!comboViable(w)) return null;
+    cp.miles = w.displayMiles;
+    return { slotId: c.run.slotId, workout: w, isCombo: true, tiredLegs: t ? tiredLegsMessage(t) : null };
+  }
+
+  /** Strength summary of a finished session: best logged set per main lift. */
+  function liftSummary(workout, sess) {
+    const out = [];
+    (workout.blocks || []).forEach((block, bi) => {
+      (block.items || []).forEach((item, ii) => {
+        const log = (sess.logs || {})[bi + "-" + ii];
+        if (!log || log.type !== "sets") return;
+        const done = (log.sets || []).filter((st) => st.done || log.exerciseDone);
+        if (!done.length) return;
+        let best = null;
+        done.forEach((st) => {
+          const w = parseFloat(String(st.weight || "").replace(/[^0-9.]/g, ""));
+          const r = parseInt(String(st.reps || "").replace(/[^0-9]/g, ""), 10);
+          if (!best || (w || 0) > (best.w || 0) || ((w || 0) === (best.w || 0) && (r || 0) > (best.r || 0))) best = { w: w || 0, r: r || 0 };
+        });
+        out.push({ name: item.name, liftId: log.liftId || null, sets: done.length, weight: best.w || null, reps: best.r || null });
+      });
+    });
+    return out;
+  }
+
+  const PR_LIFT_NAMES = { back_squat: /\bback squat\b/i, bench: /\bbarbell bench press\b/i, deadlift: /\bconventional deadlift\b/i };
+
+  /** New estimated 1RM PRs from logged main-lift sets (Epley, 1 to 10 reps). Saved to Progress, which also bumps the working 1RM. */
+  function logLiftPrs(workout, lifts, dateKey) {
+    const recorded = [];
+    Object.keys(PR_LIFT_NAMES).forEach((metricId) => {
+      let best = null;
+      lifts.forEach((l) => {
+        if (!PR_LIFT_NAMES[metricId].test(l.name || "") || /front|close-grip|incline|romanian/i.test(l.name || "")) return;
+        if (!(l.weight > 0 && l.weight <= 1000 && l.reps >= 1 && l.reps <= 10)) return;
+        const e1 = Math.floor((l.weight * (1 + l.reps / 30)) / 5) * 5;
+        if (!best || e1 > best.e1) best = { e1: e1, l: l };
+      });
+      const metric = getMetric(metricId);
+      if (!best || !metric) return;
+      const prev = bestEntry(metric);
+      if (prev && best.e1 <= Number(prev.value)) return;
+      ensureWorking1RM();
+      const prevWorking = Number(bench.working1rm[metricId]) || null;
+      const res = addBenchEntry(metricId, dateKey, best.e1, "Estimated from " + best.l.reps + " reps at " + best.l.weight + " lb in " + workout.title);
+      if (res && res.entry) recorded.push({ metricId: metricId, entryId: res.entry.id, prevWorking: prevWorking });
+    });
+    return recorded;
+  }
+
+  function undoLiftPrs(list) {
+    (list || []).forEach((r) => {
+      if (!bench.entries[r.metricId]) return;
+      bench.entries[r.metricId] = bench.entries[r.metricId].filter((e) => e.id !== r.entryId);
+      if (r.prevWorking) {
+        ensureWorking1RM();
+        bench.working1rm[r.metricId] = r.prevWorking;
+      }
+    });
+    saveBench(bench);
   }
 
   function sizeOption(slotId, workout, sizing, tired) {
@@ -3821,6 +4124,47 @@
       if (tired && easy) o.tiredLegs = tiredLegsMessage(tired);
       o.workout = sizeOption(o.slotId, o.workout, sizing, tired && easy ? tired : null);
     });
+
+    // Combined run + strength: a first-class choice on most days, while at least one run-only or strength-only option stays.
+    // Slots offered as a test today (heart rate tests or max tests) stay standalone and are left out of the pairings.
+    const testSlots = options.filter((o) => o.isTest || (o.workout && o.workout.aerobicTest)).map((o) => o.slotId);
+    const rot = today.offset + sizing.w;
+    const comboOpts = [];
+    comboCandidates(rem, sizing, tired, testSlots, rot).forEach((c) => {
+      const o = makeComboOption(c, sizing, tired);
+      if (o && !comboOpts.some((x) => x.workout.id === o.workout.id)) comboOpts.push(o);
+    });
+    if (comboOpts.length && options.length) {
+      const combo = comboOpts[rot % comboOpts.length];
+      // Keep two singles: tests and the long run first, then one run-only and one strength-only pick when both exist, then a quick one.
+      const isRun = (o) => workoutCountsMiles(o.slotId, o.workout);
+      const score = (pair) => {
+        let sc = 0;
+        pair.forEach((o) => {
+          if (o.workout && o.workout.aerobicTest) sc += 1000;
+          else if (o.isTest) sc += 500;
+          if (o.slotId === "long_run") sc += 200;
+        });
+        if (pair.some(isRun)) sc += 60;
+        if (pair.some((o) => !isRun(o))) sc += 40;
+        if (pair.some((o) => o.workout.lengthClass === "short")) sc += 30;
+        return sc;
+      };
+      let keep = options.slice(0, 2);
+      let best = -1;
+      for (let i = 0; i < options.length; i++) {
+        for (let j = i + 1; j < options.length; j++) {
+          const sc = score([options[i], options[j]]);
+          if (sc > best) {
+            best = sc;
+            keep = [options[i], options[j]];
+          }
+        }
+      }
+      options.length = 0;
+      options.push(combo);
+      keep.forEach((o) => options.push(o));
+    }
     return { done: false, options, rem, tiredLegs: tired, sizing };
   }
 
@@ -3963,6 +4307,7 @@
     return {
       dayKey: today.day.key,
       slotId: slotId,
+      pairSlotId: workout.isCombo ? workout.combo.strengthSlot : null,
       workoutId: workout.id,
       title: workout.title,
       runPlan: workout.runPlan || null,
@@ -4072,7 +4417,8 @@
       workoutId: workout.id,
       title: workout.title,
       durationMin: workout.durationMin,
-      slotName: SLOT_META[slotId].name,
+      slotName: workout.isCombo ? workout.comboLabel : SLOT_META[slotId].name,
+      pairSlotId: workout.isCombo ? workout.combo.strengthSlot : null,
       isTest: !!workout.isTest,
       metricId: workout.metricId || null,
       runPlan: workout.runPlan || null,
@@ -4126,17 +4472,44 @@
         ts: finishedAt,
       });
     }
+    const lifts = liftSummary(workout, sess);
+    const liftPrs = workout.isTest ? [] : logLiftPrs(workout, lifts, localDateKey(finishedAt));
+    const pairSlotId = workout.isCombo ? workout.combo.strengthSlot : null;
+    const parts = workout.isCombo
+      ? [
+          { kind: "run", slotId: workout.combo.runSlot, title: workout.combo.runTitle, minutes: workout.combo.runMinutes, miles: Math.round(cardioSum.miles * 100) / 100, avgHr: cardioSum.avgHr || undefined },
+          { kind: workout.combo.kind === "core" ? "core" : "strength", slotId: pairSlotId, title: workout.combo.strengthTitle, lifts: lifts },
+        ]
+      : undefined;
     recordHistory({
       dateKey: localDateKey(finishedAt),
       slotId: sess.slotId,
+      pairSlotId: pairSlotId || undefined,
       workoutId: workout.id,
       title: workout.title,
       durationMin: workout.durationMin,
       loggedMiles: cardioSum.miles,
       loggedMinutes: cardioSum.minutes,
+      lifts: lifts.length ? lifts : undefined,
+      parts: parts,
+      liftPrs: liftPrs.length ? liftPrs : undefined,
       fuelNote: fuelNote || undefined,
       ts: finishedAt,
     });
+    if (pairSlotId) {
+      state.completed[pairSlotId] = {
+        workoutId: workout.id,
+        title: workout.title,
+        dateKey: localDateKey(finishedAt),
+        dayKey: today.day.key,
+        dayLabel: today.day.label,
+        ts: finishedAt,
+        durationMin: workout.durationMin,
+        comboWith: sess.slotId,
+        countsMiles: false,
+        loggedMiles: 0,
+      };
+    }
     state.completed[sess.slotId] = {
       workoutId: workout.id,
       title: workout.title,
@@ -4150,6 +4523,10 @@
       countsMiles: countsMiles,
       loggedMiles: Math.round(cardioSum.miles * 100) / 100,
       fuelNote: fuelNote || undefined,
+      pairSlotId: pairSlotId || undefined,
+      comboLabel: workout.isCombo ? workout.comboLabel : undefined,
+      parts: parts,
+      liftPrs: liftPrs.length ? liftPrs : undefined,
     };
     if (state.todayPick) state.todayPick.status = "finished";
     const metricQueue = [];
@@ -4266,6 +4643,8 @@
         hr.history = hr.history.filter((e) => !((e.type === "drift" || e.type === "ant") && e.ts === c.ts));
         saveHr(hr);
       }
+      if (c && c.liftPrs) undoLiftPrs(c.liftPrs);
+      if (c && c.pairSlotId && state.completed[c.pairSlotId] && state.completed[c.pairSlotId].comboWith === slotId) delete state.completed[c.pairSlotId];
     }
     delete state.completed[slotId];
     state.todayPick = null;
@@ -4398,7 +4777,7 @@
     if (!sess || !body) return;
     const workout = resolveWorkout(sess.slotId, sess.workoutId, sess.runPlan);
     if (!workout) return;
-    const meta = SLOT_META[sess.slotId];
+    const meta = workout.isCombo ? { name: workout.comboLabel } : SLOT_META[sess.slotId];
     const countsMiles = workoutCountsMiles(sess.slotId, workout);
     document.getElementById("active-slot").textContent = slotCardLabel(meta, !!workout.isTest);
     document.getElementById("active-title").textContent = workout.title;
@@ -4407,7 +4786,7 @@
     document.getElementById("active-progress-line").textContent =
       prog.done + " / " + prog.total + " items logged";
 
-    let html = hrCapBlockHtml(sess.slotId, workout, "in-active");
+    let html = comboNoteHtml(workout) + hrCapBlockHtml(sess.slotId, workout, "in-active");
     if (workout.warmup && workout.warmup.length) {
       html += '<div class="active-block"><h4>Warm-up</h4>';
       workout.warmup.forEach(function (w, i) {
@@ -4551,7 +4930,7 @@
           html +=
             '<p class="cardio-count-note">' +
             (countsMiles
-              ? "Enter the distance, and these miles count toward this week's total when you tap Finish."
+              ? "Enter the distance, and these miles count toward this week's total when you tap Finish." + (workout.isCombo ? " The heart rate field belongs to the run." : "")
               : "This one does not count toward your weekly running miles.") +
             "</p>";
           html +=
@@ -4604,6 +4983,16 @@
     }
 
     body.innerHTML = html;
+  }
+
+  function comboNoteHtml(workout) {
+    if (!workout || !workout.isCombo) return "";
+    const c = workout.combo;
+    return (
+      '<div class="combo-note"><strong>Two parts, one day</strong><p>' +
+      escapeHtml("The run comes first: " + c.runTitle + ", about " + c.runMinutes + " minutes. Then the " + (c.kind === "core" ? "core work" : "lifts") + ": " + c.strengthTitle + ", about " + c.strengthMinutes + " minutes.") +
+      "</p><p>" + escapeHtml(COMBO_SPLIT_NOTE) + "</p></div>"
+    );
   }
 
   // ——— Heart rate test logging (Active Workout) and result sheet ———
@@ -4705,10 +5094,11 @@
     $("#today-date").textContent = formatTodayLabel(today.now) + " · MT";
 
     const doneCount = Object.keys(state.completed).length;
+    const comboDays = Object.values(state.completed).filter((c) => c && c.pairSlotId).length;
     const wk1End = weekStartDate(1);
     wk1End.setDate(wk1End.getDate() - 1);
     $("#week-progress").textContent = started
-      ? doneCount + " of 7 workouts done this week"
+      ? doneCount + " of 7 weekly sessions done" + (comboDays ? ". Each combined run and strength day covers two." : " this week.")
       : "Week 1 runs from Monday, " + shortDate(weekStartDate(0)) + " to Sunday, " + shortDate(wk1End) + ". Here is what it holds.";
     $("#progress-fill").style.width = (started ? (doneCount / 7) * 100 : 0) + "%";
     const weekH1 = document.querySelector("#view-week .day-hero h1");
@@ -4842,11 +5232,12 @@
     if (cont) cont.classList.add("hidden");
     $("#today-sub").textContent =
       result.options.length +
-      " choices today — tap one to start. Choosing locks today and reshuffles the rest of the week.";
+      " choices today. Tap one to start. Choosing locks today and reshuffles the rest of the week." +
+      (result.options.some((o) => o.isCombo) ? " A combined run and strength option counts for both sessions." : "");
 
     list.innerHTML = result.options
       .map(({ slotId, workout, tiredLegs }) => {
-        const meta = SLOT_META[slotId];
+        const meta = workout.isCombo ? { name: workout.comboLabel } : SLOT_META[slotId];
         const isTest = !!workout.isTest;
         const hrShort = hrCapShort(slotId, workout);
         const testTag = workout.aerobicTest ? (workout.aerobicTest === "ant" ? "Optional test" : "Heart rate test") : "Test / PR day";
@@ -4854,6 +5245,7 @@
           '<button type="button" class="option-card ' +
           workout.lengthClass +
           (isTest ? " test" : "") +
+          (workout.isCombo ? " combo" : "") +
           '" data-slot="' +
           slotId +
           '" data-workout="' +
@@ -4879,6 +5271,7 @@
           (hrShort ? '<p class="option-hr">' + escapeHtml(hrShort) + "</p>" : "") +
           '<div class="option-tags">' +
           (isTest ? '<span class="tag test-tag">' + escapeHtml(testTag) + "</span>" : "") +
+          (workout.isCombo ? '<span class="tag combo-tag">Run first, or split the day</span>' : "") +
           (tiredLegs ? '<span class="tag tired-tag">Second day on tired legs</span>' : "") +
           '<span class="tag loc">' +
           escapeHtml(plainLocation(workout.location)) +
@@ -4935,6 +5328,12 @@
     list.innerHTML = SLOT_ORDER.map((slotId) => {
       const meta = SLOT_META[slotId];
       const done = state.completed[slotId];
+      // A combined run + strength session shows once, as one row with both parts.
+      if (done && done.comboWith) return "";
+      if (!done && state.todayPick && state.todayPick.pairSlotId === slotId && state.todayPick.dayKey === today.day.key) return "";
+      const comboPair = (done && done.pairSlotId) || (!done && state.todayPick && state.todayPick.slotId === slotId && state.todayPick.dayKey === today.day.key && state.todayPick.pairSlotId) || null;
+      const pairIsCore = comboPair && ((done && done.parts && done.parts[1] && done.parts[1].kind === "core") || (!done && /core$/i.test(state.todayPick.title || "")) || comboPair === "flex");
+      const rowName = comboPair ? meta.name + " + " + (pairIsCore ? "core" : SLOT_META[comboPair].name) : meta.name;
       let status = "remaining";
       let statusIcon = "○";
       let dayLabel = "—";
@@ -4952,7 +5351,8 @@
         status = "done";
         statusIcon = "✓";
         dayLabel = done.dayLabel || "Done";
-        detail = done.title + ", about " + done.durationMin + " minutes" + (done.countsMiles && done.loggedMiles > 0 ? ", " + fmtMiles(done.loggedMiles) + " logged" : "") + ".";
+        detail = done.title + ", about " + done.durationMin + " minutes" + (done.countsMiles && done.loggedMiles > 0 ? ", " + fmtMiles(done.loggedMiles) + " logged" : "") + "." +
+          (done.pairSlotId ? " One combined session: " + comboPartsText(done.parts) : "");
       } else if (
         state.todayPick &&
         state.todayPick.slotId === slotId &&
@@ -5000,7 +5400,7 @@
         statusIcon +
         "</div>" +
         '<div class="slot-info"><h3>' +
-        escapeHtml(meta.name) +
+        escapeHtml(rowName) +
         "</h3><p>" +
         escapeHtml(detail) +
         "</p></div>" +
@@ -5010,6 +5410,51 @@
         "</div>"
       );
     }).join("");
+  }
+
+  /** Plain sentence for the two parts of a finished combined session. */
+  function comboPartsText(parts) {
+    if (!parts || !parts.length) return "";
+    return parts
+      .map((p) => {
+        if (p.kind === "run") return "the run, " + (p.miles > 0 ? fmtMiles(p.miles) + " logged" : "no distance entered") + (p.avgHr ? " at an average heart rate of " + p.avgHr : "");
+        const n = (p.lifts || []).length;
+        return (p.kind === "core" ? "the core work, " : "the lifts, ") + (n ? n + (n === 1 ? " exercise" : " exercises") + " logged" : "nothing logged");
+      })
+      .join(", then ") + ".";
+  }
+
+  function recentSessionsHtml() {
+    const hist = loadHistory().slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 10);
+    let rows = "";
+    hist.forEach((e) => {
+      const d = e.dateKey ? new Date(e.dateKey + "T12:00:00") : new Date(e.ts || Date.now());
+      const when = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+      let sub;
+      if (e.parts && e.parts.length) {
+        sub = "Run and " + (e.parts[1] && e.parts[1].kind === "core" ? "core" : "strength") + " in one session: " + comboPartsText(e.parts);
+        const top = (e.parts[1] && e.parts[1].lifts ? e.parts[1].lifts : []).filter((l) => l.weight).slice(0, 2);
+        if (top.length) sub += " Top sets: " + listPlain(top.map((l) => l.name + " " + l.weight + " lb for " + l.reps)) + ".";
+      } else {
+        const bits = [];
+        if (e.loggedMiles > 0) bits.push(fmtMiles(Math.round(e.loggedMiles * 10) / 10) + " logged");
+        if (e.lifts && e.lifts.length) bits.push(e.lifts.length + (e.lifts.length === 1 ? " exercise" : " exercises") + " logged");
+        sub = (SLOT_META[e.slotId] ? SLOT_META[e.slotId].name : "Workout") + (bits.length ? ": " + bits.join(", ") : "") + ".";
+      }
+      if (e.liftPrs && e.liftPrs.length) {
+        const names = { back_squat: "back squat", bench: "bench press", deadlift: "deadlift" };
+        sub += " New estimated 1RM for " + listPlain(e.liftPrs.map((p) => names[p.metricId] || p.metricId)) + ", saved in Progress.";
+      }
+      rows +=
+        '<li><div class="pr-top"><span>' + escapeHtml(when + " · " + (e.title || "Workout")) + "</span></div>" +
+        '<div class="pr-sub">' + escapeHtml(sub) + "</div></li>";
+    });
+    return (
+      '<article class="bench-card recent-sessions">' +
+      '<div class="bench-card-head"><div><h3>Recent sessions</h3><span class="bench-unit">finished workouts, newest first</span></div></div>' +
+      (rows ? '<ul class="plan-rows">' + rows + "</ul>" : '<p class="bench-empty">No finished workouts yet. They show up here after you tap Finish.</p>') +
+      "</article>"
+    );
   }
 
   function renderProgress() {
@@ -5060,6 +5505,7 @@
 
     root.innerHTML =
       mileageHistoryHtml() +
+      recentSessionsHtml() +
       hrProgressHtml() +
       oneRmCard +
       BENCH_GROUPS.map((g) => {
@@ -5413,6 +5859,7 @@
           <li>From December on, hills sessions include easy, controlled downhill running, because Black Canyon drops more than it climbs.</li>
           <li>From the week of December 14 through race week, strength is on maintenance: the same lifts at the same percent of your max, with fewer sets, fewer extras, and no max attempts. You'll chase lifting PRs after Black Canyon.</li>
           <li>Your longest run, about 20 miles, is about two weeks before the race. The week before race week drops about 25 percent, and race week is a few short, easy runs and then the race.</li>
+          <li>Most days offer a combined run and strength option alongside run-only and strength-only choices. An easy run can go with any strength or core session. A heavy leg day only goes with a short easy run of 3 to 4 miles. Hills days and the run after a long run only go with upper body or core. The long run, heart rate tests, and max test days always stand alone. You can do both parts together, run first, or split them across the day.</li>
           <li>You still pick each day's workout in any order. The run options resize themselves to fit the miles left in the week, and if you fall behind, the app will not ask you to cram.</li>
         </ul>
       </div>
@@ -5543,7 +5990,7 @@
 
   function openModal(slotId, workout) {
     pendingSelect = { slotId, workout };
-    const meta = SLOT_META[slotId];
+    const meta = workout.isCombo ? { name: workout.comboLabel } : SLOT_META[slotId];
     $("#modal-slot").textContent = slotCardLabel(meta, !!workout.isTest);
     $("#modal-title").textContent = workout.title;
     $("#modal-meta").textContent = sessionMetaLine(workout);
@@ -5555,7 +6002,7 @@
     }
     $("#modal-slot").textContent = workout.aerobicTest ? (workout.aerobicTest === "ant" ? "Optional test" : "Heart rate test") + " · " + SLOT_META[slotId].name : slotCardLabel(meta, !!workout.isTest);
 
-    let html = hrCapBlockHtml(slotId, workout, "in-modal");
+    let html = comboNoteHtml(workout) + hrCapBlockHtml(slotId, workout, "in-modal");
     const tired = isEasyRunOption(slotId, workout) ? tiredLegsFromYesterday() : null;
     if (tired) {
       html +=

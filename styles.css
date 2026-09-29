@@ -1564,3 +1564,22 @@ body {
 .bench-history.hr-history, .bench-history.hr-pace { max-height: none; }
 .bench-history.hr-history li { grid-template-columns: 52px minmax(0, 1fr) auto auto; }
 .bench-history.hr-pace li { grid-template-columns: 52px minmax(0, 1fr) auto; }
+
+/* Pass 13: combined run + strength sessions */
+.combo-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-dim);
+  color: #d9ffee;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+.combo-note strong { display: block; margin-bottom: 2px; color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.combo-note p { margin: 0; }
+.combo-note p + p { margin-top: 6px; }
+.option-card.combo { border-color: rgba(61, 255, 168, 0.35); }
+.tag.combo-tag { color: var(--accent); background: var(--accent-dim); border-color: transparent; }
+.recent-sessions .plan-rows { margin-top: 8px; }
